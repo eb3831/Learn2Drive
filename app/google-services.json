@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "717533968994",
+    "project_id": "learn2drive-1dcfa",
+    "storage_bucket": "learn2drive-1dcfa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:717533968994:android:65948a35f84c2391572f3b",
+        "android_client_info": {
+          "package_name": "com.example.learn2drive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtKXL9KZlsIyHb3Gata2dsUxOeChww4Nw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
