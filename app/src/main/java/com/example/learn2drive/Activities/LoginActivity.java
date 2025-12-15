@@ -1,7 +1,7 @@
-package com.example.learn2drive;
+package com.example.learn2drive.Activities;
 
-import static com.example.learn2drive.FBRef.refAuth;
-import static com.example.learn2drive.Utilities.isValidEmail;
+import static com.example.learn2drive.Helpers.FBRef.refAuth;
+import static com.example.learn2drive.Helpers.Utilities.isValidEmail;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,10 +12,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.learn2drive.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity
 {
@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity
 
     public void login(View view)
     {
-        String email = etLoginEmail.getText().toString().trim();
+        String email = etLoginEmail.getText().toString();
         String password = etLoginPassword.getText().toString();
 
         if (!isValidEmail(email))
@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity
                 {
                     Toast.makeText(LoginActivity.this, "LOGIN SUCCESSFULLY!", Toast.LENGTH_SHORT).show();
 
-                    // gi = new Intent(this, );
+                    // gi = new Intent(this, ); //to home screen
                     // startActivity(gi);
                 }
 

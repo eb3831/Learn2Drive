@@ -103,12 +103,13 @@
         android:id="@+id/btnNext"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:text="NEXT"
+        android:layout_marginBottom="24dp"
         android:background="@drawable/bg_button_primary"
+        android:onClick="moveToSignUp2"
+        android:text="NEXT"
         android:textColor="@color/white"
-        android:textStyle="bold"
         android:textSize="16sp"
-        android:layout_marginBottom="24dp"/>
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="wrap_content"

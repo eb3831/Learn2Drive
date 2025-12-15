@@ -1,4 +1,4 @@
-package com.example.learn2drive;
+package com.example.learn2drive.Helpers;
 
 public class Utilities
 {
@@ -63,5 +63,10 @@ public class Utilities
 
         // אם עברנו את כל הבדיקות - הכתובת נחשבת תקינה
         return true;
+    }
+
+    public static boolean isValidPassword(String password)
+    {
+        return password.length() >= 6;
     }
 }

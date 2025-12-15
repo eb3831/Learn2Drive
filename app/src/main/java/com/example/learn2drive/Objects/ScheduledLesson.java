@@ -1,4 +1,4 @@
-package com.example.learn2drive;
+package com.example.learn2drive.Objects;
 
 public class ScheduledLesson
 {
