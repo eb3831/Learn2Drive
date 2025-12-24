@@ -5,6 +5,7 @@ import static com.example.learn2drive.Prompts.PHOTO_PROMPT;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -34,6 +35,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 
 public class SignUpActivity2 extends AppCompatActivity implements GeminiCallBack
 {
@@ -256,5 +258,31 @@ public class SignUpActivity2 extends AppCompatActivity implements GeminiCallBack
         }
 
         Toast.makeText(this, "Registration Successful!", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Opens a calendar dialog for selecting the birth date.
+     * PUBLIC method linked via android:onClick in XML.
+     * @param view The view that triggered this method.
+     */
+    public void openDatePicker(View view)
+    {
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                (v, selectedYear, selectedMonth, selectedDay) ->
+                {
+                    // Format the date as DD/MM/YYYY
+                    String date = String.format("%02d.%02d.%d", selectedDay, selectedMonth + 1, selectedYear);
+                    etBirthDate.setText(date);
+                },
+                year, month, day);
+
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        datePickerDialog.show();
     }
 }
