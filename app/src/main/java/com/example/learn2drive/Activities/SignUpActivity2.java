@@ -1,7 +1,7 @@
 package com.example.learn2drive.Activities;
 
-import static com.example.learn2drive.Prompts.ID_CARD_SCHEMA;
-import static com.example.learn2drive.Prompts.PHOTO_PROMPT;
+import static com.example.learn2drive.Helpers.Prompts.ID_CARD_SCHEMA;
+import static com.example.learn2drive.Helpers.Prompts.PHOTO_PROMPT;
 
 import android.Manifest;
 import android.app.Activity;
