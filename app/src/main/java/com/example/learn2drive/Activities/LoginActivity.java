@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,6 +22,9 @@ import com.google.firebase.auth.AuthResult;
 public class LoginActivity extends AppCompatActivity
 {
     EditText etLoginEmail, etLoginPassword;
+    LinearLayout containerEmail, containerPassword;
+    TextView tvEmailError, tvPasswordError;
+
     Intent gi;
 
     @Override
@@ -35,6 +40,12 @@ public class LoginActivity extends AppCompatActivity
     {
         etLoginEmail = findViewById(R.id.etLoginEmail);
         etLoginPassword = findViewById(R.id.etLoginPassword);
+
+        containerEmail = findViewById(R.id.containerEmail);
+        containerPassword = findViewById(R.id.containerPassword);
+
+        tvEmailError = findViewById(R.id.tvEmailError);
+        tvPasswordError = findViewById(R.id.tvPasswordError);
     }
 
     public void moveToSignUp(View view)
@@ -48,19 +59,57 @@ public class LoginActivity extends AppCompatActivity
         String email = etLoginEmail.getText().toString();
         String password = etLoginPassword.getText().toString();
 
-        if (!isValidEmail(email))
+        resetErrors();
+
+        boolean hasError = false;
+
+        if (email.isEmpty())
         {
-            etLoginEmail.setError("invalid email address");
-            return;
+            showEmailError("Email is required");
+            hasError = true;
+        }
+
+        else if (!isValidEmail(email))
+        {
+            showEmailError("Invalid email address");
+            hasError = true;
         }
 
         if (password.isEmpty())
         {
-            etLoginPassword.setError("please write your password");
+            showPasswordError("Password is required");
+            hasError = true;
+        }
+
+        if (hasError)
+        {
             return;
         }
 
         loginUser(email, password);
+    }
+
+    private void showEmailError(String message)
+    {
+        containerEmail.setBackgroundResource(R.drawable.bg_input_error);
+        tvEmailError.setText(message);
+        tvEmailError.setVisibility(View.VISIBLE);
+    }
+
+    private void showPasswordError(String message)
+    {
+        containerPassword.setBackgroundResource(R.drawable.bg_input_error);
+        tvPasswordError.setText(message);
+        tvPasswordError.setVisibility(View.VISIBLE);
+    }
+
+    private void resetErrors()
+    {
+        containerEmail.setBackgroundResource(R.drawable.bg_input_default);
+        tvEmailError.setVisibility(View.GONE);
+
+        containerPassword.setBackgroundResource(R.drawable.bg_input_default);
+        tvPasswordError.setVisibility(View.GONE);
     }
 
     private void loginUser(String email, String password)
@@ -74,10 +123,9 @@ public class LoginActivity extends AppCompatActivity
                 {
                     Toast.makeText(LoginActivity.this, "LOGIN SUCCESSFULLY!", Toast.LENGTH_SHORT).show();
 
-                    // gi = new Intent(this, ); //to home screen
+                    // gi = new Intent(this, HomeScreenActivity.class); // שנה לשם המסך הבא שלך
                     // startActivity(gi);
                 }
-
                 else
                 {
                     Toast.makeText(LoginActivity.this, "LOGIN FAILED: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
@@ -86,4 +134,3 @@ public class LoginActivity extends AppCompatActivity
         });
     }
 }
-

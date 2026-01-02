@@ -31,8 +31,8 @@ public class SignUpActivity extends AppCompatActivity
 
     public void initViews()
     {
-        etSignUpEmail = findViewById(R.id.etEmail);
-        etSignUpPassword = findViewById(R.id.etPassword);
+        etSignUpEmail = findViewById(R.id.etLoginEmail);
+        etSignUpPassword = findViewById(R.id.etLoginPassword);
         etSignUpUsername = findViewById(R.id.etUsername);
         rgRole = findViewById(R.id.rgRole);
     }
