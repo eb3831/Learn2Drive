@@ -144,13 +144,16 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
             tvBirthDateError.setVisibility(View.VISIBLE);
         }
 
-         // Proceed to Next Screen
-        gi = new Intent(this, SignUpActivity2.class);
-        gi.putExtra("email", signUpEmail);
-        gi.putExtra("password", signUpPassword);
-        gi.putExtra("birthDate", dob);
-        gi.putExtra("id", id);
-        startActivity(gi);
+        else
+        {
+            gi = new Intent(this, SignUpActivity2.class);
+            gi.putExtra("email", signUpEmail);
+            gi.putExtra("password", signUpPassword);
+            gi.putExtra("birthDate", dob);
+            gi.putExtra("id", id);
+
+            startActivity(gi);
+        }
     }
 
     // --- Error Handling Methods --- c
