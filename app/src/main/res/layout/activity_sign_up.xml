@@ -1,112 +1,299 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/gray_50"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:background="@color/background_gray"
-    android:padding="32dp">
+    android:paddingStart="32dp"
+    android:paddingEnd="32dp"
+    android:paddingTop="40dp"
+    android:paddingBottom="24dp"
+    tools:context=".Activities.SignUpActivity">
+
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@drawable/bg_circle_black"
+        android:contentDescription="User Icon"
+        android:padding="16dp"
+        android:src="@drawable/user"
+        app:tint="@color/white" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign Up"
-        android:textSize="32sp"
-        android:textColor="@color/text_primary"
-        android:textStyle="normal"
-        android:fontFamily="sans-serif-light"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginTop="16dp"
+        android:text="Create Account"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create your new account"
-        android:textSize="14sp"
-        android:textColor="@color/text_secondary"
-        android:layout_marginBottom="32dp"/>
+        android:layout_marginTop="4dp"
+        android:text="Fill in your details to get started"
+        android:textColor="@color/gray_600"
+        android:textSize="14sp" />
 
-    <EditText
-        android:id="@+id/etLoginEmail"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/bg_input_field"
-        android:hint="Email Address"
-        android:inputType="textEmailAddress"
-        android:textColor="@color/text_primary"
-        android:textColorHint="@color/text_secondary"
-        android:layout_marginBottom="16dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"/>
-
-    <EditText
-        android:id="@+id/etLoginPassword"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/bg_input_field"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:textColor="@color/text_primary"
-        android:textColorHint="@color/text_secondary"
-        android:layout_marginBottom="16dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"/>
-
-    <EditText
-        android:id="@+id/etUsername"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/bg_input_field"
-        android:hint="Username"
-        android:inputType="textPersonName"
-        android:textColor="@color/text_primary"
-        android:textColorHint="@color/text_secondary"
-        android:layout_marginBottom="16dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="I am a:"
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp"
-        android:layout_marginBottom="4dp"/>
-
-    <RadioGroup
-        android:id="@+id/rgRole"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical"
-        android:layout_marginBottom="24dp">
+        android:gravity="center_vertical">
 
-        <RadioButton
-            android:id="@+id/rbTeacher"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Teacher"
-            android:textSize="16sp"
-            android:buttonTint="@color/black"
-            android:textColor="@color/text_dark"/>
+            android:layout_marginBottom="4dp"
+            android:text="Email Address"
+            android:textColor="@color/gray_700"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-        <RadioButton
-            android:id="@+id/rbStudent"
+        <LinearLayout
+            android:id="@+id/containerEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_input_default"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/mail"
+                app:tint="@color/gray_400" />
+
+            <EditText
+                android:id="@+id/etSignUpEmail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="you@example.com"
+                android:inputType="textEmailAddress"
+                android:paddingStart="12dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray_400"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvEmailError"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Student"
-            android:textSize="16sp"
-            android:buttonTint="@color/purple_primary"
-            android:textColor="@color/text_dark"/>
-    </RadioGroup>
+            android:layout_marginTop="4dp"
+            android:text="Error message"
+            android:textColor="@color/red_500"
+            android:textSize="12sp"
+            android:visibility="gone" />
 
-    <Button
-        android:id="@+id/btnNext"
+        <Space android:layout_width="match_parent" android:layout_height="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="Password"
+            android:textColor="@color/gray_700"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/containerPassword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_input_default"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/lock"
+                app:tint="@color/gray_400" />
+
+            <EditText
+                android:id="@+id/etSignUpPassword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="••••••••"
+                android:inputType="textPassword"
+                android:paddingStart="12dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray_400"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/btnTogglePassword"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@android:drawable/ic_menu_view"
+                app:tint="@color/gray_400"
+                android:clickable="true"
+                android:focusable="true"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvPasswordError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Error message"
+            android:textColor="@color/red_500"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <Space android:layout_width="match_parent" android:layout_height="12dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Birth Date"
+                android:textColor="@color/gray_700"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:foregroundGravity="right"
+                android:paddingEnd="5dp"
+                app:srcCompat="@drawable/scan" />
+
+            <TextView
+                android:id="@+id/btnScanID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="4dp"
+                android:drawableTint="@color/gray_600"
+                android:onClick="scanID"
+                android:text="Scan ID"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/containerBirthDate"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_input_default"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/calendar"
+                app:tint="@color/gray_400" />
+
+            <EditText
+                android:id="@+id/etBirthDate"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="dd/mm/yyyy"
+                android:inputType="date"
+                android:focusable="false"
+                android:clickable="true"
+                android:onClick="openDatePicker"
+                android:paddingStart="12dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray_400"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvBirthDateError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Error message"
+            android:textColor="@color/red_500"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <Space android:layout_width="match_parent" android:layout_height="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="ID Number"
+            android:textColor="@color/gray_700"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/containerIdNumber"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_input_default"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/id_card"
+                app:tint="@color/gray_400" />
+
+            <EditText
+                android:id="@+id/etIDNumber"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="123456789"
+                android:inputType="number"
+                android:paddingStart="12dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray_400"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvIdError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Error message"
+            android:textColor="@color/red_500"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
         android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:layout_marginBottom="24dp"
-        android:background="@drawable/bg_button_primary"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_button_black"
+        android:backgroundTint="@null"
         android:onClick="moveToSignUp2"
-        android:text="NEXT"
+        android:text="Next"
+        android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold" />
@@ -114,22 +301,24 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Already have a user? "
-            android:textColor="@color/text_hint"/>
+            android:text="Already have an account? "
+            android:textColor="@color/gray_600"
+            android:textSize="14sp" />
 
         <TextView
+            android:id="@+id/tvSignIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
             android:onClick="moveToLogin"
-            android:text="Login"
-            android:textColor="@color/link_blue"
+            android:text="Sign in"
+            android:textColor="@color/black"
+            android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
 

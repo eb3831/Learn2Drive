@@ -4,8 +4,10 @@ import static com.example.learn2drive.Helpers.FBRef.refAuth;
 import static com.example.learn2drive.Helpers.Utilities.isValidEmail;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -14,6 +16,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.learn2drive.Helpers.FBRef;
+import com.example.learn2drive.Helpers.Utilities;
 import com.example.learn2drive.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,6 +28,8 @@ public class LoginActivity extends AppCompatActivity
     EditText etLoginEmail, etLoginPassword;
     LinearLayout containerEmail, containerPassword;
     TextView tvEmailError, tvPasswordError;
+    CheckBox cbRememberMe;
+    SharedPreferences sp;
 
     Intent gi;
 
@@ -34,6 +40,25 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
 
         initViews();
+
+        loadSavedCredentials();
+    }
+
+    /**
+     * Checks if user is remembered and already signed in, redirects to MainActivity if so.
+     */
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        boolean userConnected = sp.getBoolean("is_remembered", false);
+        if (refAuth.getCurrentUser() != null && userConnected)
+        {
+            FBRef.saveCurrentUser(refAuth.getCurrentUser());
+            gi = new Intent(this, MainActivity.class);
+            startActivity(gi);
+            finish();
+        }
     }
 
     public void initViews()
@@ -46,6 +71,20 @@ public class LoginActivity extends AppCompatActivity
 
         tvEmailError = findViewById(R.id.tvEmailError);
         tvPasswordError = findViewById(R.id.tvPasswordError);
+
+        cbRememberMe = findViewById(R.id.cbRememberMe);
+        sp = getSharedPreferences("login_prefs", MODE_PRIVATE);
+        cbRememberMe = findViewById(R.id.cbRememberMe);
+    }
+
+    private void loadSavedCredentials()
+    {
+        boolean isRemembered = sp.getBoolean("is_remembered", false);
+        if (isRemembered) {
+            String savedEmail = sp.getString("email", "");
+            etLoginEmail.setText(savedEmail);
+            cbRememberMe.setChecked(true);
+        }
     }
 
     public void moveToSignUp(View view)
@@ -61,46 +100,24 @@ public class LoginActivity extends AppCompatActivity
 
         resetErrors();
 
-        boolean hasError = false;
-
-        if (email.isEmpty())
+        if (!Utilities.isValidEmail(email))
         {
-            showEmailError("Email is required");
-            hasError = true;
+            containerEmail.setBackgroundResource(R.drawable.bg_input_error);
+            tvEmailError.setText("please enter vaild email");
+            tvEmailError.setVisibility(View.VISIBLE);
         }
 
-        else if (!isValidEmail(email))
+        if (!Utilities.isValidPassword(password))
         {
-            showEmailError("Invalid email address");
-            hasError = true;
+            containerPassword.setBackgroundResource(R.drawable.bg_input_error);
+            tvPasswordError.setText("please enter vaild password");
+            tvPasswordError.setVisibility(View.VISIBLE);
         }
 
-        if (password.isEmpty())
+        else
         {
-            showPasswordError("Password is required");
-            hasError = true;
+            loginUser(email, password);
         }
-
-        if (hasError)
-        {
-            return;
-        }
-
-        loginUser(email, password);
-    }
-
-    private void showEmailError(String message)
-    {
-        containerEmail.setBackgroundResource(R.drawable.bg_input_error);
-        tvEmailError.setText(message);
-        tvEmailError.setVisibility(View.VISIBLE);
-    }
-
-    private void showPasswordError(String message)
-    {
-        containerPassword.setBackgroundResource(R.drawable.bg_input_error);
-        tvPasswordError.setText(message);
-        tvPasswordError.setVisibility(View.VISIBLE);
     }
 
     private void resetErrors()
@@ -114,23 +131,34 @@ public class LoginActivity extends AppCompatActivity
 
     private void loginUser(String email, String password)
     {
-        refAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>()
+        refAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task ->
         {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task)
+            if (task.isSuccessful())
             {
-                if (task.isSuccessful())
+                // SAVE TO SHARED PREFERENCES
+                SharedPreferences.Editor editor = sp.edit();
+                if (cbRememberMe.isChecked())
                 {
-                    Toast.makeText(LoginActivity.this, "LOGIN SUCCESSFULLY!", Toast.LENGTH_SHORT).show();
-
-                    // gi = new Intent(this, HomeScreenActivity.class); // שנה לשם המסך הבא שלך
-                    // startActivity(gi);
+                    editor.putString("email", email);
+                    editor.putBoolean("is_remembered", true);
                 }
+
                 else
                 {
-                    Toast.makeText(LoginActivity.this, "LOGIN FAILED: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    editor.clear(); // Clear data if user unchecked the box
                 }
+                editor.apply();
+
+                Toast.makeText(LoginActivity.this, "LOGIN SUCCESSFULLY!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+            }
+
+            else
+            {
+                Toast.makeText(LoginActivity.this, "LOGIN FAILED: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
+
 }

@@ -1,114 +1,255 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray_50"
     android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:background="@color/background_gray"
-    android:padding="32dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sign Up"
-        android:textSize="32sp"
-        android:textColor="@color/text_dark"
-        android:textStyle="normal"
-        android:fontFamily="sans-serif-light"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="8dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Step 2: Personal Details"
-        android:textSize="14sp"
-        android:textColor="@color/text_hint"
-        android:layout_marginBottom="32dp"/>
-
-    <EditText
-        android:id="@+id/etUserID"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_input_field"
-        android:editable="true"
-        android:enabled="true"
-        android:hint="ID Number"
-        android:inputType="number"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:textColor="@color/text_dark"
-        android:textColorHint="@color/text_hint" />
-
-    <EditText
-        android:id="@+id/etBirthDate"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="24dp"
-        android:background="@drawable/bg_input_field"
-        android:clickable="true"
-        android:editable="false"
-        android:enabled="true"
-        android:focusable="false"
-        android:hint="Birth Date (DD/MM/YYYY)"
-        android:inputType="date"
-        android:onClick="openDatePicker"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:textColor="@color/text_dark"
-        android:textColorHint="@color/text_hint" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginBottom="24dp"
-        android:background="@drawable/bg_button_outline"
-        android:clickable="false"
-        android:drawableLeft="@android:drawable/ic_menu_camera"
-        android:drawableTint="@color/purple_primary"
-        android:onClick="scanID"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:text="  Scan ID  "
-        android:textColor="@color/purple_primary"
-        android:textSize="14sp"
-        android:textStyle="bold" />
-
-    <CheckBox
-        android:id="@+id/cbRememberMe"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Remember me"
-        android:textColor="@color/text_dark"
-        android:buttonTint="@color/purple_primary"
-        android:layout_marginBottom="32dp"/>
+    tools:context=".SignUpActivity2">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:background="@color/white">
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="55dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_button_primary"
-            android:onClick="backToSignUp1"
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="onBackClicked"
+            android:contentDescription="Back"
+            android:src="@drawable/arrow_left"
+            app:tint="@color/gray_600" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Back"
-            android:textColor="@color/white"
-            android:textSize="16sp"
+            android:textColor="@color/gray_600"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginStart="4dp"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_200" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Complete Profile"
+            android:textColor="@color/black"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="55dp"
-            android:layout_marginStart="8dp"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Step 2 of 2"
+            android:textColor="@color/gray_600"
+            android:textSize="14sp" />
+
+        <Space android:layout_width="match_parent" android:layout_height="24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Username"
+            android:textColor="@color/gray_700"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/containerUsername"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_input_default"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/user"
+                app:tint="@color/gray_400" />
+
+            <EditText
+                android:id="@+id/etUsername"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="Choose a username"
+                android:inputType="textPersonName"
+                android:paddingStart="12dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray_400"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <Space android:layout_width="match_parent" android:layout_height="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="I am a"
+            android:textColor="@color/gray_700"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_black"
+                android:onClick="onStudentClicked"
+                android:text="Student"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_default"
+                android:onClick="onTeacherClicked"
+                android:text="Teacher"
+                android:textAllCaps="false"
+                android:textColor="@color/gray_700"
+                android:textSize="14sp"
+                android:textStyle="normal" />
+        </LinearLayout>
+
+        <Space android:layout_width="match_parent" android:layout_height="20dp"/>
+
+        <LinearLayout
+            android:id="@+id/layoutTeacherSelection"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_button_primary"
-            android:onClick="submit"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Select Your Teacher"
+                android:textColor="@color/gray_700"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_input_default"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/search"
+                    app:tint="@color/gray_400" />
+
+                <EditText
+                    android:id="@+id/etSearchTeacher"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="Search teachers..."
+                    android:inputType="text"
+                    android:paddingStart="12dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray_400"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/lvTeachers"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_input_default"
+                android:divider="@color/gray_200"
+                android:dividerHeight="1dp"
+                android:scrollbars="vertical"
+                android:fadeScrollbars="false" />
+
+        </LinearLayout>
+
+        <Space android:layout_width="match_parent" android:layout_height="16dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <CheckBox
+                android:id="@+id/cbRememberMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:theme="@style/Theme.AppCompat.Light"
+                android:buttonTint="@color/gray_700"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remember me"
+                android:textColor="@color/gray_700"
+                android:textSize="14sp"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_button_black"
+            android:backgroundTint="@null"
+            android:onClick="onSubmitClicked"
             android:text="Submit"
+            android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />

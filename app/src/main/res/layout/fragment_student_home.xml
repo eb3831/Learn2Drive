@@ -4,97 +4,96 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:background="@color/background_gray"
     android:padding="32dp"
     tools:context=".Activities.MainActivity">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="20dp" />
+<!--    <View-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="20dp" />-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Home"
-        android:textSize="36sp"
-        android:textColor="@color/text_dark"
-        android:textStyle="normal"
-        android:fontFamily="sans-serif-light"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="8dp"/>
+<!--    <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Home"-->
+<!--        android:textSize="36sp"-->
+<!--        android:textColor="@color/text_dark"-->
+<!--        android:textStyle="normal"-->
+<!--        android:fontFamily="sans-serif-light"-->
+<!--        android:layout_gravity="center_horizontal"-->
+<!--        android:layout_marginBottom="8dp"/>-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Your upcoming lessons"
-        android:textSize="16sp"
-        android:textColor="@color/text_hint"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="32dp"/>
+<!--    <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Your upcoming lessons"-->
+<!--        android:textSize="16sp"-->
+<!--        android:textColor="@color/text_hint"-->
+<!--        android:layout_gravity="center_horizontal"-->
+<!--        android:layout_marginBottom="32dp"/>-->
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:background="@drawable/bg_input_field"
-        android:padding="16dp"
-        android:layout_marginBottom="24dp">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="1"-->
+<!--        android:orientation="vertical"-->
+<!--        android:background="@drawable/bg_input_field"-->
+<!--        android:padding="16dp"-->
+<!--        android:layout_marginBottom="24dp">-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Next Schedule"
-            android:textColor="@color/purple_primary"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:layout_marginBottom="12dp"/>
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Next Schedule"-->
+<!--            android:textColor="@color/purple_primary"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textSize="18sp"-->
+<!--            android:layout_marginBottom="12dp"/>-->
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#EEEEEE"
-            android:layout_marginBottom="8dp"/>
+<!--        <View-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="1dp"-->
+<!--            android:background="#EEEEEE"-->
+<!--            android:layout_marginBottom="8dp"/>-->
 
-        <ListView
-            android:id="@+id/lvStNextLessons"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null"
-            android:scrollbars="none"/>
+<!--        <ListView-->
+<!--            android:id="@+id/lvStNextLessons"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:divider="@null"-->
+<!--            android:scrollbars="none"/>-->
 
-    </LinearLayout>
+<!--    </LinearLayout>-->
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:weightSum="2">-->
 
-        <Button
-            android:id="@+id/moveToStHistory"
-            android:layout_width="0dp"
-            android:layout_height="55dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_button_outline"
-            android:text="History"
-            android:textColor="@color/purple_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+<!--        <Button-->
+<!--            android:id="@+id/moveToStHistory"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="55dp"-->
+<!--            android:layout_marginEnd="8dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:background="@drawable/bg_button_outline"-->
+<!--            android:text="History"-->
+<!--            android:textColor="@color/purple_primary"-->
+<!--            android:textSize="16sp"-->
+<!--            android:textStyle="bold" />-->
 
-        <Button
-            android:id="@+id/moveToStNewLesson"
-            android:layout_width="0dp"
-            android:layout_height="55dp"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_button_primary"
-            android:text="New Lesson"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+<!--        <Button-->
+<!--            android:id="@+id/moveToStNewLesson"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="55dp"-->
+<!--            android:layout_marginStart="8dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:background="@drawable/bg_button_primary"-->
+<!--            android:text="New Lesson"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="16sp"-->
+<!--            android:textStyle="bold" />-->
 
-    </LinearLayout>
+<!--    </LinearLayout>-->
 
 </LinearLayout>
