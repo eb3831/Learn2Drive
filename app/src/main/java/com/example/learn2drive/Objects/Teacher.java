@@ -5,7 +5,6 @@ import java.util.Date;
 public class Teacher extends User
 {
     private boolean isApprovedByAdmin;
-    private String classCode;
     private int defaultLessonDurationMin;
     private int hourlyRate;
 
@@ -13,17 +12,15 @@ public class Teacher extends User
     {
         super();
         this.isApprovedByAdmin = false;
-        this.classCode = "";
         this.defaultLessonDurationMin = 0;
         this.hourlyRate = 0;
     }
 
-    public Teacher(String UserID, String fullName, Date BirthDate, String phoneNumber, String Role,
-                   boolean active, boolean isApprovedByAdmin, String classCode, int defaultLessonDurationMin, int hourlyRate)
+    public Teacher(String UserID, String fullName, String BirthDate, String phoneNumber,
+                   boolean active, boolean isApprovedByAdmin, int defaultLessonDurationMin, int hourlyRate)
     {
-        super(UserID, fullName, BirthDate, phoneNumber, Role, active);
+        super(UserID, fullName, BirthDate, phoneNumber, active);
         this.isApprovedByAdmin = isApprovedByAdmin;
-        this.classCode = classCode;
         this.defaultLessonDurationMin = defaultLessonDurationMin;
         this.hourlyRate = hourlyRate;
     }
@@ -36,16 +33,6 @@ public class Teacher extends User
     public boolean isApprovedByAdmin()
     {
         return isApprovedByAdmin;
-    }
-
-    public void setClassCode(String classCode)
-    {
-        this.classCode = classCode;
-    }
-
-    public String getClassCode()
-    {
-        return classCode;
     }
 
     public int getDefaultLessonDurationMin()

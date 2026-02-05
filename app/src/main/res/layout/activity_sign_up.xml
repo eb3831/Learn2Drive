@@ -1,325 +1,443 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/gray_50"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:paddingStart="32dp"
-    android:paddingEnd="32dp"
-    android:paddingTop="40dp"
-    android:paddingBottom="24dp"
+    android:fillViewport="true"
     tools:context=".Activities.SignUpActivity">
-
-    <ImageView
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:background="@drawable/bg_circle_black"
-        android:contentDescription="User Icon"
-        android:padding="16dp"
-        android:src="@drawable/user"
-        app:tint="@color/white" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Create Account"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Fill in your details to get started"
-        android:textColor="@color/gray_600"
-        android:textSize="14sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:gravity="center_vertical">
+        android:paddingStart="32dp"
+        android:paddingTop="40dp"
+        android:paddingEnd="32dp"
+        android:paddingBottom="24dp">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_circle_black"
+            android:contentDescription="User Icon"
+            android:padding="16dp"
+            android:src="@drawable/user"
+            app:tint="@color/white" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Email Address"
-            android:textColor="@color/gray_700"
-            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:text="Create Account"
+            android:textColor="@color/black"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
-        <LinearLayout
-            android:id="@+id/containerEmail"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_input_default"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/mail"
-                app:tint="@color/gray_400" />
-
-            <EditText
-                android:id="@+id/etSignUpEmail"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:hint="you@example.com"
-                android:inputType="textEmailAddress"
-                android:paddingStart="12dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/gray_400"
-                android:textSize="14sp" />
-        </LinearLayout>
-
         <TextView
-            android:id="@+id/tvEmailError"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Error message"
-            android:textColor="@color/red_500"
-            android:textSize="12sp"
-            android:visibility="gone" />
-
-        <Space android:layout_width="match_parent" android:layout_height="12dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Password"
-            android:textColor="@color/gray_700"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:text="Fill in your details to get started"
+            android:textColor="@color/gray_600"
+            android:textSize="14sp" />
 
         <LinearLayout
-            android:id="@+id/containerPassword"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_input_default"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/lock"
-                app:tint="@color/gray_400" />
-
-            <EditText
-                android:id="@+id/etSignUpPassword"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:hint="••••••••"
-                android:inputType="textPassword"
-                android:paddingStart="12dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/gray_400"
-                android:textSize="14sp" />
-
-            <ImageView
-                android:id="@+id/btnTogglePassword"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@android:drawable/ic_menu_view"
-                app:tint="@color/gray_400"
-                android:clickable="true"
-                android:focusable="true"/>
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvPasswordError"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Error message"
-            android:textColor="@color/red_500"
-            android:textSize="12sp"
-            android:visibility="gone" />
-
-        <Space android:layout_width="match_parent" android:layout_height="12dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="4dp">
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Birth Date"
+                android:layout_marginBottom="4dp"
+                android:text="Username"
                 android:textColor="@color/gray_700"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:foregroundGravity="right"
-                android:paddingEnd="5dp"
-                app:srcCompat="@drawable/scan" />
+            <LinearLayout
+                android:id="@+id/containerUsername"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_default"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/user"
+                    app:tint="@color/gray_400" />
+
+                <EditText
+                    android:id="@+id/etSignUpUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="Choose username"
+                    android:inputType="text"
+                    android:paddingStart="12dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray_400"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/btnScanID"
+                android:id="@+id/tvUsernameError"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="4dp"
-                android:drawableTint="@color/gray_600"
-                android:onClick="scanID"
-                android:text="Scan ID"
-                android:textColor="@color/black"
+                android:layout_marginTop="4dp"
+                android:text="Error message"
+                android:textColor="@color/red_500"
                 android:textSize="12sp"
+                android:visibility="gone" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Email Address"
+                android:textColor="@color/gray_700"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/containerEmail"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_default"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/mail"
+                    app:tint="@color/gray_400" />
+
+                <EditText
+                    android:id="@+id/etSignUpEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="you@example.com"
+                    android:inputType="textEmailAddress"
+                    android:paddingStart="12dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray_400"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvEmailError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Error message"
+                android:textColor="@color/red_500"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Phone Number"
+                android:textColor="@color/gray_700"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/containerPhone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_default"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/phone"
+                    app:tint="@color/gray_400" />
+
+                <EditText
+                    android:id="@+id/etSignUpPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="050-0000000"
+                    android:inputType="phone"
+                    android:paddingStart="12dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray_400"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvPhoneError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Error message"
+                android:textColor="@color/red_500"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Password"
+                android:textColor="@color/gray_700"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/containerPassword"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_default"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/lock"
+                    app:tint="@color/gray_400" />
+
+                <EditText
+                    android:id="@+id/etSignUpPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="••••••••"
+                    android:inputType="textPassword"
+                    android:paddingStart="12dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray_400"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/btnTogglePassword"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="@android:drawable/ic_menu_view"
+                    app:tint="@color/gray_400" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvPasswordError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Error message"
+                android:textColor="@color/red_500"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Birth Date"
+                    android:textColor="@color/gray_700"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:foregroundGravity="right"
+                    android:paddingEnd="5dp"
+                    app:srcCompat="@drawable/scan" />
+
+                <TextView
+                    android:id="@+id/btnScanID"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="4dp"
+                    android:drawableTint="@color/gray_600"
+                    android:onClick="scanID"
+                    android:text="Scan ID"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/containerBirthDate"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_default"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/calendar"
+                    app:tint="@color/gray_400" />
+
+                <EditText
+                    android:id="@+id/etBirthDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="dd/mm/yyyy"
+                    android:inputType="date"
+                    android:onClick="openDatePicker"
+                    android:paddingStart="12dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray_400"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvBirthDateError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Error message"
+                android:textColor="@color/red_500"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="ID Number"
+                android:textColor="@color/gray_700"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/containerIdNumber"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_default"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/id_card"
+                    app:tint="@color/gray_400" />
+
+                <EditText
+                    android:id="@+id/etIDNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="123456789"
+                    android:inputType="number"
+                    android:paddingStart="12dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray_400"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvIdError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Error message"
+                android:textColor="@color/red_500"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_button_black"
+            android:backgroundTint="@null"
+            android:onClick="moveToSignUp2"
+            android:text="Next"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already have an account? "
+                android:textColor="@color/gray_600"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvSignIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="moveToLogin"
+                android:text="Sign in"
+                android:textColor="@color/black"
+                android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/containerBirthDate"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_input_default"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/calendar"
-                app:tint="@color/gray_400" />
-
-            <EditText
-                android:id="@+id/etBirthDate"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:hint="dd/mm/yyyy"
-                android:inputType="date"
-                android:focusable="false"
-                android:clickable="true"
-                android:onClick="openDatePicker"
-                android:paddingStart="12dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/gray_400"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvBirthDateError"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Error message"
-            android:textColor="@color/red_500"
-            android:textSize="12sp"
-            android:visibility="gone" />
-
-        <Space android:layout_width="match_parent" android:layout_height="12dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="ID Number"
-            android:textColor="@color/gray_700"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:id="@+id/containerIdNumber"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_input_default"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/id_card"
-                app:tint="@color/gray_400" />
-
-            <EditText
-                android:id="@+id/etIDNumber"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:hint="123456789"
-                android:inputType="number"
-                android:paddingStart="12dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/gray_400"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvIdError"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Error message"
-            android:textColor="@color/red_500"
-            android:textSize="12sp"
-            android:visibility="gone" />
-
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_button_black"
-        android:backgroundTint="@null"
-        android:onClick="moveToSignUp2"
-        android:text="Next"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Already have an account? "
-            android:textColor="@color/gray_600"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tvSignIn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="moveToLogin"
-            android:text="Sign in"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-</LinearLayout>
+</ScrollView>

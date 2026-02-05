@@ -1,34 +1,52 @@
 package com.example.learn2drive.Activities;
 
+import static com.example.learn2drive.Helpers.FBRef.refAuth;
+import static com.example.learn2drive.Helpers.FBRef.refStudents;
+import static com.example.learn2drive.Helpers.FBRef.refTeachers;
+
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
+import com.example.learn2drive.Helpers.FBRef;
+import com.example.learn2drive.Objects.Student;
+import com.example.learn2drive.Objects.Teacher;
 import com.example.learn2drive.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseNetworkException;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
 import java.util.ArrayList;
 
 public class SignUpActivity2 extends AppCompatActivity
 {
+    private final Context context = this;
 
     // רכיבי התצוגה
-    private EditText etUsername, etSearchTeacher;
+    private EditText etSearchTeacher;
     private AppCompatButton btnTypeStudent, btnTypeTeacher;
     private LinearLayout layoutTeacherSelection;
     private ListView lvTeachers;
-    private AppCompatButton btnSubmit;
+    private CheckBox cbRememberMe;
 
     // משתנים לניהול נתונים
     private ArrayList<String> allTeachers;
@@ -39,8 +57,10 @@ public class SignUpActivity2 extends AppCompatActivity
     private boolean isStudent = true;
     private String selectedTeacher = "";
 
-    Intent gi;
-    String email, password, birthDate, id;
+    Intent gi, si;
+    String email, password, birthDate, id, username, phone;
+
+    SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,15 +81,18 @@ public class SignUpActivity2 extends AppCompatActivity
         password = gi.getStringExtra("password");
         birthDate = gi.getStringExtra("birthDate");
         id = gi.getStringExtra("id");
+        username = gi.getStringExtra("username");
+        phone = gi.getStringExtra("phone");
 
-        etUsername = findViewById(R.id.etUsername);
         etSearchTeacher = findViewById(R.id.etSearchTeacher);
         layoutTeacherSelection = findViewById(R.id.layoutTeacherSelection);
         lvTeachers = findViewById(R.id.lvTeachers);
 
         btnTypeStudent = findViewById(R.id.btnTypeStudent);
         btnTypeTeacher = findViewById(R.id.btnTypeTeacher);
-        btnSubmit = findViewById(R.id.btnSubmit);
+        cbRememberMe = findViewById(R.id.cbRememberMe);
+
+        sp = getSharedPreferences("login_prefs", MODE_PRIVATE);
     }
 
     /**
@@ -210,27 +233,77 @@ public class SignUpActivity2 extends AppCompatActivity
 
     public void onSubmitClicked(View v)
     {
-        String username = etUsername.getText().toString().trim();
-
-        if (username.isEmpty())
-        {
-            etUsername.setError("Username is required");
-            return;
-        }
-
         if (isStudent && selectedTeacher.isEmpty())
         {
             Toast.makeText(this, "Please select a teacher", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        String type = isStudent ? "Student" : "Teacher";
-        String msg = "Signed up: " + username + " (" + type + ")";
-        if (isStudent)
-            msg += " with teacher: " + etSearchTeacher.getText().toString();
+        //
+        ProgressDialog pd = ProgressDialog.show(this, "Sign Up", "Loading...", true);
 
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        refAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(SignUpActivity2.this, new OnCompleteListener<AuthResult>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task)
+                    {
+                        pd.dismiss();
+                        if (task.isSuccessful())
+                        {
+                            saveRememberMe();
+                            FBRef.saveCurrentUser(refAuth.getCurrentUser());
+                            saveUserToFB(isStudent);
+                            Toast.makeText(context, "User created successfully", Toast.LENGTH_LONG).show();
 
-        // Intent intent = new Intent(this, NextActivity.class);
-        // startActivity(intent);
+                            si = new Intent(context, MainActivity.class);
+                            startActivity(si);
+                            finish();
+                        }
+                        else
+                        {
+                            handleAuthException(task.getException());
+                        }
+                    }
+                });
     }
+
+    private void saveRememberMe()
+    {
+        sp.edit().putBoolean("is_remembered", cbRememberMe.isChecked()).apply();
+    }
+
+    private void saveUserToFB(boolean isStudent)
+    {
+        if (isStudent)
+        {
+            Student student = new Student(id, username,
+                    birthDate, phone, true, false,
+                    0, "");
+            refStudents.child(FBRef.uid).setValue(student);
+        }
+        else
+        {
+            Teacher teacher = new Teacher(id, username,
+                    birthDate, phone, true, false, 60, 200);
+            refTeachers.child(FBRef.uid).setValue(teacher);
+        }
+    }
+
+    private void handleAuthException(Exception exp)
+    {
+        if (exp instanceof FirebaseAuthUserCollisionException)
+        {
+            Toast.makeText(this, "User with this mail already exists", Toast.LENGTH_LONG).show();
+        }
+        else if (exp instanceof FirebaseNetworkException)
+        {
+            Toast.makeText(this, "Network error. Please check your connection", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            Toast.makeText(this, "An error occurred, please try again later", Toast.LENGTH_LONG).show();
+        }
+    }
+
 }

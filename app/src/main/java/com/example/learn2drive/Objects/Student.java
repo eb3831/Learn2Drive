@@ -16,10 +16,10 @@ public class Student extends User
         this.teacherID = "";
     }
 
-    public Student(String UserID, String fullName, Date BirthDate, String phoneNumber, String Role,
+    public Student(String UserID, String fullName, String BirthDate, String phoneNumber,
                    boolean active, boolean isApprovedByTeacher, int lessonsCompleted, String teacherID)
     {
-        super(UserID, fullName, BirthDate, phoneNumber, Role, active);
+        super(UserID, fullName, BirthDate, phoneNumber, active);
         this.isApprovedByTeacher = isApprovedByTeacher;
         this.lessonsCompleted = lessonsCompleted;
         this.teacherID = teacherID;

@@ -83,46 +83,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="Username"
-                android:textColor="@color/gray_700"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:id="@+id/containerUsername"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/bg_input_default"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/user"
-                    app:tint="@color/gray_400" />
-
-                <EditText
-                    android:id="@+id/etUsername"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:hint="Choose a username"
-                    android:inputType="textPersonName"
-                    android:paddingStart="12dp"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/gray_400"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <Space android:layout_width="match_parent" android:layout_height="20dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:text="I am a"
                 android:textColor="@color/gray_700"
                 android:textSize="14sp"

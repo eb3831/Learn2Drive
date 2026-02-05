@@ -44,16 +44,18 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
     Intent gi;
 
     // Inputs
-    EditText etSignUpEmail, etSignUpPassword, etBirthDate, etIDNumber;
+    EditText etSignUpEmail, etSignUpPassword, etBirthDate, etIDNumber, etUserName, etPhone;
 
     // Containers
-    LinearLayout containerEmail, containerPassword, containerBirthDate, containerIdNumber;
+    LinearLayout containerUsername, containerEmail, containerPhone,
+            containerPassword, containerBirthDate, containerIdNumber;
 
     // Error TextViews
-    TextView tvEmailError, tvPasswordError, tvBirthDateError, tvIdError;
+    TextView tvUsernameError, tvEmailError, tvPhoneError,
+            tvPasswordError, tvBirthDateError, tvIdError;
 
     // Variables
-    String signUpEmail, signUpPassword, id, dob;
+    String signUpEmail, signUpPassword, id, dob, username, phone;
 
     private static final String TAG = "SignUpActivity";
     private static final int REQUEST_FULL_IMAGE_CAPTURE = 202;
@@ -80,9 +82,13 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         etSignUpPassword = findViewById(R.id.etSignUpPassword);
         etBirthDate = findViewById(R.id.etBirthDate);
         etIDNumber = findViewById(R.id.etIDNumber);
+        etUserName = findViewById(R.id.etSignUpUsername);
+        etPhone = findViewById(R.id.etSignUpPhone);
 
         // Containers
+        containerUsername = findViewById(R.id.containerUsername);
         containerEmail = findViewById(R.id.containerEmail);
+        containerPhone = findViewById(R.id.containerPhone);
         containerPassword = findViewById(R.id.containerPassword);
         containerBirthDate = findViewById(R.id.containerBirthDate);
         containerIdNumber = findViewById(R.id.containerIdNumber);
@@ -92,12 +98,17 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         tvPasswordError = findViewById(R.id.tvPasswordError);
         tvBirthDateError = findViewById(R.id.tvBirthDateError);
         tvIdError = findViewById(R.id.tvIdError);
+        tvUsernameError = findViewById(R.id.tvUsernameError);
+        tvPhoneError = findViewById(R.id.tvPhoneError);
+
 
         geminiManager = GeminiManager.getInstance();
     }
 
     public void moveToSignUp2(View view)
     {
+        username = etUserName.getText().toString().trim();
+        phone = etPhone.getText().toString().trim();
         signUpEmail = etSignUpEmail.getText().toString().trim();
         signUpPassword = etSignUpPassword.getText().toString().trim();
         id = etIDNumber.getText().toString().trim();
@@ -105,12 +116,26 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
 
         resetErrors();
 
+        // TODO: Check username doesnt exist already
+        if(username.isEmpty()){
+            containerUsername.setBackgroundResource(R.drawable.bg_input_error);
+            tvUsernameError.setText("Please enter a valid username");
+            tvUsernameError.setVisibility(View.VISIBLE);
+        }
+
         // Email Validation
-        if (!Utilities.isValidEmail(signUpEmail))
+        else if (!Utilities.isValidEmail(signUpEmail))
         {
             containerEmail.setBackgroundResource(R.drawable.bg_input_error);
             tvEmailError.setText("Please enter a valid email");
             tvEmailError.setVisibility(View.VISIBLE);
+        }
+
+        else if(!(phone.length() == 10 && phone.startsWith("05")))
+        {
+            containerPhone.setBackgroundResource(R.drawable.bg_input_error);
+            tvPhoneError.setText("Please enter a valid phone number");
+            tvPhoneError.setVisibility(View.VISIBLE);
         }
 
         // Password Validation
@@ -119,14 +144,6 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
             containerPassword.setBackgroundResource(R.drawable.bg_input_error);
             tvPasswordError.setText("Password must be at least 6 characters");
             tvPasswordError.setVisibility(View.VISIBLE);
-        }
-
-        // ID Validation
-        else if (id.length() != 9)
-        {
-            containerIdNumber.setBackgroundResource(R.drawable.bg_input_error);
-            tvIdError.setText("ID must be exactly 9 digits");
-            tvIdError.setVisibility(View.VISIBLE);
         }
 
         // Birth Date Validation
@@ -144,6 +161,14 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
             tvBirthDateError.setVisibility(View.VISIBLE);
         }
 
+        // ID Validation
+        else if (id.length() != 9)
+        {
+            containerIdNumber.setBackgroundResource(R.drawable.bg_input_error);
+            tvIdError.setText("ID must be exactly 9 digits");
+            tvIdError.setVisibility(View.VISIBLE);
+        }
+
         else
         {
             gi = new Intent(this, SignUpActivity2.class);
@@ -151,6 +176,8 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
             gi.putExtra("password", signUpPassword);
             gi.putExtra("birthDate", dob);
             gi.putExtra("id", id);
+            gi.putExtra("username", username);
+            gi.putExtra("phone", phone);
 
             startActivity(gi);
         }
@@ -161,12 +188,16 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
     private void resetErrors()
     {
         // Reset backgrounds
+        containerUsername.setBackgroundResource(R.drawable.bg_input_default);
+        containerPhone.setBackgroundResource(R.drawable.bg_input_default);
         containerEmail.setBackgroundResource(R.drawable.bg_input_default);
         containerPassword.setBackgroundResource(R.drawable.bg_input_default);
         containerBirthDate.setBackgroundResource(R.drawable.bg_input_default);
         containerIdNumber.setBackgroundResource(R.drawable.bg_input_default);
 
         // Hide error texts
+        tvUsernameError.setVisibility(View.GONE);
+        tvPhoneError.setVisibility(View.GONE);
         tvEmailError.setVisibility(View.GONE);
         tvPasswordError.setVisibility(View.GONE);
         tvBirthDateError.setVisibility(View.GONE);

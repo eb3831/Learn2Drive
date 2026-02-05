@@ -4,42 +4,38 @@ import java.util.Date;
 
 public class User
 {
-    private String UserID;
+    private String userID;
     private String fullName;
-    private Date BirthDate;
+    private String birthDate;
     private String phoneNumber;
-    private String Role;
     private boolean active;
 
     public User()
     {
-        this.UserID = "";
+        this.userID = "";
         this.fullName = "";
-        this.BirthDate = new Date();
+        this.birthDate = "";
         this.phoneNumber = "";
-        this.Role = "";
         this.active = true;
     }
 
-    public User(String UserID, String fullName, Date BirthDate, String phoneNumber, String Role,
-                boolean active)
+    public User(String UserID, String fullName, String BirthDate, String phoneNumber, boolean active)
     {
-        this.UserID = UserID;
+        this.userID = UserID;
         this.fullName = fullName;
-        this.BirthDate = BirthDate;
+        this.birthDate = BirthDate;
         this.phoneNumber = phoneNumber;
-        this.Role = Role;
         this.active = active;
     }
 
     public String getUserID()
     {
-        return UserID;
+        return userID;
     }
 
     public void setUserID(String userID)
     {
-        UserID = userID;
+        userID = userID;
     }
 
     public void setFullName(String fullName)
@@ -52,14 +48,14 @@ public class User
         return fullName;
     }
 
-    public void setBirthDate(Date BirthDate)
+    public void setBirthDate(String BirthDate)
     {
-        this.BirthDate = BirthDate;
+        this.birthDate = BirthDate;
     }
 
-    public Date getBirthDate()
+    public String getBirthDate()
     {
-        return BirthDate;
+        return birthDate;
     }
 
     public void setPhoneNumber(String phoneNumber)
@@ -72,16 +68,6 @@ public class User
         return phoneNumber;
     }
 
-    public void setRole(String Role)
-    {
-        this.Role = Role;
-    }
-
-    public String getRole()
-    {
-        return Role;
-    }
-
     public void setActive(boolean active)
     {
         this.active = active;
@@ -91,8 +77,5 @@ public class User
     {
         return active;
     }
-
-
-
 
 }

@@ -1,14 +1,16 @@
 package com.example.learn2drive.Helpers;
 
-import androidx.annotation.NonNull;
-
-import com.example.learn2drive.Objects.User;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class FBRef
 {
     public static FirebaseAuth refAuth = FirebaseAuth.getInstance();
+    public static FirebaseDatabase FB_DB = FirebaseDatabase.getInstance();
+
+    public static DatabaseReference refStudents, refTeachers;
 
     public static String uid;
 
@@ -20,5 +22,7 @@ public class FBRef
     public static void saveCurrentUser(FirebaseUser fbUser)
     {
         uid = fbUser.getUid();
+        refStudents = FB_DB.getReference("Users").child("Students");
+        refTeachers = FB_DB.getReference("Users").child("Teachers");
     }
 }
