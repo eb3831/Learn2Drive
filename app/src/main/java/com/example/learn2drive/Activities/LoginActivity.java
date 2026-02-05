@@ -1,7 +1,6 @@
 package com.example.learn2drive.Activities;
 
 import static com.example.learn2drive.Helpers.FBRef.refAuth;
-import static com.example.learn2drive.Helpers.Utilities.isValidEmail;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,15 +12,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.learn2drive.BuildConfig;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Helpers.Utilities;
 import com.example.learn2drive.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 
 public class LoginActivity extends AppCompatActivity
 {
@@ -149,9 +145,19 @@ public class LoginActivity extends AppCompatActivity
                 }
                 editor.apply();
 
-                Toast.makeText(LoginActivity.this, "LOGIN SUCCESSFULLY!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
+                if (email.equals(BuildConfig.ADMIN_EMAIL))
+                {
+                    Toast.makeText(LoginActivity.this, "LOGIN SUCCESSFULLY!", Toast.LENGTH_SHORT).show();
+                    //startActivity(new Intent(this, AdminActivity.class));
+                    finish();
+                }
+
+                else
+                {
+                    Toast.makeText(LoginActivity.this, "LOGIN SUCCESSFULLY!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                }
             }
 
             else
