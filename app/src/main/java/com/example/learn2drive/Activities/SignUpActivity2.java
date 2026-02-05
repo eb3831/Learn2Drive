@@ -34,6 +34,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -49,13 +52,14 @@ public class SignUpActivity2 extends AppCompatActivity
     private CheckBox cbRememberMe;
 
     // משתנים לניהול נתונים
-    private ArrayList<String> allTeachers;
-    private ArrayList<String> displayedTeachers;
+    private ArrayList<String> allTeachersNames;
+    private ArrayList<String> displayedTeachersNames;
+    private ArrayList<Teacher> allTeachersObjects, displayedTeachersObjects;
 
     private ArrayAdapter<String> adapter;
 
     private boolean isStudent = true;
-    private String selectedTeacher = "";
+    private Teacher selectedTeacher = null;
 
     Intent gi, si;
     String email, password, birthDate, id, username, phone;
@@ -95,36 +99,60 @@ public class SignUpActivity2 extends AppCompatActivity
         sp = getSharedPreferences("login_prefs", MODE_PRIVATE);
     }
 
-    /**
-     *
-     */
-    private void setupTeacherData()
+    private void setupTeacherData() 
     {
-        allTeachers = new ArrayList<>();
-        allTeachers.add("Yanir Aton");
-        allTeachers.add("Ori Roitzaid");
-        allTeachers.add("Eliya Bitton");
-        allTeachers.add("Albert Levi");
-        allTeachers.add("Moshe Levi");
-        allTeachers.add("Itai Hadar");
+        allTeachersNames = new ArrayList<>();
+        displayedTeachersNames = new ArrayList<>();
+        allTeachersObjects = new ArrayList<>();
+        displayedTeachersObjects = new ArrayList<>();
 
-        displayedTeachers = new ArrayList<>(allTeachers);
-
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayedTeachers);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayedTeachersNames);
         lvTeachers.setAdapter(adapter);
+
+        ProgressDialog pd = ProgressDialog.show(this, "טוען נתונים", "מחפש מורים במערכת...", true);
+
+        refTeachers.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot)
+            {
+                allTeachersNames.clear();
+                for (DataSnapshot data : snapshot.getChildren())
+                {
+                    Teacher teacher = data.getValue(Teacher.class);
+
+                    if (teacher != null)
+                    {
+                        allTeachersObjects.add(teacher);
+                        allTeachersNames.add(teacher.getFullName());
+                    }
+                }
+
+                displayedTeachersObjects.clear();
+                displayedTeachersNames.clear();
+
+                displayedTeachersObjects.addAll(allTeachersObjects);
+                displayedTeachersNames.addAll(allTeachersNames);
+                adapter.notifyDataSetChanged();
+                pd.dismiss();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                pd.dismiss();
+                Toast.makeText(context, "שגיאה בטעינת המורים", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         lvTeachers.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
-                selectedTeacher = displayedTeachers.get(position);
-
-                etSearchTeacher.setText(selectedTeacher);
-
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectedTeacher = displayedTeachersObjects.get(position);
+                etSearchTeacher.setText(selectedTeacher.getFullName());
                 etSearchTeacher.setSelection(etSearchTeacher.getText().length());
 
-                Toast.makeText(SignUpActivity2.this, "בחרת ב: " + selectedTeacher, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignUpActivity2.this, "בחרת ב: " + selectedTeacher.getFullName(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -152,22 +180,22 @@ public class SignUpActivity2 extends AppCompatActivity
 
     private void filterTeachers(String query)
     {
-        displayedTeachers.clear();
+        displayedTeachersNames.clear();
 
         if (query.isEmpty())
         {
-            displayedTeachers.addAll(allTeachers);
+            displayedTeachersNames.addAll(allTeachersNames);
         }
 
         else
         {
             query = query.toLowerCase();
 
-            for (String teacher : allTeachers)
+            for (String teacher : allTeachersNames)
             {
                 if (teacher.toLowerCase().contains(query))
                 {
-                    displayedTeachers.add(teacher);
+                    displayedTeachersNames.add(teacher);
                 }
             }
         }
@@ -233,7 +261,7 @@ public class SignUpActivity2 extends AppCompatActivity
 
     public void onSubmitClicked(View v)
     {
-        if (isStudent && selectedTeacher.isEmpty())
+        if (isStudent && selectedTeacher == null)
         {
             Toast.makeText(this, "Please select a teacher", Toast.LENGTH_SHORT).show();
             return;
@@ -279,7 +307,7 @@ public class SignUpActivity2 extends AppCompatActivity
         {
             Student student = new Student(id, username,
                     birthDate, phone, true, false,
-                    0, "");
+                    0, selectedTeacher.getUserId());
             refStudents.child(FBRef.uid).setValue(student);
         }
         else

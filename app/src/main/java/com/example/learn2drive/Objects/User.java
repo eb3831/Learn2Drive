@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class User
 {
-    private String userID;
+    private String userId;
     private String fullName;
     private String birthDate;
     private String phoneNumber;
@@ -12,30 +12,30 @@ public class User
 
     public User()
     {
-        this.userID = "";
+        this.userId = "";
         this.fullName = "";
         this.birthDate = "";
         this.phoneNumber = "";
         this.active = true;
     }
 
-    public User(String UserID, String fullName, String BirthDate, String phoneNumber, boolean active)
+    public User(String userId, String fullName, String birthDate, String phoneNumber, boolean active)
     {
-        this.userID = UserID;
+        this.userId = userId;
         this.fullName = fullName;
-        this.birthDate = BirthDate;
+        this.birthDate = birthDate;
         this.phoneNumber = phoneNumber;
         this.active = active;
     }
 
-    public String getUserID()
+    public String getUserId()
     {
-        return userID;
+        return userId;
     }
 
-    public void setUserID(String userID)
+    public void setUserId(String userId)
     {
-        userID = userID;
+        this.userId = userId;
     }
 
     public void setFullName(String fullName)

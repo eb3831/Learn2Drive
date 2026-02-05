@@ -10,7 +10,8 @@ public class FBRef
     public static FirebaseAuth refAuth = FirebaseAuth.getInstance();
     public static FirebaseDatabase FB_DB = FirebaseDatabase.getInstance();
 
-    public static DatabaseReference refStudents, refTeachers;
+    public static DatabaseReference refStudents = FB_DB.getReference("Users").child("Students");
+    public static DatabaseReference refTeachers = FB_DB.getReference("Users").child("Teachers");;
 
     public static String uid;
 
@@ -22,7 +23,5 @@ public class FBRef
     public static void saveCurrentUser(FirebaseUser fbUser)
     {
         uid = fbUser.getUid();
-        refStudents = FB_DB.getReference("Users").child("Students");
-        refTeachers = FB_DB.getReference("Users").child("Teachers");
     }
 }
