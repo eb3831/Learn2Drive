@@ -55,13 +55,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:text="Username"
+                android:text="Full Name"
                 android:textColor="@color/gray_700"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
             <LinearLayout
-                android:id="@+id/containerUsername"
+                android:id="@+id/containerFullName"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/bg_input_default"
@@ -77,11 +77,11 @@
                     app:tint="@color/gray_400" />
 
                 <EditText
-                    android:id="@+id/etSignUpUsername"
+                    android:id="@+id/etSignUpFullName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@null"
-                    android:hint="Choose username"
+                    android:hint="Enter your full name"
                     android:inputType="text"
                     android:paddingStart="12dp"
                     android:textColor="@color/black"
@@ -90,7 +90,7 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/tvUsernameError"
+                android:id="@+id/tvFullNameError"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
