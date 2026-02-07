@@ -50,18 +50,18 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
     Intent gi;
 
     // Inputs
-    EditText etSignUpEmail, etSignUpPassword, etBirthDate, etIDNumber, etUserName, etPhone;
+    EditText etSignUpEmail, etSignUpPassword, etBirthDate, etIDNumber, etFullName, etPhone;
 
     // Containers
-    LinearLayout containerUsername, containerEmail, containerPhone,
+    LinearLayout containerFullName, containerEmail, containerPhone,
             containerPassword, containerBirthDate, containerIdNumber;
 
     // Error TextViews
-    TextView tvUsernameError, tvEmailError, tvPhoneError,
+    TextView tvFullNameError, tvEmailError, tvPhoneError,
             tvPasswordError, tvBirthDateError, tvIdError;
 
     // Variables
-    String signUpEmail, signUpPassword, id, dob, username, phone;
+    String signUpEmail, signUpPassword, id, dob, fullName, phone;
 
     private static final String TAG = "SignUpActivity";
     private static final int REQUEST_FULL_IMAGE_CAPTURE = 202;
@@ -72,7 +72,7 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
     private GeminiManager geminiManager;
     private ProgressDialog pD;
 
-    private ArrayList<String> existingUsernames, existingIds;
+    private ArrayList<String> existingIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -90,11 +90,11 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         etSignUpPassword = findViewById(R.id.etSignUpPassword);
         etBirthDate = findViewById(R.id.etBirthDate);
         etIDNumber = findViewById(R.id.etIDNumber);
-        etUserName = findViewById(R.id.etSignUpUsername);
+        etFullName = findViewById(R.id.etSignUpFullName);
         etPhone = findViewById(R.id.etSignUpPhone);
 
         // Containers
-        containerUsername = findViewById(R.id.containerUsername);
+        containerFullName = findViewById(R.id.containerFullName);
         containerEmail = findViewById(R.id.containerEmail);
         containerPhone = findViewById(R.id.containerPhone);
         containerPassword = findViewById(R.id.containerPassword);
@@ -106,12 +106,11 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         tvPasswordError = findViewById(R.id.tvPasswordError);
         tvBirthDateError = findViewById(R.id.tvBirthDateError);
         tvIdError = findViewById(R.id.tvIdError);
-        tvUsernameError = findViewById(R.id.tvUsernameError);
+        tvFullNameError = findViewById(R.id.tvFullNameError);
         tvPhoneError = findViewById(R.id.tvPhoneError);
 
         geminiManager = GeminiManager.getInstance();
 
-        existingUsernames = new ArrayList<>();
         existingIds = new ArrayList<>();
 
         readExistingUsers();
@@ -119,8 +118,6 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
 
     private void readExistingUsers()
     {
-
-        existingUsernames.clear();
         existingIds.clear();
 
         refUsers.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -130,8 +127,7 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
                     for (DataSnapshot user : specificUserRef.getChildren()) {
                         User userObj = user.getValue(User.class);
                         if (userObj != null) {
-                            existingUsernames.add(userObj.getFullName().toLowerCase());
-                            existingIds.add(userObj.getUserId());
+                            existingIds.add(userObj.getIdNumber());
                         }
                     }
                 }
@@ -146,7 +142,7 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
 
     public void moveToSignUp2(View view)
     {
-        username = etUserName.getText().toString().trim();
+        fullName = etFullName.getText().toString().trim();
         phone = etPhone.getText().toString().trim();
         signUpEmail = etSignUpEmail.getText().toString().trim();
         signUpPassword = etSignUpPassword.getText().toString().trim();
@@ -155,18 +151,11 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
 
         resetErrors();
 
-        if(username.isEmpty()){
-            containerUsername.setBackgroundResource(R.drawable.bg_input_error);
-            tvUsernameError.setText("Please enter a valid username");
-            tvUsernameError.setVisibility(View.VISIBLE);
-        }
-
-        else if(existingUsernames.contains(username.toLowerCase()))
+        if(fullName.isEmpty())
         {
-            containerUsername.setBackgroundResource(R.drawable.bg_input_error);
-            tvUsernameError.setText("Username already exists");
-            tvUsernameError.setVisibility(View.VISIBLE);
-
+            containerFullName.setBackgroundResource(R.drawable.bg_input_error);
+            tvFullNameError.setText("Please enter a valid name");
+            tvFullNameError.setVisibility(View.VISIBLE);
         }
 
         // Email Validation
@@ -229,7 +218,7 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
             gi.putExtra("password", signUpPassword);
             gi.putExtra("birthDate", dob);
             gi.putExtra("id", id);
-            gi.putExtra("username", username);
+            gi.putExtra("username", fullName);
             gi.putExtra("phone", phone);
 
             startActivity(gi);
@@ -241,7 +230,7 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
     private void resetErrors()
     {
         // Reset backgrounds
-        containerUsername.setBackgroundResource(R.drawable.bg_input_default);
+        containerFullName.setBackgroundResource(R.drawable.bg_input_default);
         containerPhone.setBackgroundResource(R.drawable.bg_input_default);
         containerEmail.setBackgroundResource(R.drawable.bg_input_default);
         containerPassword.setBackgroundResource(R.drawable.bg_input_default);
@@ -249,7 +238,7 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         containerIdNumber.setBackgroundResource(R.drawable.bg_input_default);
 
         // Hide error texts
-        tvUsernameError.setVisibility(View.GONE);
+        tvFullNameError.setVisibility(View.GONE);
         tvPhoneError.setVisibility(View.GONE);
         tvEmailError.setVisibility(View.GONE);
         tvPasswordError.setVisibility(View.GONE);
