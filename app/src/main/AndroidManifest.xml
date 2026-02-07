@@ -32,9 +32,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Learn2Drive">
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".Activities.WaitingActivity"
             android:exported="false" />
-        <!-- Provider Definition (MUST BE ADDED) -->
+        <activity
+            android:name=".Activities.MainActivity"
+            android:exported="false" /> <!-- Provider Definition (MUST BE ADDED) -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -48,7 +50,7 @@
         <activity
             android:name=".Activities.SignUpActivity2"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activities.SignUpActivity"
             android:exported="false" />

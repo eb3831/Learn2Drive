@@ -1,5 +1,6 @@
 package com.example.learn2drive.Activities;
 
+import static com.example.learn2drive.Helpers.FBRef.refAdmins;
 import static com.example.learn2drive.Helpers.FBRef.refAuth;
 
 import android.content.Intent;
@@ -36,8 +37,6 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
 
         initViews();
-
-        loadSavedCredentials();
     }
 
     /**
@@ -71,16 +70,6 @@ public class LoginActivity extends AppCompatActivity
         cbRememberMe = findViewById(R.id.cbRememberMe);
         sp = getSharedPreferences("login_prefs", MODE_PRIVATE);
         cbRememberMe = findViewById(R.id.cbRememberMe);
-    }
-
-    private void loadSavedCredentials()
-    {
-        boolean isRemembered = sp.getBoolean("is_remembered", false);
-        if (isRemembered) {
-            String savedEmail = sp.getString("email", "");
-            etLoginEmail.setText(savedEmail);
-            cbRememberMe.setChecked(true);
-        }
     }
 
     public void moveToSignUp(View view)

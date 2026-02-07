@@ -1,8 +1,10 @@
 package com.example.learn2drive.Activities;
 
 import static com.example.learn2drive.Helpers.FBRef.refAuth;
+import static com.example.learn2drive.Helpers.FBRef.refClasses;
 import static com.example.learn2drive.Helpers.FBRef.refStudents;
 import static com.example.learn2drive.Helpers.FBRef.refTeachers;
+import static com.example.learn2drive.Helpers.FBRef.refTeachersRequests;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -124,7 +126,7 @@ public class SignUpActivity2 extends AppCompatActivity
                     if (teacher != null)
                     {
                         allTeachersObjects.add(teacher);
-                        allTeachersNames.add(teacher.getFullName());
+                        allTeachersNames.add(teacher.getFullName() + "\n" + teacher.getIdNumber());
                     }
                 }
 
@@ -284,7 +286,8 @@ public class SignUpActivity2 extends AppCompatActivity
                             saveUserToFB(isStudent);
                             Toast.makeText(context, "User created successfully", Toast.LENGTH_LONG).show();
 
-                            si = new Intent(context, MainActivity.class);
+                            si = new Intent(context, WaitingActivity.class);
+                            si.putExtra("isStudent", isStudent);
                             startActivity(si);
                             finish();
                         }
@@ -305,16 +308,20 @@ public class SignUpActivity2 extends AppCompatActivity
     {
         if (isStudent)
         {
-            Student student = new Student(id, username,
+            Student student = new Student(FBRef.uid, id, username,
                     birthDate, phone, true, false,
-                    0, selectedTeacher.getUserId());
+                    0, selectedTeacher.getUid());
             refStudents.child(FBRef.uid).setValue(student);
+
+            refClasses.child(selectedTeacher.getUid()).child("Pending Students").child(FBRef.uid).setValue(false);
         }
         else
         {
-            Teacher teacher = new Teacher(id, username,
+            Teacher teacher = new Teacher(FBRef.uid, id, username,
                     birthDate, phone, true, false, 60, 200);
             refTeachers.child(FBRef.uid).setValue(teacher);
+
+            refTeachersRequests.child(FBRef.uid).setValue(false);
         }
     }
 
