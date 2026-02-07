@@ -6,23 +6,23 @@ public class Student extends User
 {
     private boolean isApprovedByTeacher;
     private int lessonsCompleted;
-    private String teacherID;
+    private String teacherUid;
 
     public Student()
     {
         super();
         this.isApprovedByTeacher = false;
         this.lessonsCompleted = 0;
-        this.teacherID = "";
+        this.teacherUid = "";
     }
 
-    public Student(String UserID, String fullName, String BirthDate, String phoneNumber,
-                   boolean active, boolean isApprovedByTeacher, int lessonsCompleted, String teacherID)
+    public Student(String uid, String idNumber, String fullName, String BirthDate, String phoneNumber,
+                   boolean active, boolean isApprovedByTeacher, int lessonsCompleted, String teacherUid)
     {
-        super(UserID, fullName, BirthDate, phoneNumber, active);
+        super(uid, idNumber, fullName, BirthDate, phoneNumber, active);
         this.isApprovedByTeacher = isApprovedByTeacher;
         this.lessonsCompleted = lessonsCompleted;
-        this.teacherID = teacherID;
+        this.teacherUid = teacherUid;
     }
 
     public void setApprovedByTeacher(boolean isApprovedByTeacher)
@@ -45,13 +45,13 @@ public class Student extends User
         return lessonsCompleted;
     }
 
-    public void setTeacherID(String teacherID)
+    public void setTeacherUid(String teacherUid)
     {
-        this.teacherID = teacherID;
+        this.teacherUid = teacherUid;
     }
 
-    public String getTeacherID()
+    public String getTeacherUid()
     {
-        return teacherID;
+        return teacherUid;
     }
 }

@@ -16,10 +16,10 @@ public class Teacher extends User
         this.hourlyRate = 0;
     }
 
-    public Teacher(String UserID, String fullName, String BirthDate, String phoneNumber,
+    public Teacher(String uid, String idNumber, String fullName, String BirthDate, String phoneNumber,
                    boolean active, boolean isApprovedByAdmin, int defaultLessonDurationMin, int hourlyRate)
     {
-        super(UserID, fullName, BirthDate, phoneNumber, active);
+        super(uid, idNumber, fullName, BirthDate, phoneNumber, active);
         this.isApprovedByAdmin = isApprovedByAdmin;
         this.defaultLessonDurationMin = defaultLessonDurationMin;
         this.hourlyRate = hourlyRate;
