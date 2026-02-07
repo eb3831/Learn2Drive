@@ -1,5 +1,6 @@
 package com.example.learn2drive.Activities;
 
+import static com.example.learn2drive.Helpers.FBRef.refUsers;
 import static com.example.learn2drive.Helpers.Prompts.ID_CARD_SCHEMA;
 import static com.example.learn2drive.Helpers.Prompts.PHOTO_PROMPT;
 
@@ -30,13 +31,18 @@ import androidx.core.content.FileProvider;
 import com.example.learn2drive.Helpers.GeminiCallBack;
 import com.example.learn2drive.Helpers.GeminiManager;
 import com.example.learn2drive.Helpers.Utilities;
+import com.example.learn2drive.Objects.User;
 import com.example.learn2drive.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
@@ -65,6 +71,8 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
     private Bitmap imageBitmap;
     private GeminiManager geminiManager;
     private ProgressDialog pD;
+
+    private ArrayList<String> existingUsernames, existingIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -101,8 +109,39 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         tvUsernameError = findViewById(R.id.tvUsernameError);
         tvPhoneError = findViewById(R.id.tvPhoneError);
 
-
         geminiManager = GeminiManager.getInstance();
+
+        existingUsernames = new ArrayList<>();
+        existingIds = new ArrayList<>();
+
+        readExistingUsers();
+    }
+
+    private void readExistingUsers()
+    {
+
+        existingUsernames.clear();
+        existingIds.clear();
+
+        refUsers.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot specificUserRef : snapshot.getChildren()) {
+                    for (DataSnapshot user : specificUserRef.getChildren()) {
+                        User userObj = user.getValue(User.class);
+                        if (userObj != null) {
+                            existingUsernames.add(userObj.getFullName().toLowerCase());
+                            existingIds.add(userObj.getUserId());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     public void moveToSignUp2(View view)
@@ -116,11 +155,18 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
 
         resetErrors();
 
-        // TODO: Check username doesnt exist already
         if(username.isEmpty()){
             containerUsername.setBackgroundResource(R.drawable.bg_input_error);
             tvUsernameError.setText("Please enter a valid username");
             tvUsernameError.setVisibility(View.VISIBLE);
+        }
+
+        else if(existingUsernames.contains(username.toLowerCase()))
+        {
+            containerUsername.setBackgroundResource(R.drawable.bg_input_error);
+            tvUsernameError.setText("Username already exists");
+            tvUsernameError.setVisibility(View.VISIBLE);
+
         }
 
         // Email Validation
@@ -166,6 +212,13 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         {
             containerIdNumber.setBackgroundResource(R.drawable.bg_input_error);
             tvIdError.setText("ID must be exactly 9 digits");
+            tvIdError.setVisibility(View.VISIBLE);
+        }
+
+        else if (existingIds.contains(id))
+        {
+            containerIdNumber.setBackgroundResource(R.drawable.bg_input_error);
+            tvIdError.setText("ID already exists");
             tvIdError.setVisibility(View.VISIBLE);
         }
 
