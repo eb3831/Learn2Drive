@@ -2,12 +2,13 @@ package com.example.learn2drive.Objects;
 
 public class User
 {
-    private String uid;
-    private String idNumber;
-    private String fullName;
-    private String birthDate;
-    private String phoneNumber;
-    private boolean active;
+    protected String uid;
+    protected String idNumber;
+    protected String fullName;
+    protected String birthDate;
+    protected String phoneNumber;
+    protected boolean active;
+    protected boolean approved;
 
     public User()
     {
@@ -17,9 +18,11 @@ public class User
         this.birthDate = "";
         this.phoneNumber = "";
         this.active = true;
+        this.approved = false;
     }
 
-    public User(String uid, String idNumber, String fullName, String birthDate, String phoneNumber, boolean active)
+    public User(String uid, String idNumber, String fullName, String birthDate, String phoneNumber,
+                boolean active, boolean approved)
     {
         this.uid = uid;
         this.idNumber = idNumber;
@@ -27,6 +30,7 @@ public class User
         this.birthDate = birthDate;
         this.phoneNumber = phoneNumber;
         this.active = active;
+        this.approved = approved;
     }
 
     public String getUid()
@@ -64,6 +68,11 @@ public class User
         this.birthDate = BirthDate;
     }
 
+    public void setApproved(boolean approved)
+    {
+        this.approved = approved;
+    }
+
     public String getBirthDate()
     {
         return birthDate;
@@ -87,6 +96,11 @@ public class User
     public boolean isActive()
     {
         return active;
+    }
+
+    public boolean isApproved()
+    {
+        return approved;
     }
 
 }
