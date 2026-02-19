@@ -313,15 +313,16 @@ public class SignUpActivity2 extends AppCompatActivity
                     0, selectedTeacher.getUid());
             refStudents.child(FBRef.uid).setValue(student);
 
-            refClasses.child(selectedTeacher.getUid()).child("Pending Students").child(FBRef.uid).setValue(false);
+            refClasses.child(selectedTeacher.getUid()).child("Pending Students").child(FBRef.uid).setValue(true);
         }
+
         else
         {
             Teacher teacher = new Teacher(FBRef.uid, id, username,
                     birthDate, phone, true, false, 60, 200);
             refTeachers.child(FBRef.uid).setValue(teacher);
 
-            refTeachersRequests.child(FBRef.uid).setValue(false);
+            refTeachersRequests.child(FBRef.uid).setValue(true);
         }
     }
 
@@ -331,10 +332,12 @@ public class SignUpActivity2 extends AppCompatActivity
         {
             Toast.makeText(this, "User with this mail already exists", Toast.LENGTH_LONG).show();
         }
+
         else if (exp instanceof FirebaseNetworkException)
         {
             Toast.makeText(this, "Network error. Please check your connection", Toast.LENGTH_LONG).show();
         }
+
         else
         {
             Toast.makeText(this, "An error occurred, please try again later", Toast.LENGTH_LONG).show();
