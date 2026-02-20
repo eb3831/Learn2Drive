@@ -28,6 +28,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "API_KEY", "\"${localProperties.getProperty("Gemini_API_Key", '')}\""
         buildConfigField "String", "ADMIN_EMAIL", "\"${localProperties.getProperty("Admin_Email", '')}\""
+        buildConfigField "String", "ADMIN_PASSWORD", "\"${localProperties.getProperty("Admin_Password", '')}\""
     }
 
     buildTypes {

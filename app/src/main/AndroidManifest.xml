@@ -32,6 +32,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Learn2Drive">
         <activity
+            android:name=".Activities.AdminActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.WaitingActivity"
             android:exported="false" />
         <activity

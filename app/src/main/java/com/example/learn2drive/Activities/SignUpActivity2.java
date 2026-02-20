@@ -309,7 +309,7 @@ public class SignUpActivity2 extends AppCompatActivity
         if (isStudent)
         {
             Student student = new Student(FBRef.uid, id, username,
-                    birthDate, phone, true, false,
+                    birthDate, phone, true, false, 0,
                     0, selectedTeacher.getUid());
             refStudents.child(FBRef.uid).setValue(student);
 
@@ -319,7 +319,7 @@ public class SignUpActivity2 extends AppCompatActivity
         else
         {
             Teacher teacher = new Teacher(FBRef.uid, id, username,
-                    birthDate, phone, true, false, 60, 200);
+                    birthDate, phone, true, false, 1, 60, 200);
             refTeachers.child(FBRef.uid).setValue(teacher);
 
             refTeachersRequests.child(FBRef.uid).setValue(true);

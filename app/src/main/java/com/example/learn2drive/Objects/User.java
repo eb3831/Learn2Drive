@@ -2,6 +2,7 @@ package com.example.learn2drive.Objects;
 
 public class User
 {
+    protected int role;  // 0 - Student, 1 - Teacher, 2 - Admin
     protected String uid;
     protected String idNumber;
     protected String fullName;
@@ -12,6 +13,7 @@ public class User
 
     public User()
     {
+        this.role = 0;
         this.uid = "";
         this.idNumber = "";
         this.fullName = "";
@@ -22,8 +24,9 @@ public class User
     }
 
     public User(String uid, String idNumber, String fullName, String birthDate, String phoneNumber,
-                boolean active, boolean approved)
+                boolean active, boolean approved, int role)
     {
+        this.role = role;
         this.uid = uid;
         this.idNumber = idNumber;
         this.fullName = fullName;
@@ -31,6 +34,16 @@ public class User
         this.phoneNumber = phoneNumber;
         this.active = active;
         this.approved = approved;
+    }
+
+    public int getRole()
+    {
+        return role;
+    }
+
+    public void setRole(int role)
+    {
+        this.role = role;
     }
 
     public String getUid()
@@ -68,11 +81,6 @@ public class User
         this.birthDate = BirthDate;
     }
 
-    public void setApproved(boolean approved)
-    {
-        this.approved = approved;
-    }
-
     public String getBirthDate()
     {
         return birthDate;
@@ -101,6 +109,11 @@ public class User
     public boolean isApproved()
     {
         return approved;
+    }
+
+    public void setApproved(boolean approved)
+    {
+        this.approved = approved;
     }
 
 }

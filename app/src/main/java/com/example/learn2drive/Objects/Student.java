@@ -13,9 +13,9 @@ public class Student extends User
     }
 
     public Student(String uid, String idNumber, String fullName, String BirthDate, String phoneNumber,
-                   boolean active, boolean approved, int lessonsCompleted, String teacherUid)
+                   boolean active, boolean approved, int role, int lessonsCompleted, String teacherUid)
     {
-        super(uid, idNumber, fullName, BirthDate, phoneNumber, active, approved);
+        super(uid, idNumber, fullName, BirthDate, phoneNumber, active, approved, role);
         this.lessonsCompleted = lessonsCompleted;
         this.teacherUid = teacherUid;
     }
