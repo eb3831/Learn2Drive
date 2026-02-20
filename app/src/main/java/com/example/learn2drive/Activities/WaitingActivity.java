@@ -1,5 +1,7 @@
 package com.example.learn2drive.Activities;
 
+import static com.example.learn2drive.Helpers.FBRef.refClasses;
+import static com.example.learn2drive.Helpers.FBRef.refStudents;
 import static com.example.learn2drive.Helpers.FBRef.refTeachers;
 import static com.example.learn2drive.Helpers.FBRef.refTeachersRequests;
 
@@ -46,6 +48,33 @@ public class WaitingActivity extends AppCompatActivity
         if(gi.getBooleanExtra("isStudent", true))
         {
             tvWaitingForApproval.setText("Waiting to be approved by Teacher");
+
+            String teacherUid = sp.getString("teacher_uid", "");
+
+            refClasses.child(teacherUid).child("Pending Students").child(FBRef.uid).
+                    addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot)
+                {
+                    if(snapshot.getValue(Boolean.class) != null && Boolean.TRUE.equals(snapshot.getValue(Boolean.class)))
+                    {
+                        // Removes the request and moves to home screen
+                        refClasses.child(teacherUid).child("Pending Students").
+                                child(FBRef.uid).setValue(null);
+                        refStudents.child(FBRef.uid).child("approved").setValue(true);
+
+                        updateSharedPrefs();
+
+                        startActivity(new Intent(WaitingActivity.this, MainActivity.class));
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
 
         // Teacher waiting for approval
