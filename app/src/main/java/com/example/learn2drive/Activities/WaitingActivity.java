@@ -23,6 +23,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+/**
+ * WaitingActivity handles the intermediate state where a user (Student or Teacher)
+ * is waiting for admin or teacher approval.
+ * * It listens to real-time updates from Firebase and redirects the user
+ * to the main screen once the approval flag is updated.
+ */
 public class WaitingActivity extends AppCompatActivity
 {
     TextView tvWaitingForApproval;
@@ -36,10 +42,14 @@ public class WaitingActivity extends AppCompatActivity
         setContentView(R.layout.activity_waiting);
 
         gi = getIntent();
-        initViews();
+        initAll();
     }
 
-    private void initViews()
+    /**
+     * Initializes the UI components and sets up Firebase listeners
+     * based on the user type (Student or Teacher).
+     */
+    private void initAll()
     {
         tvWaitingForApproval = findViewById(R.id.tvWaitingForApproval);
         sp = getSharedPreferences("login_prefs", MODE_PRIVATE);
@@ -51,14 +61,17 @@ public class WaitingActivity extends AppCompatActivity
 
             String teacherUid = sp.getString("teacher_uid", "");
 
+            // Listen for changes in the specific teacher's pending students list
             refClasses.child(teacherUid).child("Pending Students").child(FBRef.uid).
                     addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot)
                 {
-                    if(snapshot.getValue(Boolean.class) != null && Boolean.TRUE.equals(snapshot.getValue(Boolean.class)))
+                    // Check if the student has been approved (value set to true)
+                    if(snapshot.getValue(Boolean.class) != null &&
+                            Boolean.TRUE.equals(snapshot.getValue(Boolean.class)))
                     {
-                        // Removes the request and moves to home screen
+                        // Removes the request from pending and updates student object in Firebase
                         refClasses.child(teacherUid).child("Pending Students").
                                 child(FBRef.uid).setValue(null);
                         refStudents.child(FBRef.uid).child("approved").setValue(true);
@@ -72,7 +85,7 @@ public class WaitingActivity extends AppCompatActivity
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
+                    // Handle potential database errors here
                 }
             });
         }
@@ -82,13 +95,16 @@ public class WaitingActivity extends AppCompatActivity
         {
             tvWaitingForApproval.setText("Waiting to be approved by Admin");
 
+            // Listen for changes in the global teacher requests list
             refTeachersRequests.child(FBRef.uid).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot)
                 {
-                    if(snapshot.getValue(Boolean.class) != null && Boolean.TRUE.equals(snapshot.getValue(Boolean.class)))
+                    // Checks if the admin has approved the teacher
+                    if(snapshot.getValue(Boolean.class) != null &&
+                            Boolean.TRUE.equals(snapshot.getValue(Boolean.class)))
                     {
-                        // Removes the request and moves to home screen
+                        // Removes the request and updates teacher object in Firebase
                         refTeachersRequests.child(FBRef.uid).setValue(null);
                         refTeachers.child(FBRef.uid).child("approved").setValue(true);
 
@@ -101,13 +117,17 @@ public class WaitingActivity extends AppCompatActivity
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
+                    // Handle potential database errors here
                 }
             });
 
         }
     }
 
+    /**
+     * Updates the local SharedPreferences to indicate that the user has been approved.
+     * This makes sure the user is not shown the waiting screen again.
+     */
     private void updateSharedPrefs()
     {
         SharedPreferences.Editor editor = sp.edit();
