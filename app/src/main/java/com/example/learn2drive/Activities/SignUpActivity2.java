@@ -353,7 +353,7 @@ public class SignUpActivity2 extends AppCompatActivity
                     0, selectedTeacher.getUid());
             refStudents.child(FBRef.uid).setValue(student);
 
-            refClasses.child(selectedTeacher.getUid()).child("Pending Students").child(FBRef.uid).setValue(true);
+            refClasses.child(selectedTeacher.getUid()).child("Pending Students").child(FBRef.uid).setValue(false);
         }
 
         else
@@ -362,7 +362,7 @@ public class SignUpActivity2 extends AppCompatActivity
                     birthDate, phone, true, false, 1, 60, 200);
             refTeachers.child(FBRef.uid).setValue(teacher);
 
-            refTeachersRequests.child(FBRef.uid).setValue(true);
+            refTeachersRequests.child(FBRef.uid).setValue(false);
         }
     }
 
