@@ -42,18 +42,21 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+/**
+ * SignUpActivity2 handles the second phase of user registration.
+ * It allows the user to choose a role (Student/Teacher), search for a teacher
+ * if they are a student, and finalize the account creation process.
+ */
 public class SignUpActivity2 extends AppCompatActivity
 {
     private final Context context = this;
 
-    // רכיבי התצוגה
     private EditText etSearchTeacher;
     private AppCompatButton btnTypeStudent, btnTypeTeacher;
     private LinearLayout layoutTeacherSelection;
     private ListView lvTeachers;
     private CheckBox cbRememberMe;
 
-    // משתנים לניהול נתונים
     private ArrayList<String> allTeachersNames;
     private ArrayList<String> displayedTeachersNames;
     private ArrayList<Teacher> allTeachersObjects, displayedTeachersObjects;
@@ -80,6 +83,10 @@ public class SignUpActivity2 extends AppCompatActivity
         updateUserTypeUI();
     }
 
+    /**
+     * Initializes UI components, retrieves data from the previous Intent,
+     * and sets up SharedPreferences.
+     */
     private void initViews()
     {
         gi = getIntent();
@@ -101,6 +108,9 @@ public class SignUpActivity2 extends AppCompatActivity
         sp = getSharedPreferences("login_prefs", MODE_PRIVATE);
     }
 
+    /**
+     * Fetches the list of all teachers from the database to allow student selection.
+     */
     private void setupTeacherData() 
     {
         allTeachersNames = new ArrayList<>();
@@ -160,7 +170,7 @@ public class SignUpActivity2 extends AppCompatActivity
     }
 
     /**
-     *
+     * Sets up a TextWatcher on the search field to filter the teacher list in real-time.
      */
     private void setupCustomSearch()
     {
@@ -180,6 +190,10 @@ public class SignUpActivity2 extends AppCompatActivity
         });
     }
 
+    /**
+     * Filters the teachers list based on the user's search query.
+     * @param query The search string entered by the user.
+     */
     private void filterTeachers(String query)
     {
         displayedTeachersNames.clear();
@@ -205,8 +219,10 @@ public class SignUpActivity2 extends AppCompatActivity
         adapter.notifyDataSetChanged();
     }
 
-    // --- לוגיקה ועיצוב (Student/Teacher) ---
-
+    /**
+     * Handles the Student role selection button click.
+     * @param v The view triggered the click.
+     */
     public void onStudentClicked(View v)
     {
         if (!isStudent)
@@ -216,6 +232,10 @@ public class SignUpActivity2 extends AppCompatActivity
         }
     }
 
+    /**
+     * Handles the Teacher role selection button click.
+     * @param v The view triggered the click.
+     */
     public void onTeacherClicked(View v)
     {
         if (isStudent)
@@ -225,13 +245,15 @@ public class SignUpActivity2 extends AppCompatActivity
         }
     }
 
+    /**
+     * Updates the UI styling and visibility based on the selected user role.
+     */
     private void updateUserTypeUI()
     {
         if (btnTypeStudent == null || btnTypeTeacher == null) return;
 
         if (isStudent)
         {
-            // עיצוב למצב תלמיד
             btnTypeStudent.setBackgroundResource(R.drawable.bg_button_black);
             btnTypeStudent.setTextColor(ContextCompat.getColor(this, R.color.white));
 
@@ -243,7 +265,6 @@ public class SignUpActivity2 extends AppCompatActivity
 
         else
         {
-            // עיצוב למצב מורה
             btnTypeTeacher.setBackgroundResource(R.drawable.bg_button_black);
             btnTypeTeacher.setTextColor(ContextCompat.getColor(this, R.color.white));
 
@@ -254,13 +275,19 @@ public class SignUpActivity2 extends AppCompatActivity
         }
     }
 
-    // --- כפתורים כלליים ---
-
+    /**
+     * Closes the current activity and returns to the previous one.
+     * @param v The view triggered the click.
+     */
     public void onBackClicked(View v)
     {
         finish();
     }
 
+    /**
+     * Finalizes the registration by creating a user in Firebase Auth and saving details to Database.
+     * @param v The view triggered the click.
+     */
     public void onSubmitClicked(View v)
     {
         if (isStudent && selectedTeacher == null)
@@ -269,7 +296,6 @@ public class SignUpActivity2 extends AppCompatActivity
             return;
         }
 
-        //
         ProgressDialog pd = ProgressDialog.show(this, "Sign Up", "Loading...", true);
 
         refAuth.createUserWithEmailAndPassword(email, password)
@@ -281,7 +307,9 @@ public class SignUpActivity2 extends AppCompatActivity
                         pd.dismiss();
                         if (task.isSuccessful())
                         {
-                            saveRememberMe();
+                            int role = isStudent ? 0 : 1;
+
+                            saveRememberMe(role);
                             FBRef.saveCurrentUser(refAuth.getCurrentUser());
                             saveUserToFB(isStudent);
                             Toast.makeText(context, "User created successfully", Toast.LENGTH_LONG).show();
@@ -299,11 +327,23 @@ public class SignUpActivity2 extends AppCompatActivity
                 });
     }
 
-    private void saveRememberMe()
+    /**
+     * Saves session preferences including role and approval status.
+     * @param role The user role (0 for Student, 1 for Teacher).
+     */
+    private void saveRememberMe(int role)
     {
-        sp.edit().putBoolean("is_remembered", cbRememberMe.isChecked()).apply();
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean("is_remembered", cbRememberMe.isChecked());
+        editor.putInt("user_role", role);
+        editor.putBoolean("is_approved", false);
+        editor.apply();
     }
 
+    /**
+     * Maps the user data to the relevant object and uploads it to Firebase.
+     * @param isStudent Boolean indicating the user's selected role.
+     */
     private void saveUserToFB(boolean isStudent)
     {
         if (isStudent)
@@ -326,6 +366,10 @@ public class SignUpActivity2 extends AppCompatActivity
         }
     }
 
+    /**
+     * Handles Firebase Authentication exceptions and provides user feedback.
+     * @param exp The exception to handle.
+     */
     private void handleAuthException(Exception exp)
     {
         if (exp instanceof FirebaseAuthUserCollisionException)
@@ -343,5 +387,4 @@ public class SignUpActivity2 extends AppCompatActivity
             Toast.makeText(this, "An error occurred, please try again later", Toast.LENGTH_LONG).show();
         }
     }
-
 }
