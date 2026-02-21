@@ -17,6 +17,7 @@ import com.example.learn2drive.Objects.User;
 import com.example.learn2drive.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 /**
@@ -54,65 +55,14 @@ public class WaitingActivity extends AppCompatActivity
         if(gi.getBooleanExtra("isStudent", true))
         {
             tvWaitingForApproval.setText("Waiting to be approved by Teacher");
-
-            String teacherUid = sp.getString("teacher_uid", "");
-
-            // Listen for changes in the specific teacher's pending students list
-            refClasses.child(teacherUid).child(FBRef.uid).
-                    addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot)
-                {
-                    // Check if the student has been approved
-                    if(snapshot.getValue(String.class) != null &&
-                            snapshot.getValue(String.class).equals(User.ACTIVE))
-                    {
-                        // Removes the request from pending and updates student object in Firebase
-                        refClasses.child(teacherUid).child("Pending Students").
-                                child(FBRef.uid).setValue(null);
-                        refStudents.child(FBRef.uid).child("status").setValue(User.ACTIVE);
-
-                        updateSharedPrefs();
-
-                        startActivity(new Intent(WaitingActivity.this, MainActivity.class));
-                        finish();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    // Handle potential database errors here
-                }
-            });
+            addListenerToFBBranch(true);
         }
 
         // Teacher waiting for approval
         else
         {
             tvWaitingForApproval.setText("Waiting to be approved by Admin");
-
-            // Listen for changes in the status property of the teacher's object
-            refTeachers.child(FBRef.uid).child("status").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot)
-                {
-                    // Checks if the admin has approved the teacher
-                    if(snapshot.getValue(String.class) != null &&
-                            snapshot.getValue(String.class).equals(User.ACTIVE))
-                    {
-                        updateSharedPrefs();
-
-                        startActivity(new Intent(WaitingActivity.this, MainActivity.class));
-                        finish();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    // Handle potential database errors here
-                }
-            });
-
+            addListenerToFBBranch(false);
         }
     }
 
@@ -125,5 +75,32 @@ public class WaitingActivity extends AppCompatActivity
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean("is_approved", true);
         editor.apply();
+    }
+
+    private void addListenerToFBBranch(boolean isStudent)
+    {
+        DatabaseReference ref = isStudent ? refStudents : refTeachers;
+
+        // Listen for changes in the status property of given branch (Teachers/Students)
+        ref.child(FBRef.uid).child("status").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot)
+            {
+                // Checks if the user was approved
+                if(snapshot.getValue(String.class) != null &&
+                        snapshot.getValue(String.class).equals(User.ACTIVE))
+                {
+                    updateSharedPrefs();
+
+                    startActivity(new Intent(WaitingActivity.this, MainActivity.class));
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle potential database errors here
+            }
+        });
     }
 }
