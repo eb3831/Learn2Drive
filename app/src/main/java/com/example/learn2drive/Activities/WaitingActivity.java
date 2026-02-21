@@ -3,21 +3,17 @@ package com.example.learn2drive.Activities;
 import static com.example.learn2drive.Helpers.FBRef.refClasses;
 import static com.example.learn2drive.Helpers.FBRef.refStudents;
 import static com.example.learn2drive.Helpers.FBRef.refTeachers;
-import static com.example.learn2drive.Helpers.FBRef.refTeachersRequests;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.learn2drive.Helpers.FBRef;
+import com.example.learn2drive.Objects.User;
 import com.example.learn2drive.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -62,19 +58,19 @@ public class WaitingActivity extends AppCompatActivity
             String teacherUid = sp.getString("teacher_uid", "");
 
             // Listen for changes in the specific teacher's pending students list
-            refClasses.child(teacherUid).child("Pending Students").child(FBRef.uid).
+            refClasses.child(teacherUid).child(FBRef.uid).
                     addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot)
                 {
-                    // Check if the student has been approved (value set to true)
-                    if(snapshot.getValue(Boolean.class) != null &&
-                            Boolean.TRUE.equals(snapshot.getValue(Boolean.class)))
+                    // Check if the student has been approved
+                    if(snapshot.getValue(String.class) != null &&
+                            snapshot.getValue(String.class).equals(User.ACTIVE))
                     {
                         // Removes the request from pending and updates student object in Firebase
                         refClasses.child(teacherUid).child("Pending Students").
                                 child(FBRef.uid).setValue(null);
-                        refStudents.child(FBRef.uid).child("approved").setValue(true);
+                        refStudents.child(FBRef.uid).child("status").setValue(User.ACTIVE);
 
                         updateSharedPrefs();
 
@@ -95,19 +91,15 @@ public class WaitingActivity extends AppCompatActivity
         {
             tvWaitingForApproval.setText("Waiting to be approved by Admin");
 
-            // Listen for changes in the global teacher requests list
-            refTeachersRequests.child(FBRef.uid).addValueEventListener(new ValueEventListener() {
+            // Listen for changes in the status property of the teacher's object
+            refTeachers.child(FBRef.uid).child("status").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot)
                 {
                     // Checks if the admin has approved the teacher
-                    if(snapshot.getValue(Boolean.class) != null &&
-                            Boolean.TRUE.equals(snapshot.getValue(Boolean.class)))
+                    if(snapshot.getValue(String.class) != null &&
+                            snapshot.getValue(String.class).equals(User.ACTIVE))
                     {
-                        // Removes the request and updates teacher object in Firebase
-                        refTeachersRequests.child(FBRef.uid).setValue(null);
-                        refTeachers.child(FBRef.uid).child("approved").setValue(true);
-
                         updateSharedPrefs();
 
                         startActivity(new Intent(WaitingActivity.this, MainActivity.class));

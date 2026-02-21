@@ -4,7 +4,6 @@ import static com.example.learn2drive.Helpers.FBRef.refAuth;
 import static com.example.learn2drive.Helpers.FBRef.refClasses;
 import static com.example.learn2drive.Helpers.FBRef.refStudents;
 import static com.example.learn2drive.Helpers.FBRef.refTeachers;
-import static com.example.learn2drive.Helpers.FBRef.refTeachersRequests;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -30,6 +29,7 @@ import androidx.core.content.ContextCompat;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.Student;
 import com.example.learn2drive.Objects.Teacher;
+import com.example.learn2drive.Objects.User;
 import com.example.learn2drive.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -121,7 +121,8 @@ public class SignUpActivity2 extends AppCompatActivity
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayedTeachersNames);
         lvTeachers.setAdapter(adapter);
 
-        ProgressDialog pd = ProgressDialog.show(this, "טוען נתונים", "מחפש מורים במערכת...", true);
+        ProgressDialog pd = ProgressDialog.show(this, "Loading Data",
+                "Looking for teachers...", true);
 
         refTeachers.addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -133,7 +134,7 @@ public class SignUpActivity2 extends AppCompatActivity
                 {
                     Teacher teacher = data.getValue(Teacher.class);
 
-                    if (teacher != null)
+                    if (teacher != null && teacher.getStatus().equals(Teacher.ACTIVE))
                     {
                         allTeachersObjects.add(teacher);
                         allTeachersNames.add(teacher.getFullName() + "\n" + teacher.getIdNumber());
@@ -152,7 +153,7 @@ public class SignUpActivity2 extends AppCompatActivity
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 pd.dismiss();
-                Toast.makeText(context, "שגיאה בטעינת המורים", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Error while loading teachers data", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -164,7 +165,8 @@ public class SignUpActivity2 extends AppCompatActivity
                 etSearchTeacher.setText(selectedTeacher.getFullName());
                 etSearchTeacher.setSelection(etSearchTeacher.getText().length());
 
-                Toast.makeText(SignUpActivity2.this, "בחרת ב: " + selectedTeacher.getFullName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignUpActivity2.this, "You chose: " +
+                        selectedTeacher.getFullName(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -309,7 +311,7 @@ public class SignUpActivity2 extends AppCompatActivity
                         {
                             int role = isStudent ? 0 : 1;
 
-                            saveRememberMe(role, selectedTeacher.getUid());
+                            saveRememberMe(role, isStudent ? selectedTeacher.getUid(): "");
                             FBRef.saveCurrentUser(refAuth.getCurrentUser());
                             saveUserToFB(isStudent);
                             Toast.makeText(context, "User created successfully", Toast.LENGTH_LONG).show();
@@ -355,20 +357,18 @@ public class SignUpActivity2 extends AppCompatActivity
         if (isStudent)
         {
             Student student = new Student(FBRef.uid, id, username,
-                    birthDate, phone, true, false, 0,
+                    birthDate, phone, User.PENDING, 0,
                     0, selectedTeacher.getUid());
             refStudents.child(FBRef.uid).setValue(student);
 
-            refClasses.child(selectedTeacher.getUid()).child("Pending Students").child(FBRef.uid).setValue(false);
-        }
+            refClasses.child(selectedTeacher.getUid()).child("students").
+                    child(FBRef.uid).setValue(User.PENDING);        }
 
         else
         {
             Teacher teacher = new Teacher(FBRef.uid, id, username,
-                    birthDate, phone, true, false, 1, 60, 200);
+                    birthDate, phone, User.PENDING, 1, 60, 200);
             refTeachers.child(FBRef.uid).setValue(teacher);
-
-            refTeachersRequests.child(FBRef.uid).setValue(false);
         }
     }
 

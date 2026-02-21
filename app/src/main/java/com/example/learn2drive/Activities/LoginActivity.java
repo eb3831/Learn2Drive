@@ -204,7 +204,7 @@ public class LoginActivity extends AppCompatActivity
         }
 
         editor.putInt("user_role", user.getRole());
-        editor.putBoolean("is_approved", user.isApproved());
+        editor.putBoolean("is_approved", user.getStatus().equals(User.ACTIVE));
         editor.apply();
     }
 
@@ -222,7 +222,7 @@ public class LoginActivity extends AppCompatActivity
         {
             // Using SharedPreferences to save admin credentials
             saveToSharedPreferences(new User("", "", "", "",
-                    "", true, true, 2), email);
+                    "", User.ACTIVE, 2), email);
             startActivity(new Intent(this, AdminActivity.class));
             finish();
             return;
@@ -245,7 +245,7 @@ public class LoginActivity extends AppCompatActivity
 
                         saveToSharedPreferences(user, email);
 
-                        if (user.isApproved())
+                        if (user.getStatus().equals(User.ACTIVE))
                         {
                             gi = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(gi);

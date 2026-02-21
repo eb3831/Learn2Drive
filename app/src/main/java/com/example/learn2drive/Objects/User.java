@@ -2,14 +2,21 @@ package com.example.learn2drive.Objects;
 
 public class User
 {
+    public static final int STUDENT = 0;
+    public static final int TEACHER = 1;
+    public static final int ADMIN = 2;
+
+    public static final String ACTIVE = "ACTIVE";
+    public static final String PENDING = "PENDING";
+    public static final String ARCHIVED = "ARCHIVED";
+
     protected int role;  // 0 - Student, 1 - Teacher, 2 - Admin
     protected String uid;
     protected String idNumber;
     protected String fullName;
     protected String birthDate;
     protected String phoneNumber;
-    protected boolean active;
-    protected boolean approved;
+    protected String status;
 
     public User()
     {
@@ -19,12 +26,11 @@ public class User
         this.fullName = "";
         this.birthDate = "";
         this.phoneNumber = "";
-        this.active = true;
-        this.approved = false;
+        this.status = "";
     }
 
     public User(String uid, String idNumber, String fullName, String birthDate, String phoneNumber,
-                boolean active, boolean approved, int role)
+                String status, int role)
     {
         this.role = role;
         this.uid = uid;
@@ -32,8 +38,17 @@ public class User
         this.fullName = fullName;
         this.birthDate = birthDate;
         this.phoneNumber = phoneNumber;
-        this.active = active;
-        this.approved = approved;
+        this.status = status;
+    }
+
+    public String getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus(String status)
+    {
+        this.status = status;
     }
 
     public int getRole()
@@ -94,26 +109,6 @@ public class User
     public String getPhoneNumber()
     {
         return phoneNumber;
-    }
-
-    public void setActive(boolean active)
-    {
-        this.active = active;
-    }
-
-    public boolean isActive()
-    {
-        return active;
-    }
-
-    public boolean isApproved()
-    {
-        return approved;
-    }
-
-    public void setApproved(boolean approved)
-    {
-        this.approved = approved;
     }
 
 }
