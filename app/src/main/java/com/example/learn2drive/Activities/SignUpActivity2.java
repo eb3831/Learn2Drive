@@ -311,7 +311,7 @@ public class SignUpActivity2 extends AppCompatActivity
                         {
                             int role = isStudent ? 0 : 1;
 
-                            saveRememberMe(role, isStudent ? selectedTeacher.getUid(): "");
+                            saveRememberMe(role);
                             FBRef.saveCurrentUser(refAuth.getCurrentUser());
                             saveUserToFB(isStudent);
                             Toast.makeText(context, "User created successfully", Toast.LENGTH_LONG).show();
@@ -333,17 +333,12 @@ public class SignUpActivity2 extends AppCompatActivity
      * Saves session preferences including role and approval status.
      * @param role The user role (0 for Student, 1 for Teacher).
      */
-    private void saveRememberMe(int role, String teacherUid)
+    private void saveRememberMe(int role)
     {
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean("is_remembered", cbRememberMe.isChecked());
         editor.putInt("user_role", role);
         editor.putBoolean("is_approved", false);
-
-        if(role == 0)
-        {
-            editor.putString("teacher_uid", teacherUid);
-        }
 
         editor.apply();
     }

@@ -9,6 +9,7 @@ public class User
     public static final String ACTIVE = "ACTIVE";
     public static final String PENDING = "PENDING";
     public static final String ARCHIVED = "ARCHIVED";
+    public static final String REJECTED = "REJECTED";
 
     protected int role;  // 0 - Student, 1 - Teacher, 2 - Admin
     protected String uid;
