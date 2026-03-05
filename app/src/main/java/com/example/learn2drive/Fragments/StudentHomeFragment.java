@@ -1,95 +1,66 @@
-//package com.example.learn2drive.Fragments;
-//
-//import android.os.Bundle;
-//import androidx.annotation.NonNull;
-//import androidx.annotation.Nullable;
-//import androidx.fragment.app.Fragment;
-//import android.view.LayoutInflater;
-//import android.view.View;
-//import android.view.ViewGroup;
-//import android.widget.Button;
-//import android.widget.ListView;
-//import android.widget.Toast;
-//
-//import com.example.learn2drive.Adapters.LessonAdapter;
-//import com.example.learn2drive.Classes.Lesson;
-//import com.example.learn2drive.R;
-//
-//import java.util.ArrayList;
-//
-//public class StudentHomeFragment extends Fragment
-//{
-//
-//    private ListView lvNextLessons;
-//    private Button btnHistory;
-//    private Button btnNewLesson;
-//
-//    private ArrayList<Lesson> lessonsList;
-//    private LessonAdapter adapter;
-//
-//    public StudentHomeFragment()
-//    {
-//        // בנאי ריק (חובה)
-//    }
-//
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-//    {
-//        View view = inflater.inflate(R.layout.fragment_student_home, container, false);
-//
-//        initViews(view);
-//
-//        return view;
-//    }
-//
-//    private void initViews(View view)
-//    {
-//        lvNextLessons = view.findViewById(R.id.lvStNextLessons);
-//        btnHistory = view.findViewById(R.id.moveToStHistory);
-//        btnNewLesson = view.findViewById(R.id.moveToStNewLesson);
-//
-//        setupListView();
-//        setupListeners();
-//    }
-//
-//    private void setupListView()
-//    {
-//        lessonsList = new ArrayList<>();
-//
-//        // --- נתונים לדוגמה (בהמשך נחליף בשליפה מ-Firebase) ---
-//        lessonsList.add(new Lesson("12/10/2025", "09:00", "60 min"));
-//        lessonsList.add(new Lesson("15/10/2025", "13:00", "45 min"));
-//        lessonsList.add(new Lesson("18/10/2025", "10:00", "60 min"));
-//        lessonsList.add(new Lesson("20/10/2025", "16:00", "60 min"));
-//
-//        if (getContext() != null)
-//        {
-//            adapter = new LessonAdapter(getContext(), lessonsList);
-//            lvNextLessons.setAdapter(adapter);
-//        }
-//    }
-//
-//    private void setupListeners()
-//    {
-//        btnHistory.setOnClickListener(new View.OnClickListener(
-//
-//        ) {
-//            @Override
-//            public void onClick(View v)
-//            {
-//                // כרגע רק נציג הודעה. בהמשך נעשה כאן מעבר מסך.
-//                Toast.makeText(getContext(), "Clicked: History", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        btnNewLesson.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v)
-//            {
-//                // כרגע רק נציג הודעה.
-//                Toast.makeText(getContext(), "Clicked: New Lesson", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-//}
+package com.example.learn2drive.Fragments;
+
+import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.example.learn2drive.R;
+
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link StudentHomeFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class StudentHomeFragment extends Fragment {
+
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
+    public StudentHomeFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment TeacherHomeFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static TeacherHomeFragment newInstance(String param1, String param2) {
+        TeacherHomeFragment fragment = new TeacherHomeFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_teacher_home, container, false);
+    }
+}
