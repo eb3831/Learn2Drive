@@ -250,6 +250,13 @@ public class LoginActivity extends AppCompatActivity
                             gi = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(gi);
                         }
+
+                        else if (user.getStatus().equals(User.REJECTED))
+                        {
+                            Toast.makeText(LoginActivity.this,
+                                    "Your account has been rejected", Toast.LENGTH_SHORT).show();
+                        }
+
                         else
                         {
                             gi = new Intent(LoginActivity.this, WaitingActivity.class);
@@ -260,13 +267,15 @@ public class LoginActivity extends AppCompatActivity
                     }
                 }
 
-                if (!found) {
+                if (!found)
+                {
                     Toast.makeText(LoginActivity.this, "User data not found", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error)
+            {
                 Toast.makeText(LoginActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
