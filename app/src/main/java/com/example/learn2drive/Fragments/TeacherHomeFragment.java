@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 
-public class TeacherHomeFragment extends Fragment {
-
+public class TeacherHomeFragment extends Fragment
+{
     private RecyclerView teacherRvScheduledLessons;
     private TeacherLessonAdapter adapter;
     private ArrayList<ScheduledLesson> lessonList;
