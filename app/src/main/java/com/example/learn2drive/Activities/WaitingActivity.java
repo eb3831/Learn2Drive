@@ -1,6 +1,5 @@
 package com.example.learn2drive.Activities;
 
-import static com.example.learn2drive.Helpers.FBRef.refClasses;
 import static com.example.learn2drive.Helpers.FBRef.refStudents;
 import static com.example.learn2drive.Helpers.FBRef.refTeachers;
 
@@ -92,7 +91,7 @@ public class WaitingActivity extends AppCompatActivity
                 {
                     updateSharedPrefs();
 
-                    startActivity(new Intent(WaitingActivity.this, MainActivity.class));
+                    startActivity(new Intent(WaitingActivity.this, StudentMainActivity.class));
                     finish();
                 }
             }

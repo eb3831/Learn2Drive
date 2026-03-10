@@ -95,7 +95,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="Sarah Johnson"
+                android:text="Albert Levi"
                 android:textColor="#4B5563"
                 android:textSize="14sp" />
         </LinearLayout>

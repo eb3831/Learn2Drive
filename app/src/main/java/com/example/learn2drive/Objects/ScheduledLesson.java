@@ -2,33 +2,43 @@ package com.example.learn2drive.Objects;
 
 public class ScheduledLesson
 {
+    public static int PENDING = 0;
+    public static int ACCEPTED = 1;
+    public static int REJECTED = 2;
+
     private int lessonNumber;
-    private String teacherID;
+    private String teacherUID;
+    private String studentUID;
     private String studentID;
-    private String DateAndTime;
+    private String dateAndTime;
     private int duration;
     private int lessonStatus;
+    private String studentName;
 
     public ScheduledLesson()
     {
         this.lessonNumber = 0;
-        this.teacherID = "";
+        this.teacherUID = "";
+        this.studentUID = "";
         this.studentID = "";
-        this.DateAndTime = "";
+        this.dateAndTime = "";
         this.duration = 0;
         this.lessonStatus = 0;
+        this.studentName = "";
     }
 
 
-    public ScheduledLesson(int lessonNumber, String teacherID, String studentID, String DateAndTime,
-                           int duration, int lessonStatus)
+    public ScheduledLesson(int lessonNumber, String teacherUID, String studentUID, String studentID,
+                           String dateAndTime, int duration, int lessonStatus, String studentName)
     {
         this.lessonNumber = lessonNumber;
-        this.teacherID = teacherID;
+        this.teacherUID = teacherUID;
+        this.studentUID = studentUID;
         this.studentID = studentID;
-        this.DateAndTime = DateAndTime;
+        this.dateAndTime = dateAndTime;
         this.duration = duration;
         this.lessonStatus = lessonStatus;
+        this.studentName = studentName;
     }
 
     public void setLessonNumber(int lessonNumber)
@@ -41,14 +51,23 @@ public class ScheduledLesson
         return lessonNumber;
     }
 
-    public void setTeacherID(String teacherID)
+    public void setTeacherUID(String teacherUID)
     {
-        this.teacherID = teacherID;
+        this.teacherUID = teacherUID;
     }
 
-    public String getTeacherID()
+    public String getTeacherUID()
     {
-        return teacherID;
+        return teacherUID;
+    }
+
+    public void setStudentUID(String studentUID) {
+        this.studentUID = studentUID;
+    }
+
+    public String getStudentUID()
+    {
+        return studentUID;
     }
 
     public void setStudentID(String studentID)
@@ -61,14 +80,14 @@ public class ScheduledLesson
         return studentID;
     }
 
-    public void setDateAndTime(String DateAndTime)
+    public void setDateAndTime(String dateAndTime)
     {
-        this.DateAndTime = DateAndTime;
+        this.dateAndTime = dateAndTime;
     }
 
     public String getDateAndTime()
     {
-        return DateAndTime;
+        return dateAndTime;
     }
 
     public void setDuration(int duration)
@@ -89,5 +108,15 @@ public class ScheduledLesson
     public int getLessonStatus()
     {
         return lessonStatus;
+    }
+
+    public void setStudentName(String studentName)
+    {
+        this.studentName = studentName;
+    }
+
+    public String getStudentName()
+    {
+        return studentName;
     }
 }

@@ -17,6 +17,8 @@ public class FBRef
 
     public static DatabaseReference refClasses = FB_DB.getReference("Classes");
 
+    public static DatabaseReference refScheduledLessons = FB_DB.getReference("Lessons").child("Scheduled");
+
     public static String uid;
 
 

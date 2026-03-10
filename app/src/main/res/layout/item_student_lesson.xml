@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="Tomorrow"
+                android:text="Date"
                 android:textColor="#374151"
                 android:textSize="14sp"
                 android:textStyle="bold" />

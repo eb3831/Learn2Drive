@@ -1,7 +1,7 @@
 package com.example.learn2drive.Activities;
 
 import static com.example.learn2drive.Helpers.FBRef.refAuth;
-import static com.example.learn2drive.Helpers.FBRef.refTeachers;
+import static com.example.learn2drive.Helpers.FBRef.refScheduledLessons;
 import static com.example.learn2drive.Helpers.FBRef.refUsers;
 
 import android.app.ProgressDialog;
@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.learn2drive.BuildConfig;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Helpers.Utilities;
+import com.example.learn2drive.Objects.ScheduledLesson;
 import com.example.learn2drive.Objects.User;
 import com.example.learn2drive.R;
 import com.google.firebase.database.DataSnapshot;
@@ -74,7 +75,7 @@ public class LoginActivity extends AppCompatActivity
             }
             else if(approved)
             {
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, StudentMainActivity.class));
             }
             else
             {
@@ -247,7 +248,7 @@ public class LoginActivity extends AppCompatActivity
 
                         if (user.getStatus().equals(User.ACTIVE))
                         {
-                            gi = new Intent(LoginActivity.this, MainActivity.class);
+                            gi = new Intent(LoginActivity.this, StudentMainActivity.class);
                             startActivity(gi);
                         }
 
