@@ -15,12 +15,15 @@
         android:layout_weight="1" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+        android:id="@+id/studentBottomNav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
         android:background="@color/white"
         app:elevation="8dp"
-        app:itemIconSize="38dp"
+        app:itemIconSize="26dp"
+        app:labelVisibilityMode="unlabeled"
+        app:itemPaddingTop="0dp"
+        app:itemPaddingBottom="0dp"
         app:menu="@menu/student_bottom_nav_menu" />
 
 </LinearLayout>

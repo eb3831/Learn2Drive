@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/ic_home"
+        android:id="@+id/menu_student_home"
         android:icon="@drawable/home"
         android:title="Home" />
 
         <item
-            android:id="@+id/ic_profile"
+            android:id="@+id/menu_student_profile"
             android:icon="@drawable/user"
             android:title="Profile" />
 
         <item
-            android:id="@+id/ic_payment"
+            android:id="@+id/menu_student_payment"
             android:icon="@drawable/wallet"
             android:title="Payment" />
 </menu>

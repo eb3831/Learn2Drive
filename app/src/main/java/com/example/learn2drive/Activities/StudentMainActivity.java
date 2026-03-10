@@ -4,62 +4,62 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.learn2drive.Fragments.StudentHomeFragment;
 import com.example.learn2drive.R;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.MenuItem;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class StudentMainActivity extends AppCompatActivity
+public class StudentMainActivity extends AppCompatActivity implements
+        BottomNavigationView.OnNavigationItemSelectedListener
 {
+    private BottomNavigationView studentBottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_student_main);
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-        bottomNav.setOnNavigationItemSelectedListener(navListener);
-
-        if (savedInstanceState == null)
-        {
-//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-//                    new HomeFragment()).commit();
-        }
+        initViews();
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
-            new BottomNavigationView.OnNavigationItemSelectedListener()
-            {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item)
-                {
-                    Fragment selectedFragment = null;
-                    int itemId = item.getItemId();
+    private void initViews()
+    {
+        studentBottomNav = findViewById(R.id.studentBottomNav);
+        studentBottomNav.setOnNavigationItemSelectedListener(this);
+        studentBottomNav.setSelectedItemId(R.id.menu_student_home);
+    }
 
-                    if (itemId == R.id.ic_home)
-                    {
-//                        selectedFragment = new HomeFragment();
-                    }
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item)
+    {
+        Fragment selectedFragment = null;
+        int itemId = item.getItemId();
 
-                    else if (itemId == R.id.ic_profile)
-                    {
-//                        selectedFragment = new HomeFragment();
-                    }
+        if (itemId == R.id.menu_student_home)
+        {
+            selectedFragment = new StudentHomeFragment();
+        }
+        else if (itemId == R.id.menu_student_profile)
+        {
+            // selectedFragment = new HomeFragment();
+        }
+        else if (itemId == R.id.menu_student_payment)
+        {
+            // selectedFragment = new HomeFragment();
+        }
 
-                    else if (itemId == R.id.ic_payment)
-                    {
-//                        selectedFragment = new HomeFragment();
-                    }
+        if (selectedFragment != null)
+        {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    selectedFragment).commit();
+        }
 
-                    if (selectedFragment != null)
-                    {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                selectedFragment).commit();
-                    }
-                    return true;
-                }
-            };
+        return true;
+    }
 }
