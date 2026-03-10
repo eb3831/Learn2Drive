@@ -69,13 +69,20 @@ public class LoginActivity extends AppCompatActivity
             boolean approved = sp.getBoolean("is_approved", false);
 
             // Admin check
-            if(role == 2)
+            if(role == User.ADMIN)
             {
                 startActivity(new Intent(this, AdminActivity.class));
             }
             else if(approved)
             {
-                startActivity(new Intent(this, StudentMainActivity.class));
+                if(role == User.TEACHER)
+                {
+                    startActivity(new Intent(this, TeacherMainActivity.class));
+                }
+                else
+                {
+                    startActivity(new Intent(this, StudentMainActivity.class));
+                }
             }
             else
             {
@@ -248,7 +255,11 @@ public class LoginActivity extends AppCompatActivity
 
                         if (user.getStatus().equals(User.ACTIVE))
                         {
-                            gi = new Intent(LoginActivity.this, StudentMainActivity.class);
+                            if(user.getRole() == User.TEACHER)
+                                gi = new Intent(LoginActivity.this, TeacherMainActivity.class);
+                            else
+                                gi = new Intent(LoginActivity.this, StudentMainActivity.class);
+
                             startActivity(gi);
                         }
 

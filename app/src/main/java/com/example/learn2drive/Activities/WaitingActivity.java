@@ -91,7 +91,8 @@ public class WaitingActivity extends AppCompatActivity
                 {
                     updateSharedPrefs();
 
-                    startActivity(new Intent(WaitingActivity.this, StudentMainActivity.class));
+                    startActivity(new Intent(WaitingActivity.this,
+                            isStudent ? StudentMainActivity.class : TeacherMainActivity.class));
                     finish();
                 }
             }

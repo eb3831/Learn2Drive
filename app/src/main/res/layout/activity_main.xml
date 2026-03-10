@@ -21,6 +21,6 @@
         android:background="@color/white"
         app:elevation="8dp"
         app:itemIconSize="38dp"
-        app:menu="@menu/bottom_nav_menu" />
+        app:menu="@menu/student_bottom_nav_menu" />
 
 </LinearLayout>
