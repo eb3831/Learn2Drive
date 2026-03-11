@@ -6,6 +6,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -23,10 +24,15 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.Student;
 import com.example.learn2drive.Objects.Teacher;
@@ -54,13 +60,14 @@ public class ProfileFragment extends Fragment
     private ImageView ivProfilePicture, ivEditProfilePic;
     private LinearLayout teacherContainer;
     private FrameLayout loadingOverlay;
+    private ProgressBar pbProfilePicLoading;
 
     public ProfileFragment()
     {
         // Required empty public constructor
     }
 
-    public static ProfileFragment newInstance(boolean isStudent) 
+    public static ProfileFragment newInstance(boolean isStudent)
     {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
@@ -70,11 +77,11 @@ public class ProfileFragment extends Fragment
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) 
+    public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        
-        if (getArguments() != null) 
+
+        if (getArguments() != null)
         {
             isStudent = getArguments().getBoolean(ARG_IS_STUDENT);
         }
@@ -82,14 +89,14 @@ public class ProfileFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) 
+                             Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) 
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
 
@@ -100,7 +107,7 @@ public class ProfileFragment extends Fragment
         ivEditProfilePic.setOnClickListener(v -> checkCameraPermission());
     }
 
-    private void initViews(View view) 
+    private void initViews(View view)
     {
         tvProfileSubtitle = view.findViewById(R.id.tvProfileSubtitle);
         tvProfileName = view.findViewById(R.id.tvProfileName);
@@ -111,6 +118,7 @@ public class ProfileFragment extends Fragment
         loadingOverlay = view.findViewById(R.id.profileLoadingOverlay);
         ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
         ivEditProfilePic = view.findViewById(R.id.ivEditProfilePic);
+        pbProfilePicLoading = view.findViewById(R.id.pbProfilePicLoading);
     }
 
     private void setupUI() {
@@ -135,7 +143,6 @@ public class ProfileFragment extends Fragment
             return;
         }
 
-        // הצגת אנימציית הטעינה לפני הקריאה למסד הנתונים
         loadingOverlay.setVisibility(View.VISIBLE);
 
         if (isStudent) {
@@ -151,7 +158,6 @@ public class ProfileFragment extends Fragment
                             tvProfileTeacher.setText(student.getTeacherName());
                         }
                     }
-                    // הסתרת הטעינה בסיום
                     loadingOverlay.setVisibility(View.GONE);
                 }
 
@@ -173,7 +179,6 @@ public class ProfileFragment extends Fragment
                             tvProfileBirthDate.setText(teacher.getBirthDate());
                         }
                     }
-                    // הסתרת הטעינה בסיום
                     loadingOverlay.setVisibility(View.GONE);
                 }
 
@@ -190,32 +195,54 @@ public class ProfileFragment extends Fragment
     {
         if (FBRef.uid == null || FBRef.uid.isEmpty()) return;
 
-        // Reaching: Profile Pictures -> UserID -> profile.jpg
         StorageReference picRef = refProfilePics.child(FBRef.uid).child("profile.jpg");
+
+        pbProfilePicLoading.setVisibility(View.VISIBLE);
 
         picRef.getDownloadUrl().addOnSuccessListener(uri ->
         {
-            // If the uri is not null, load the image into the ImageView
             if (isAdded() && getContext() != null)
             {
-                ivProfilePicture.setImageTintList(null);
-                ivProfilePicture.setPadding(0, 0, 0, 0);
-
                 Glide.with(requireContext())
                         .load(uri)
-                        .circleCrop() // crops the image to a circle
-                        .placeholder(R.drawable.user) // sets a placeholder image while loading
+                        .listener(new RequestListener<Drawable>()
+                        {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                        Target<Drawable> target,
+                                                        boolean isFirstResource)
+                            {
+                                pbProfilePicLoading.setVisibility(View.GONE);
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model,
+                                                           Target<Drawable> target,
+                                                           DataSource dataSource,
+                                                           boolean isFirstResource)
+                            {
+                                pbProfilePicLoading.setVisibility(View.GONE);
+
+                                // Reset the tint and padding to default
+                                ivProfilePicture.setImageTintList(null);
+                                ivProfilePicture.setPadding(0, 0, 0, 0);
+
+                                return false;
+                            }
+                        })
+                        .circleCrop()
                         .into(ivProfilePicture);
             }
         }).addOnFailureListener(e ->
         {
-            // If there is no image or a failure occurs, stays with the default image
+            // Hides the loading spinner
+            pbProfilePicLoading.setVisibility(View.GONE);
         });
     }
 
     private void checkCameraPermission()
     {
-        // Check if the camera permission is granted
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED)
         {
@@ -238,14 +265,12 @@ public class ProfileFragment extends Fragment
             File imgFile = File.createTempFile(filename, ".jpg", storageDir);
             currentPath = imgFile.getAbsolutePath();
 
-            // Create a URI for the captured image
             String authority = requireActivity().getPackageName() + ".fileprovider";
             imageUri = FileProvider.getUriForFile(requireContext(), authority, imgFile);
 
             Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             takePicIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
 
-            // If the camera app is available, start the camera intent
             if (takePicIntent.resolveActivity(requireActivity().getPackageManager()) != null)
             {
                 startActivityForResult(takePicIntent, REQUEST_FULL_IMAGE_CAPTURE);
@@ -259,7 +284,6 @@ public class ProfileFragment extends Fragment
         }
     }
 
-    // Handle the result of the camera intent
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults)
@@ -287,7 +311,6 @@ public class ProfileFragment extends Fragment
     {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Checks if the result is from the camera intent
         if (requestCode == REQUEST_FULL_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK)
         {
             uploadProfilePicture();
@@ -298,40 +321,57 @@ public class ProfileFragment extends Fragment
     {
         if (imageUri == null || FBRef.uid == null || FBRef.uid.isEmpty()) return;
 
-        // Displays the loading overlay
-        loadingOverlay.setVisibility(View.VISIBLE);
+        // Displays the spinner
+        pbProfilePicLoading.setVisibility(View.VISIBLE);
 
-        // Sets the path for the image in storage (Profile Pictures -> UserID -> profile.jpg)
         StorageReference picRef = FBRef.refProfilePics.child(FBRef.uid).child("profile.jpg");
 
-        // Uploads the image to the storage
         picRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot ->
                 {
-                    // If the upload is successful, get the download URL and display it
                     picRef.getDownloadUrl().addOnSuccessListener(uri ->
                     {
                         if (isAdded() && getContext() != null)
                         {
-                            ivProfilePicture.setImageTintList(null);
-                            ivProfilePicture.setPadding(0, 0, 0, 0);
-
                             Glide.with(requireContext())
                                     .load(uri)
+                                    .listener(new RequestListener<Drawable>()
+                                    {
+                                        @Override
+                                        public boolean onLoadFailed(@Nullable GlideException e,
+                                                                    Object model,
+                                                                    Target<Drawable> target,
+                                                                    boolean isFirstResource)
+                                        {
+                                            pbProfilePicLoading.setVisibility(View.GONE);
+                                            return false;
+                                        }
+
+                                        @Override
+                                        public boolean onResourceReady(Drawable resource,
+                                                                       Object model,
+                                                                       Target<Drawable> target,
+                                                                       DataSource dataSource,
+                                                                       boolean isFirstResource)
+                                        {
+                                            pbProfilePicLoading.setVisibility(View.GONE);
+                                            ivProfilePicture.setImageTintList(null);
+                                            ivProfilePicture.setPadding(0, 0, 0, 0);
+                                            return false;
+                                        }
+                                    })
                                     .circleCrop()
                                     .into(ivProfilePicture);
 
-                            // Hides the loading overlay
-                            loadingOverlay.setVisibility(View.GONE);
                             Toast.makeText(requireContext(),
                                     "Profile picture updated successfully!", Toast.LENGTH_SHORT).show();
                         }
                     });
                 })
+
                 .addOnFailureListener(e ->
                 {
-                    // If a failure occurs
-                    loadingOverlay.setVisibility(View.GONE);
+                    pbProfilePicLoading.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to upload image.", Toast.LENGTH_SHORT).show();
                     Log.e("ProfileFragment", "Upload failed: " + e.getMessage());
                 });
