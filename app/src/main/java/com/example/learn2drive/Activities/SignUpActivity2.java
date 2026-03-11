@@ -353,7 +353,7 @@ public class SignUpActivity2 extends AppCompatActivity
         {
             Student student = new Student(FBRef.uid, id, username,
                     birthDate, phone, User.PENDING, 0,
-                    0, selectedTeacher.getUid());
+                    0, selectedTeacher.getUid(), selectedTeacher.getFullName());
             refStudents.child(FBRef.uid).setValue(student);
 
             refClasses.child(selectedTeacher.getUid()).child("students").
