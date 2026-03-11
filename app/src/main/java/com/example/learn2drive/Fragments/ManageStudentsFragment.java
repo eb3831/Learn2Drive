@@ -2,7 +2,6 @@ package com.example.learn2drive.Fragments;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.learn2drive.Adapters.StudentAdapter;
@@ -30,6 +30,8 @@ public class ManageStudentsFragment extends Fragment
 
     private RecyclerView rvManageStudents;
     private LinearLayout btnRequests, btnArchive;
+    private ProgressBar pbLoading;
+    private LinearLayout llEmptyState;
 
     private StudentAdapter studentAdapter;
     private List<Student> studentList;
@@ -82,6 +84,8 @@ public class ManageStudentsFragment extends Fragment
         rvManageStudents = view.findViewById(R.id.rvManageStudents);
         btnRequests = view.findViewById(R.id.btnRequests);
         btnArchive = view.findViewById(R.id.btnArchive);
+        pbLoading = view.findViewById(R.id.pbManageStudents);
+        llEmptyState = view.findViewById(R.id.llMangeStudentsEmptyState);
 
         studentList = new ArrayList<>();
         rvManageStudents.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -101,55 +105,79 @@ public class ManageStudentsFragment extends Fragment
         });
     }
 
-    private void loadActiveStudents()
-    {
+    private void loadActiveStudents() {
         if (FBRef.uid == null) return;
+
+        // Display the loading spinner
+        pbLoading.setVisibility(View.VISIBLE);
+        rvManageStudents.setVisibility(View.GONE);
+        llEmptyState.setVisibility(View.GONE);
 
         FBRef.refClasses.child(FBRef.uid).child("students")
                 .addValueEventListener(new ValueEventListener()
                 {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot)
-                    {
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
                         studentList.clear();
                         studentAdapter.notifyDataSetChanged();
 
+                        // First, we collect the uids of the active students
+                        ArrayList<String> activeUids = new ArrayList<>();
+
                         for (DataSnapshot studentSnapshot : snapshot.getChildren())
                         {
-                            String studentUid = studentSnapshot.getKey();
                             String status = studentSnapshot.getValue(String.class);
 
                             if (status != null && status.equals(User.ACTIVE))
                             {
-
-                                FBRef.refStudents.child(studentUid)
-                                        .addListenerForSingleValueEvent(new ValueEventListener()
-                                        {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot studentData)
-                                            {
-                                                Student student = studentData.getValue(Student.class);
-                                                if (student != null)
-                                                {
-                                                    studentList.add(student);
-                                                    studentAdapter.notifyDataSetChanged();
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error)
-                                            {
-                                                Toast.makeText(getContext(), "Error loading student details", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+                                activeUids.add(studentSnapshot.getKey());
                             }
+                        }
+
+                        // If there are not active students, displays empty state
+                        if (activeUids.isEmpty())
+                        {
+                            pbLoading.setVisibility(View.GONE);
+                            rvManageStudents.setVisibility(View.GONE);
+                            llEmptyState.setVisibility(View.VISIBLE);
+                            return;
+                        }
+
+                        // If there are students, hides the loading and displays the list
+                        pbLoading.setVisibility(View.GONE);
+                        llEmptyState.setVisibility(View.GONE);
+                        rvManageStudents.setVisibility(View.VISIBLE);
+
+                        // Now, we load the students
+                        for (String studentUid : activeUids)
+                        {
+                            FBRef.refStudents.child(studentUid)
+                                    .addListenerForSingleValueEvent(new ValueEventListener()
+                                    {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot studentData)
+                                        {
+                                            Student student = studentData.getValue(Student.class);
+
+                                            if (student != null)
+                                            {
+                                                studentList.add(student);
+                                                studentAdapter.notifyDataSetChanged();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                        }
+                                    });
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error)
                     {
-                        Toast.makeText(getContext(), "Error loading students list", Toast.LENGTH_SHORT).show();
+                        pbLoading.setVisibility(View.GONE);
+                        Toast.makeText(getContext(), "Error loading students", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
