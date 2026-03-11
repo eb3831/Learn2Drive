@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.learn2drive.Fragments.ManageStudentsFragment;
 import com.example.learn2drive.Fragments.ProfileFragment;
 import com.example.learn2drive.Fragments.TeacherHomeFragment;
 import com.example.learn2drive.R;
@@ -52,7 +53,7 @@ public class TeacherMainActivity extends AppCompatActivity implements
         }
         else if (itemId == R.id.menu_teacher_students)
         {
-            // selectedFragment = new HomeFragment();
+            selectedFragment = ManageStudentsFragment.newInstance();
         }
         else if (itemId == R.id.menu_teacher_payment)
         {
