@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.learn2drive.Fragments.ProfileFragment;
 import com.example.learn2drive.Fragments.StudentHomeFragment;
 import com.example.learn2drive.R;
 
@@ -47,7 +48,7 @@ public class StudentMainActivity extends AppCompatActivity implements
         }
         else if (itemId == R.id.menu_student_profile)
         {
-            // selectedFragment = new HomeFragment();
+            selectedFragment = ProfileFragment.newInstance(true);
         }
         else if (itemId == R.id.menu_student_payment)
         {

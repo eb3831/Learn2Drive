@@ -20,7 +20,6 @@
             android:padding="24dp">
 
             <TextView
-                android:id="@+id/tvHeaderTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Profile"
@@ -29,7 +28,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvHeaderSubtitle"
+                android:id="@+id/tvProfileSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -106,7 +105,7 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/tvNameValue"
+                        android:id="@+id/tvProfileName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_profile_field"
@@ -144,7 +143,7 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/tvIdValue"
+                        android:id="@+id/tvProfileId"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_profile_field"
@@ -182,7 +181,7 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/tvBirthDateValue"
+                        android:id="@+id/tvProfileBirthDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_profile_field"
@@ -192,7 +191,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/teacherContainer"
+                    android:id="@+id/profileTeacherContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
@@ -221,7 +220,7 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/tvTeacherValue"
+                        android:id="@+id/tvProfileTeacher"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_profile_field"
@@ -233,4 +232,21 @@
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/profileLoadingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80FFFFFF"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="#000000" />
+    </FrameLayout>
+
 </FrameLayout>
