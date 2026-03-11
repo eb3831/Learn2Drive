@@ -6,11 +6,6 @@
         android:title="Home" />
 
     <item
-        android:id="@+id/menu_teacher_profile"
-        android:icon="@drawable/user"
-        android:title="Profile" />
-
-    <item
         android:id="@+id/menu_teacher_students"
         android:icon="@drawable/student"
         android:title="Student" />
@@ -19,4 +14,9 @@
         android:id="@+id/menu_teacher_payment"
         android:icon="@drawable/wallet"
         android:title="Payment" />
+
+    <item
+        android:id="@+id/menu_teacher_profile"
+        android:icon="@drawable/user"
+        android:title="Profile" />
 </menu>
