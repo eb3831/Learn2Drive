@@ -57,10 +57,14 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
+                        holder.ivStudentProfile.setImageTintList(null);
+                        holder.ivStudentProfile.setPadding(0, 0, 0, 0);
+
                         Glide.with(context)
                                 .load(uri)
                                 .placeholder(R.drawable.user)
                                 .error(R.drawable.user)
+                                .circleCrop()
                                 .into(holder.ivStudentProfile);
                     }
                 });
