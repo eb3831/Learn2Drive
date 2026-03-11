@@ -65,6 +65,7 @@
                         app:tint="#9CA3AF" />
 
                     <ImageView
+                        android:id="@+id/ivEditProfilePic"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:layout_gravity="bottom|end"

@@ -4,6 +4,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class FBRef
 {
@@ -18,6 +20,10 @@ public class FBRef
     public static DatabaseReference refClasses = FB_DB.getReference("Classes");
 
     public static DatabaseReference refScheduledLessons = FB_DB.getReference("Lessons").child("Scheduled");
+
+    // --- Firebase Storage ---
+    public static FirebaseStorage FB_STORAGE = FirebaseStorage.getInstance();
+    public static StorageReference refProfilePics = FB_STORAGE.getReference("Profile Pictures");
 
     public static String uid;
 
