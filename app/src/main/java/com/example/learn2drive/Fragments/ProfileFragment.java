@@ -146,7 +146,8 @@ public class ProfileFragment extends Fragment
         loadingOverlay.setVisibility(View.VISIBLE);
 
         if (isStudent) {
-            FBRef.refStudents.child(FBRef.uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            FBRef.refStudents.child(FBRef.uid).addListenerForSingleValueEvent(new ValueEventListener()
+            {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
