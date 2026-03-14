@@ -1,12 +1,12 @@
 package com.example.learn2drive.Fragments;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -23,6 +23,7 @@ import com.example.learn2drive.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -37,9 +38,13 @@ public class StudentsRequestsFragment extends Fragment
     private RecyclerView rvStudentRequests;
     private ProgressBar progressBar;
     private ImageView btnBack;
+    private LinearLayout layoutEmptyState;
 
     private StudentRequestsAdapter adapter;
     private List<Student> studentsList;
+
+    private ValueEventListener requestsListener;
+    private DatabaseReference requestsRef;
 
     @Nullable
     @Override
@@ -62,12 +67,14 @@ public class StudentsRequestsFragment extends Fragment
 
     /**
      * Initializes the UI components from the layout.
+     *
      * @param view The root view of the fragment.
      */
     private void initViews(View view)
     {
         rvStudentRequests = view.findViewById(R.id.rvStudentRequests);
         progressBar = view.findViewById(R.id.progressBar);
+        layoutEmptyState = view.findViewById(R.id.studentsRequestsEmptyLayout);
         btnBack = view.findViewById(R.id.btnBack);
         studentsList = new ArrayList<>();
     }
@@ -111,7 +118,8 @@ public class StudentsRequestsFragment extends Fragment
 
     /**
      * Shows a confirmation dialog to accept a student request.
-     * @param student The student object to be accepted.
+     *
+     * @param student  The student object to be accepted.
      * @param position The position of the student in the list.
      */
     private void showAcceptConfirmation(Student student, int position)
@@ -130,7 +138,8 @@ public class StudentsRequestsFragment extends Fragment
 
     /**
      * Updates Firebase and the local list when a request is accepted.
-     * @param student The student to accept.
+     *
+     * @param student  The student to accept.
      * @param position The position in the adapter.
      */
     private void handleAcceptRequest(Student student, int position)
@@ -152,7 +161,8 @@ public class StudentsRequestsFragment extends Fragment
 
     /**
      * Shows a confirmation dialog to reject a student request.
-     * @param student The student object to be rejected.
+     *
+     * @param student  The student object to be rejected.
      * @param position The position of the student in the list.
      */
     private void showRejectConfirmation(Student student, int position)
@@ -171,7 +181,8 @@ public class StudentsRequestsFragment extends Fragment
 
     /**
      * Updates Firebase and the local list when a request is rejected.
-     * @param student The student to reject.
+     *
+     * @param student  The student to reject.
      * @param position The position in the adapter.
      */
     private void handleRejectRequest(Student student, int position)
@@ -193,16 +204,19 @@ public class StudentsRequestsFragment extends Fragment
 
     /**
      * Removes a student from the local list and updates the adapter with animation.
+     *
      * @param position The index to remove.
      */
     private void removeStudentFromList(int position)
     {
         studentsList.remove(position);
         adapter.notifyItemRemoved(position);
+        updateUI();
     }
 
     /**
      * Retrieves the current teacher's UID from FBRef or FirebaseAuth.
+     *
      * @return The UID string or null if not authenticated.
      */
     private String getTeacherUid()
@@ -232,7 +246,9 @@ public class StudentsRequestsFragment extends Fragment
             return;
         }
 
-        FBRef.refClasses.child(teacherUid).child("students").addValueEventListener(new ValueEventListener()
+        requestsRef = FBRef.refClasses.child(teacherUid).child("students");
+
+        requestsListener = new ValueEventListener()
         {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot)
@@ -253,6 +269,7 @@ public class StudentsRequestsFragment extends Fragment
                     progressBar.setVisibility(View.GONE);
                     studentsList.clear();
                     adapter.notifyDataSetChanged();
+                    updateUI();
                     return;
                 }
 
@@ -264,11 +281,14 @@ public class StudentsRequestsFragment extends Fragment
             {
                 progressBar.setVisibility(View.GONE);
             }
-        });
+        };
+
+        requestsRef.addValueEventListener(requestsListener);
     }
 
     /**
      * Fetches full Student objects for a list of UIDs and updates the UI.
+     *
      * @param pendingStudentUids List of UIDs to fetch.
      */
     private void fetchStudentsData(List<String> pendingStudentUids)
@@ -302,8 +322,9 @@ public class StudentsRequestsFragment extends Fragment
 
     /**
      * Checks if all asynchronous database calls are finished to hide the progress bar.
+     *
      * @param current The number of students loaded so far.
-     * @param total The total number of students to load.
+     * @param total   The total number of students to load.
      */
     private void checkLoadingComplete(int current, int total)
     {
@@ -311,6 +332,7 @@ public class StudentsRequestsFragment extends Fragment
         {
             progressBar.setVisibility(View.GONE);
             adapter.notifyDataSetChanged();
+            updateUI();
         }
     }
 
@@ -326,10 +348,17 @@ public class StudentsRequestsFragment extends Fragment
     {
         super.onStop();
         toggleBottomNavigation(true);
+
+        // Remove the listener to avoid memory leaks
+        if (requestsRef != null && requestsListener != null)
+        {
+            requestsRef.removeEventListener(requestsListener);
+        }
     }
 
     /**
      * Shows or hides the BottomNavigationView.
+     *
      * @param isVisible True to show, false to hide.
      */
     private void toggleBottomNavigation(boolean isVisible)
@@ -338,6 +367,25 @@ public class StudentsRequestsFragment extends Fragment
         if (bottomNav != null)
         {
             bottomNav.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    /**
+     * Toggles visibility between the RecyclerView and the Empty State placeholder
+     * based on the size of the students list.
+     */
+    private void updateUI()
+    {
+        if (studentsList.isEmpty())
+        {
+            rvStudentRequests.setVisibility(View.GONE);
+            layoutEmptyState.setVisibility(View.VISIBLE);
+        }
+
+        else
+        {
+            rvStudentRequests.setVisibility(View.VISIBLE);
+            layoutEmptyState.setVisibility(View.GONE);
         }
     }
 }
