@@ -11,6 +11,8 @@ import com.example.learn2drive.R;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.MenuItem;
 
@@ -20,6 +22,7 @@ public class TeacherMainActivity extends AppCompatActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener
 {
     private BottomNavigationView teacherBottomNav;
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -35,6 +38,8 @@ public class TeacherMainActivity extends AppCompatActivity implements
         teacherBottomNav = findViewById(R.id.teacherBottomNav);
         teacherBottomNav.setOnNavigationItemSelectedListener(this);
         teacherBottomNav.setSelectedItemId(R.id.menu_teacher_home);
+
+        fragmentManager = getSupportFragmentManager();
     }
 
     @Override
@@ -67,5 +72,36 @@ public class TeacherMainActivity extends AppCompatActivity implements
         }
 
         return true;
+    }
+
+    /**
+     * This method replaces the current fragment displayed on the screen.
+     * @param fragment The fragment to replace to.
+     * @param backStack Whether to add the fragment to back stack, or not.
+     * @param fragmentName The name of the fragment.
+     */
+    public void replaceFragment(Fragment fragment, boolean backStack, String fragmentName)
+    {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment, fragmentName);
+
+        if (backStack)
+        {
+            transaction.addToBackStack(fragmentName);
+        }
+
+        else
+        {
+            transaction.runOnCommit(this::invalidateOptionsMenu);
+        }
+
+        transaction.commit();
+
+        // If added to back stack, call invalidateOptionsMenu manually after commit
+        if (backStack)
+        {
+            fragmentManager.executePendingTransactions(); // ensures commit completes
+            invalidateOptionsMenu();
+        }
     }
 }

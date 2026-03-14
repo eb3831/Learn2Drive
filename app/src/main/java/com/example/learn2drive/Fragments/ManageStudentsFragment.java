@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.learn2drive.Activities.TeacherMainActivity;
 import com.example.learn2drive.Adapters.StudentAdapter;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.Student;
@@ -61,8 +62,10 @@ public class ManageStudentsFragment extends Fragment
         btnRequests.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "Requests clicked - To be implemented", Toast.LENGTH_SHORT).show();
+            public void onClick(View v)
+            {
+                ((TeacherMainActivity) getActivity()).replaceFragment(new StudentsRequestsFragment(),
+                        true, "StudentsRequestsFragment");
             }
         });
 
