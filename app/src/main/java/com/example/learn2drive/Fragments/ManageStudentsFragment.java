@@ -108,8 +108,12 @@ public class ManageStudentsFragment extends Fragment
         });
     }
 
-    private void loadActiveStudents() {
+    private void loadActiveStudents()
+    {
         if (FBRef.uid == null) return;
+
+        studentList.clear();
+        studentAdapter.notifyDataSetChanged();
 
         // Display the loading spinner
         pbLoading.setVisibility(View.VISIBLE);
