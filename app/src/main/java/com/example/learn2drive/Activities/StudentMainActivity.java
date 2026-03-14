@@ -1,24 +1,25 @@
 package com.example.learn2drive.Activities;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.learn2drive.Fragments.ProfileFragment;
 import com.example.learn2drive.Fragments.StudentHomeFragment;
 import com.example.learn2drive.R;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
-import android.view.MenuItem;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class StudentMainActivity extends AppCompatActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener
 {
+
     private BottomNavigationView studentBottomNav;
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -31,8 +32,12 @@ public class StudentMainActivity extends AppCompatActivity implements
 
     private void initViews()
     {
+        fragmentManager = getSupportFragmentManager();
+
         studentBottomNav = findViewById(R.id.studentBottomNav);
         studentBottomNav.setOnNavigationItemSelectedListener(this);
+
+        // Set default fragment
         studentBottomNav.setSelectedItemId(R.id.menu_student_home);
     }
 
@@ -40,27 +45,46 @@ public class StudentMainActivity extends AppCompatActivity implements
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
         Fragment selectedFragment = null;
+        String tag = "";
         int itemId = item.getItemId();
 
         if (itemId == R.id.menu_student_home)
         {
             selectedFragment = new StudentHomeFragment();
+            tag = "STUDENT_HOME";
         }
+
         else if (itemId == R.id.menu_student_profile)
         {
             selectedFragment = ProfileFragment.newInstance(true);
+            tag = "STUDENT_PROFILE";
         }
+
         else if (itemId == R.id.menu_student_payment)
         {
-            // selectedFragment = new HomeFragment();
+            // selectedFragment = new StudentPaymentFragment();
+            // tag = "STUDENT_PAYMENT";
         }
 
         if (selectedFragment != null)
         {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    selectedFragment).commit();
+            replaceFragment(selectedFragment, false, tag);
         }
 
         return true;
+    }
+
+    public void replaceFragment(Fragment fragment, boolean addToBackStack, String tag)
+    {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.studentFragmentContainer, fragment, tag);
+
+        if (addToBackStack)
+        {
+            transaction.addToBackStack(tag);
+        }
+
+        transaction.commit();
+        invalidateOptionsMenu();
     }
 }

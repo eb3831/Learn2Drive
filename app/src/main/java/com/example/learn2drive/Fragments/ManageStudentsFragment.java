@@ -64,8 +64,9 @@ public class ManageStudentsFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                ((TeacherMainActivity) getActivity()).replaceFragment(new StudentsRequestsFragment(),
-                        true, "StudentsRequestsFragment");
+                ((TeacherMainActivity) requireActivity()).replaceFragment(
+                        new StudentsRequestsFragment(), true,
+                        "StudentsRequestsFragment");
             }
         });
 
