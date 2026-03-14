@@ -1,5 +1,7 @@
 package com.example.learn2drive.Fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +28,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment responsible for displaying and managing pending student registration requests.
+ * Allows teachers to accept or reject students who wish to join their classes.
+ */
 public class StudentsRequestsFragment extends Fragment
 {
     private RecyclerView rvStudentRequests;
@@ -40,7 +46,6 @@ public class StudentsRequestsFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState)
     {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_students_requests, container, false);
     }
 
@@ -49,178 +54,208 @@ public class StudentsRequestsFragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize UI components
+        initViews(view);
+        setupRecyclerView();
+        setupListeners();
+        loadPendingRequests();
+    }
+
+    /**
+     * Initializes the UI components from the layout.
+     * @param view The root view of the fragment.
+     */
+    private void initViews(View view)
+    {
         rvStudentRequests = view.findViewById(R.id.rvStudentRequests);
         progressBar = view.findViewById(R.id.progressBar);
         btnBack = view.findViewById(R.id.btnBack);
+        studentsList = new ArrayList<>();
+    }
 
-        // Setup RecyclerView
+    /**
+     * Configures the RecyclerView with its layout manager and adapter.
+     */
+    private void setupRecyclerView()
+    {
         rvStudentRequests.setHasFixedSize(true);
         rvStudentRequests.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Initialize the list
-        studentsList = new ArrayList<>();
-
-        // Initialize the adapter and connect the interface
         adapter = new StudentRequestsAdapter(getContext(), studentsList, new StudentRequestsAdapter.OnRequestClickListener()
         {
             @Override
             public void onAcceptClick(Student student, int position)
             {
-                // Show confirmation dialog for accepting
-                new android.app.AlertDialog.Builder(getContext())
-                        .setTitle("Accept Request")
-                        .setMessage("Are you sure you want to accept " + student.getFullName() + "'s request?")
-                        .setCancelable(false)
-
-                        .setPositiveButton("Accept",
-                                new android.content.DialogInterface.OnClickListener()
-                                {
-                            @Override
-                            public void onClick(android.content.DialogInterface dialog, int which)
-                            {
-                                // Change the status from "PENDING" to "ACCEPTED"
-                                FBRef.refClasses.child(FBRef.uid).child("students")
-                                        .child(student.getUid()).setValue(User.ACTIVE);
-
-                                FBRef.refStudents.child(student.getUid()).child("status")
-                                        .setValue(User.ACTIVE);
-
-                                // Remove the item locally to refresh the UI with a smooth animation
-                                studentsList.remove(position);
-                                adapter.notifyItemRemoved(position);
-                            }
-                        })
-                        .setNegativeButton("Cancel", null)
-                        .show();
+                showAcceptConfirmation(student, position);
             }
 
             @Override
             public void onRejectClick(Student student, int position)
             {
-                // Show confirmation dialog for rejecting
-                new android.app.AlertDialog.Builder(getContext())
-                        .setTitle("Reject Request")
-                        .setMessage("Are you sure you want to reject " + student.getFullName() + "'s request?")
-                        .setCancelable(false)
-
-                        .setPositiveButton("Reject", new android.content.DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(android.content.DialogInterface dialog, int which) {
-                                String teacherUid = FBRef.uid != null ? FBRef.uid : FBRef.refAuth.getCurrentUser().getUid();
-
-                                // Completely remove the request from the teacher's list
-                                FBRef.refClasses.child(teacherUid).child("students")
-                                        .child(student.getUid()).removeValue();
-
-                                FBRef.refStudents.child(student.getUid()).child("status")
-                                        .setValue(User.REJECTED);
-
-                                // Remove the item locally to refresh the UI with a smooth animation
-                                studentsList.remove(position);
-                                adapter.notifyItemRemoved(position);
-                            }
-                        })
-                        .setNegativeButton("Cancel", null)
-                        .show();
+                showRejectConfirmation(student, position);
             }
         });
 
         rvStudentRequests.setAdapter(adapter);
-
-        // Handle the back button click
-        btnBack.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                requireActivity().getSupportFragmentManager().popBackStack();
-            }
-        });
-
-        // Load data from Firebase
-        loadPendingRequests();
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-
-        // Hide the Bottom Navigation View when this fragment is visible
-        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.teacherBottomNav);
-        if (bottomNav != null)
-        {
-            bottomNav.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    public void onStop()
-    {
-        super.onStop();
-
-        // Show the Bottom Navigation View again when leaving this fragment
-        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.teacherBottomNav);
-        if (bottomNav != null)
-        {
-            bottomNav.setVisibility(View.VISIBLE);
-        }
     }
 
     /**
-     * Step 1: Find all student UIDs with "PENDING" status under this teacher
+     * Sets up click listeners for static UI elements.
+     */
+    private void setupListeners()
+    {
+        btnBack.setOnClickListener(v ->
+        {
+            requireActivity().getSupportFragmentManager().popBackStack();
+        });
+    }
+
+    /**
+     * Shows a confirmation dialog to accept a student request.
+     * @param student The student object to be accepted.
+     * @param position The position of the student in the list.
+     */
+    private void showAcceptConfirmation(Student student, int position)
+    {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Accept Request")
+                .setMessage("Are you sure you want to accept " + student.getFullName() + "'s request?")
+                .setCancelable(false)
+                .setPositiveButton("Accept", (dialog, which) ->
+                {
+                    handleAcceptRequest(student, position);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * Updates Firebase and the local list when a request is accepted.
+     * @param student The student to accept.
+     * @param position The position in the adapter.
+     */
+    private void handleAcceptRequest(Student student, int position)
+    {
+        String teacherUid = getTeacherUid();
+        if (teacherUid == null)
+        {
+            return;
+        }
+
+        FBRef.refClasses.child(teacherUid).child("students")
+                .child(student.getUid()).setValue(User.ACTIVE);
+
+        FBRef.refStudents.child(student.getUid()).child("status")
+                .setValue(User.ACTIVE);
+
+        removeStudentFromList(position);
+    }
+
+    /**
+     * Shows a confirmation dialog to reject a student request.
+     * @param student The student object to be rejected.
+     * @param position The position of the student in the list.
+     */
+    private void showRejectConfirmation(Student student, int position)
+    {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Reject Request")
+                .setMessage("Are you sure you want to reject " + student.getFullName() + "'s request?")
+                .setCancelable(false)
+                .setPositiveButton("Reject", (dialog, which) ->
+                {
+                    handleRejectRequest(student, position);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * Updates Firebase and the local list when a request is rejected.
+     * @param student The student to reject.
+     * @param position The position in the adapter.
+     */
+    private void handleRejectRequest(Student student, int position)
+    {
+        String teacherUid = getTeacherUid();
+        if (teacherUid == null)
+        {
+            return;
+        }
+
+        FBRef.refClasses.child(teacherUid).child("students")
+                .child(student.getUid()).removeValue();
+
+        FBRef.refStudents.child(student.getUid()).child("status")
+                .setValue(User.REJECTED);
+
+        removeStudentFromList(position);
+    }
+
+    /**
+     * Removes a student from the local list and updates the adapter with animation.
+     * @param position The index to remove.
+     */
+    private void removeStudentFromList(int position)
+    {
+        studentsList.remove(position);
+        adapter.notifyItemRemoved(position);
+    }
+
+    /**
+     * Retrieves the current teacher's UID from FBRef or FirebaseAuth.
+     * @return The UID string or null if not authenticated.
+     */
+    private String getTeacherUid()
+    {
+        if (FBRef.uid != null)
+        {
+            return FBRef.uid;
+        }
+        if (FBRef.refAuth.getCurrentUser() != null)
+        {
+            return FBRef.refAuth.getCurrentUser().getUid();
+        }
+        return null;
+    }
+
+    /**
+     * Fetches all student UIDs with "PENDING" status from the database.
      */
     private void loadPendingRequests()
     {
-        // Show loading animation
         progressBar.setVisibility(View.VISIBLE);
-        studentsList.clear();
-
-        // Ensure we have the teacher's UID (from your FBRef helper)
-        String teacherUid = FBRef.uid;
-        if (teacherUid == null && FBRef.refAuth.getCurrentUser() != null)
-        {
-            teacherUid = FBRef.refAuth.getCurrentUser().getUid();
-        }
+        String teacherUid = getTeacherUid();
 
         if (teacherUid == null)
         {
             progressBar.setVisibility(View.GONE);
-            return; // Error: No user connected
+            return;
         }
 
-        // Go to Classes -> TeacherUID
-        FBRef.refClasses.child(teacherUid).child("students").addValueEventListener(
-                new ValueEventListener()
+        FBRef.refClasses.child(teacherUid).child("students").addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot)
             {
                 ArrayList<String> pendingStudentUids = new ArrayList<>();
 
-                // Iterate over all students under this teacher
                 for (DataSnapshot studentSnapshot : snapshot.getChildren())
                 {
-                    String studentUid = studentSnapshot.getKey();
                     String status = studentSnapshot.getValue(String.class);
-
                     if ("PENDING".equals(status))
                     {
-                        pendingStudentUids.add(studentUid);
+                        pendingStudentUids.add(studentSnapshot.getKey());
                     }
                 }
 
-                // If no pending requests, stop loading and update adapter
                 if (pendingStudentUids.isEmpty())
                 {
                     progressBar.setVisibility(View.GONE);
+                    studentsList.clear();
                     adapter.notifyDataSetChanged();
                     return;
                 }
 
-                // Step 2: Fetch the full Student objects
                 fetchStudentsData(pendingStudentUids);
             }
 
@@ -233,19 +268,16 @@ public class StudentsRequestsFragment extends Fragment
     }
 
     /**
-     * Step 2: Fetch the full Student object for each PENDING UID
+     * Fetches full Student objects for a list of UIDs and updates the UI.
+     * @param pendingStudentUids List of UIDs to fetch.
      */
     private void fetchStudentsData(List<String> pendingStudentUids)
     {
         studentsList.clear();
-        adapter.notifyDataSetChanged();
-
-        // We use an array of size 1 so we can modify it inside the inner class
         final int[] loadedCount = {0};
 
         for (String studentUid : pendingStudentUids)
         {
-            // Go to Users -> Students -> StudentUID
             FBRef.refStudents.child(studentUid).addListenerForSingleValueEvent(new ValueEventListener()
             {
                 @Override
@@ -256,28 +288,56 @@ public class StudentsRequestsFragment extends Fragment
                     {
                         studentsList.add(student);
                     }
-
-                    loadedCount[0]++;
-
-                    // If we checked all students, hide progress bar and refresh list
-                    if (loadedCount[0] == pendingStudentUids.size())
-                    {
-                        progressBar.setVisibility(View.GONE);
-                        adapter.notifyDataSetChanged();
-                    }
+                    checkLoadingComplete(++loadedCount[0], pendingStudentUids.size());
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error)
                 {
-                    loadedCount[0]++;
-                    if (loadedCount[0] == pendingStudentUids.size())
-                    {
-                        progressBar.setVisibility(View.GONE);
-                        adapter.notifyDataSetChanged();
-                    }
+                    checkLoadingComplete(++loadedCount[0], pendingStudentUids.size());
                 }
             });
+        }
+    }
+
+    /**
+     * Checks if all asynchronous database calls are finished to hide the progress bar.
+     * @param current The number of students loaded so far.
+     * @param total The total number of students to load.
+     */
+    private void checkLoadingComplete(int current, int total)
+    {
+        if (current == total)
+        {
+            progressBar.setVisibility(View.GONE);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        toggleBottomNavigation(false);
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        toggleBottomNavigation(true);
+    }
+
+    /**
+     * Shows or hides the BottomNavigationView.
+     * @param isVisible True to show, false to hide.
+     */
+    private void toggleBottomNavigation(boolean isVisible)
+    {
+        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.teacherBottomNav);
+        if (bottomNav != null)
+        {
+            bottomNav.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         }
     }
 }
