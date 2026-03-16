@@ -66,9 +66,9 @@ public class StudentsArchiveFragment extends Fragment
     private void initViews(View view)
     {
         rvArchivedStudents = view.findViewById(R.id.rvArchivedStudents);
-        layoutEmptyState = view.findViewById(R.id.layoutEmptyState);
-        btnBack = view.findViewById(R.id.btnBack);
-        pbLoading = view.findViewById(R.id.pbLoading);
+        layoutEmptyState = view.findViewById(R.id.studentsArchiveEmptyLayout);
+        btnBack = view.findViewById(R.id.studentsArchiveBtnBack);
+        pbLoading = view.findViewById(R.id.pbStudentsArchive);
 
         archivedStudentList = new ArrayList<>();
         rvArchivedStudents.setLayoutManager(new LinearLayoutManager(getContext()));

@@ -75,7 +75,7 @@ public class StudentsRequestsFragment extends Fragment
         rvStudentRequests = view.findViewById(R.id.rvStudentRequests);
         progressBar = view.findViewById(R.id.progressBar);
         layoutEmptyState = view.findViewById(R.id.studentsRequestsEmptyLayout);
-        btnBack = view.findViewById(R.id.btnBack);
+        btnBack = view.findViewById(R.id.studentsRequestsBtnBack);
         studentsList = new ArrayList<>();
     }
 
