@@ -17,6 +17,11 @@ public class TimeSlot
 
     public TimeSlot()
     {
+        this.duration = 0;
+        this.status = STATUS_AVAILABLE;
+        this.studentUid = "";
+        this.startTime = "";
+        this.endTime = "";
     }
 
     /**
