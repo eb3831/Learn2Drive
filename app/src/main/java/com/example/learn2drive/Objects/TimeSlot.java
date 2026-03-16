@@ -2,17 +2,30 @@ package com.example.learn2drive.Objects;
 
 public class TimeSlot
 {
+    public static final String STATUS_AVAILABLE = "AVAILABLE";
+    public static final String STATUS_UNAVAILABLE = "UNAVAILABLE";
+    public static final String STATUS_BOOKED = "BOOKED";
+
     private int duration;
-    private boolean isAvailable;
+    private String status;
+    private String studentUid;
 
     public TimeSlot()
     {
     }
 
-    public TimeSlot(int duration, boolean isAvailable)
+    public TimeSlot(int duration, String status, String studentUid)
     {
         this.duration = duration;
-        this.isAvailable = isAvailable;
+        this.status = status;
+        this.studentUid = studentUid;
+    }
+
+    public TimeSlot(int duration)
+    {
+        this.duration = duration;
+        this.status = STATUS_AVAILABLE;
+        this.studentUid = "";
     }
 
     public int getDuration()
@@ -25,13 +38,23 @@ public class TimeSlot
         this.duration = duration;
     }
 
-    public boolean isAvailable()
+    public String getStatus()
     {
-        return isAvailable;
+        return status;
     }
 
-    public void setAvailable(boolean available)
+    public void setStatus(String status)
     {
-        isAvailable = available;
+        this.status = status;
+    }
+
+    public String getStudentUid()
+    {
+        return studentUid;
+    }
+
+    public void setStudentUid(String studentUid)
+    {
+        this.studentUid = studentUid;
     }
 }
