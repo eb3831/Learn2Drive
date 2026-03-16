@@ -15,12 +15,11 @@ import com.example.learn2drive.Fragments.TeacherHomeFragment;
 import com.example.learn2drive.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class TeacherMainActivity extends AppCompatActivity implements
+public class TeacherMainActivity extends MasterActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener
 {
 
     private BottomNavigationView teacherBottomNav;
-    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -33,8 +32,6 @@ public class TeacherMainActivity extends AppCompatActivity implements
 
     private void initViews()
     {
-        fragmentManager = getSupportFragmentManager();
-
         teacherBottomNav = findViewById(R.id.teacherBottomNav);
         teacherBottomNav.setOnNavigationItemSelectedListener(this);
 
@@ -83,15 +80,7 @@ public class TeacherMainActivity extends AppCompatActivity implements
 
     public void replaceFragment(Fragment fragment, boolean addToBackStack, String tag)
     {
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.teacherFragmentContainer, fragment, tag);
+        super.replaceFragment(fragment, addToBackStack, tag, R.id.teacherFragmentContainer);
 
-        if (addToBackStack)
-        {
-            transaction.addToBackStack(tag);
-        }
-
-        transaction.commit();
-        invalidateOptionsMenu();
     }
 }
