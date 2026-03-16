@@ -4,14 +4,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.learn2drive.Activities.TeacherMainActivity;
 import com.example.learn2drive.Adapters.TeacherLessonAdapter;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.ScheduledLesson;
@@ -35,6 +38,7 @@ public class TeacherHomeFragment extends Fragment
     private SimpleDateFormat dateTimeFormatter;
     private ProgressBar pbLoading;
     private LinearLayout layoutEmptyState;
+    private LinearLayout btnHoursManager;
 
     public TeacherHomeFragment()
     {
@@ -68,11 +72,16 @@ public class TeacherHomeFragment extends Fragment
         teacherRvScheduledLessons = view.findViewById(R.id.teacherRvScheduledLessons);
         pbLoading = view.findViewById(R.id.teacherHomePb);
         layoutEmptyState = view.findViewById(R.id.teacherHomeEmptyStateLayout);
+        btnHoursManager = view.findViewById(R.id.btnHoursManager);
 
         teacherRvScheduledLessons.setLayoutManager(new LinearLayoutManager(getContext()));
         lessonList = new ArrayList<>();
         adapter = new TeacherLessonAdapter(lessonList);
         teacherRvScheduledLessons.setAdapter(adapter);
+
+        btnHoursManager.setOnClickListener(v -> ((TeacherMainActivity) requireActivity()).
+                replaceFragment(HoursManagerFragment.newInstance(), true,
+                        "HoursManagerFragment"));
     }
 
     /**

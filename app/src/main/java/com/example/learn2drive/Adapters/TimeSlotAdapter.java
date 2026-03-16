@@ -60,13 +60,14 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
         {
             case TimeSlot.STATUS_BOOKED:
                 holder.tvStatusBadge.setVisibility(View.VISIBLE);
-                holder.switchAvailability.setChecked(true);
-                holder.switchAvailability.setEnabled(false); // Locked - teacher cannot cancel a booked lesson here
+                holder.tvStatusBadge.setText("Booked");
+                holder.switchAvailability.setVisibility(View.GONE);
                 setNormalStyle(holder);
                 break;
 
             case TimeSlot.STATUS_UNAVAILABLE:
                 holder.tvStatusBadge.setVisibility(View.GONE);
+                holder.switchAvailability.setVisibility(View.VISIBLE);
                 holder.switchAvailability.setEnabled(true);
                 holder.switchAvailability.setChecked(false);
                 setDisabledStyle(holder);
@@ -75,6 +76,7 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
             case TimeSlot.STATUS_AVAILABLE:
             default:
                 holder.tvStatusBadge.setVisibility(View.GONE);
+                holder.switchAvailability.setVisibility(View.VISIBLE);
                 holder.switchAvailability.setEnabled(true);
                 holder.switchAvailability.setChecked(true);
                 setNormalStyle(holder);
