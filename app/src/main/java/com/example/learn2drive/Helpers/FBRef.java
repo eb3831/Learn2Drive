@@ -21,6 +21,9 @@ public class FBRef
 
     public static DatabaseReference refScheduledLessons = FB_DB.getReference("Lessons").child("Scheduled");
 
+    public static DatabaseReference refTeachersTimeTable = FB_DB.getReference("Teachers Timetable");
+
+
     // --- Firebase Storage ---
     public static FirebaseStorage FB_STORAGE = FirebaseStorage.getInstance();
     public static StorageReference refProfilePics = FB_STORAGE.getReference("Profile Pictures");

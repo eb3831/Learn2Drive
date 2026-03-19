@@ -6,12 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.learn2drive.Activities.StudentMainActivity;
 import com.example.learn2drive.Adapters.StudentLessonAdapter;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.ScheduledLesson;
@@ -27,6 +29,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 
+/**
+ * Fragment representing the student's home dashboard.
+ * Displays upcoming lessons and provides navigation to scheduling and history.
+ */
 public class StudentHomeFragment extends Fragment
 {
     private RecyclerView studentRvScheduledLessons;
@@ -35,44 +41,72 @@ public class StudentHomeFragment extends Fragment
     private SimpleDateFormat dateTimeFormatter;
     private ProgressBar pbLoading;
     private LinearLayout layoutEmptyState;
+    private LinearLayout btnSchedule;
+    private String teacherUid;
 
+    /**
+     * Required empty public constructor.
+     */
     public StudentHomeFragment()
     {
-        // Required empty public constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_student_home, container, false);
 
-        // Initialize UI components
         initViews(view);
+        setupListeners();
 
-        // Initialize Date Formatter for sorting (Format: DD.MM.YYYY HH:mm)
         dateTimeFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
 
-        // Fetches from FB
         fetchTeacherUidAndLessons();
 
         return view;
     }
 
     /**
-     * Sets up the RecyclerView and its adapter.
+     * Sets up the RecyclerView and initializes UI components.
+     *
+     * @param view The root view of the fragment.
      */
     private void initViews(View view)
     {
         studentRvScheduledLessons = view.findViewById(R.id.studentRvScheduledLessons);
         pbLoading = view.findViewById(R.id.studentHomePb);
         layoutEmptyState = view.findViewById(R.id.studentHomeEmptyStateLayout);
+        btnSchedule = view.findViewById(R.id.btnSchedule);
 
         studentRvScheduledLessons.setLayoutManager(new LinearLayoutManager(getContext()));
         lessonList = new ArrayList<>();
         adapter = new StudentLessonAdapter(lessonList);
         studentRvScheduledLessons.setAdapter(adapter);
+    }
+
+    /**
+     * Sets up click listeners for the interactive UI elements.
+     */
+    private void setupListeners()
+    {
+        btnSchedule.setOnClickListener(v -> {
+            if (teacherUid != null && !teacherUid.isEmpty())
+            {
+                if (getActivity() instanceof StudentMainActivity)
+                {
+                    ((StudentMainActivity) getActivity()).replaceFragment(
+                            ScheduleLessonFragment.newInstance(teacherUid),
+                            true,
+                            "SCHEDULE_LESSON"
+                    );
+                }
+            }
+            else
+            {
+                Toast.makeText(getContext(), "You don't have a teacher assigned yet.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
@@ -82,75 +116,72 @@ public class StudentHomeFragment extends Fragment
     {
         if (FBRef.uid == null) return;
 
-        // Displays loading bar, and hides other elements
         pbLoading.setVisibility(View.VISIBLE);
         studentRvScheduledLessons.setVisibility(View.GONE);
         layoutEmptyState.setVisibility(View.GONE);
 
-        // Reaching the teacherUid field of the student
         FBRef.refStudents.child(FBRef.uid).child("teacherUid").
                 addListenerForSingleValueEvent(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot)
-            {
-                String teacherUid = snapshot.getValue(String.class);
-
-                // If the student has a teacher, continues to fetch the lessons
-                if (teacherUid != null && !teacherUid.isEmpty())
                 {
-                    loadScheduledLessons(teacherUid);
-                }
-                else
-                {
-                    // If there is no teacher, shows the empty state
-                    updateUIState();
-                }
-            }
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot)
+                    {
+                        teacherUid = snapshot.getValue(String.class);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error)
-            {
-                pbLoading.setVisibility(View.GONE);
-            }
-        });
+                        if (teacherUid != null && !teacherUid.isEmpty())
+                        {
+                            loadScheduledLessons(teacherUid);
+                        }
+                        else
+                        {
+                            updateUIState();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error)
+                    {
+                        pbLoading.setVisibility(View.GONE);
+                    }
+                });
     }
 
     /**
-     * Loads the student's lessons from FB
+     * Loads the student's accepted lessons from Firebase.
      * Path: Lessons -> Scheduled -> TeacherUID -> StudentUID -> LessonNumber
+     *
+     * @param teacherUid The UID of the assigned teacher.
      */
     private void loadScheduledLessons(String teacherUid)
     {
         FBRef.refScheduledLessons.child(teacherUid).child(FBRef.uid).addValueEventListener(
                 new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot)
-            {
-                lessonList.clear();
-
-                // Goes over the lessons
-                for (DataSnapshot lessonSnapshot : snapshot.getChildren())
                 {
-                    ScheduledLesson lesson = lessonSnapshot.getValue(ScheduledLesson.class);
-
-                    if (lesson != null && lesson.getLessonStatus() == ScheduledLesson.ACCEPTED)
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot)
                     {
-                        lessonList.add(lesson);
+                        lessonList.clear();
+
+                        for (DataSnapshot lessonSnapshot : snapshot.getChildren())
+                        {
+                            ScheduledLesson lesson = lessonSnapshot.getValue(ScheduledLesson.class);
+
+                            if (lesson != null && lesson.getLessonStatus() == ScheduledLesson.ACCEPTED)
+                            {
+                                lessonList.add(lesson);
+                            }
+                        }
+
+                        sortLessonsByDate();
+                        updateUIState();
                     }
-                }
 
-                sortLessonsByDate();
-                updateUIState();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error)
-            {
-                pbLoading.setVisibility(View.GONE);
-            }
-        });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error)
+                    {
+                        pbLoading.setVisibility(View.GONE);
+                    }
+                });
     }
 
     /**

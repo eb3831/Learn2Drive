@@ -2,7 +2,6 @@ package com.example.learn2drive.Fragments;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,10 +9,13 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +29,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,9 +43,11 @@ import java.util.Locale;
  */
 public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.OnTimeSlotStatusChangeListener
 {
+
     private ImageView btnBack;
     private TextView etDate, etStartHour, etEndHour;
-    private TextView btnDuration60, btnDuration45, tvAvailableSlotsLabel;
+    private Switch switchDuration;
+    private TextView tvAvailableSlotsLabel;
     private LinearLayout btnGenerateSlots, hoursManagerEmptyLayout;
     private RecyclerView rvTimeSlots;
     private FrameLayout pbHoursManagerOverlay;
@@ -82,7 +87,6 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
         return new HoursManagerFragment();
     }
 
-
     /**
      * Initializes all UI components and sets up the RecyclerView.
      *
@@ -94,8 +98,7 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
         etDate = view.findViewById(R.id.etDate);
         etStartHour = view.findViewById(R.id.etStartHour);
         etEndHour = view.findViewById(R.id.etEndHour);
-        btnDuration60 = view.findViewById(R.id.btnDuration60);
-        btnDuration45 = view.findViewById(R.id.btnDuration45);
+        switchDuration = view.findViewById(R.id.switchDuration);
         btnGenerateSlots = view.findViewById(R.id.btnGenerateSlots);
         tvAvailableSlotsLabel = view.findViewById(R.id.tvAvailableSlotsLabel);
         hoursManagerEmptyLayout = view.findViewById(R.id.hoursManagerEmptyLayout);
@@ -103,7 +106,7 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
         pbHoursManagerOverlay = view.findViewById(R.id.pbHoursManagerOverlay);
 
         timeSlotList = new ArrayList<>();
-        timeSlotAdapter = new TimeSlotAdapter(requireContext(), timeSlotList, this);
+        timeSlotAdapter = new TimeSlotAdapter(requireContext(), timeSlotList, false, this);
         rvTimeSlots.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvTimeSlots.setAdapter(timeSlotAdapter);
     }
@@ -117,6 +120,9 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         selectedDate = sdf.format(new Date());
         etDate.setText(selectedDate);
+
+        // Match the default state of the switch in XML (checked = true -> 60 min)
+        selectedDuration = switchDuration.isChecked() ? 60 : 45;
 
         loadTimeSlotsFromFirebase(selectedDate);
     }
@@ -134,9 +140,10 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
 
         etEndHour.setOnClickListener(v -> showTimePicker(etEndHour));
 
-        btnDuration45.setOnClickListener(v -> updateDurationSelection(45));
-
-        btnDuration60.setOnClickListener(v -> updateDurationSelection(60));
+        switchDuration.setOnCheckedChangeListener((buttonView, isChecked) ->
+        {
+            selectedDuration = isChecked ? 60 : 45;
+        });
 
         btnGenerateSlots.setOnClickListener(v -> handleGenerateClick());
     }
@@ -148,19 +155,19 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
     private void showDatePicker()
     {
         Calendar calendar = Calendar.getInstance();
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
         try
         {
             if (!selectedDate.isEmpty())
             {
-                java.util.Date date = sdf.parse(selectedDate);
+                Date date = sdf.parse(selectedDate);
                 if (date != null)
                 {
                     calendar.setTime(date);
                 }
             }
-        } catch (java.text.ParseException e)
+        } catch (ParseException e)
         {
             e.printStackTrace();
         }
@@ -169,7 +176,7 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        android.app.DatePickerDialog datePickerDialog = new android.app.DatePickerDialog(requireContext(), (view, selectedYear, selectedMonth, selectedDay) ->
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, selectedYear, selectedMonth, selectedDay) ->
         {
             Calendar selectedCalendar = Calendar.getInstance();
             selectedCalendar.set(selectedYear, selectedMonth, selectedDay);
@@ -187,7 +194,8 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
 
     /**
      * Displays a TimePickerDialog to select start or end hours.
-     * * @param targetTextView The TextView to update with the selected time.
+     *
+     * @param targetTextView The TextView to update with the selected time.
      */
     private void showTimePicker(TextView targetTextView)
     {
@@ -205,31 +213,6 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
     }
 
     /**
-     * Updates the UI to reflect the selected lesson duration.
-     * * @param duration The selected duration in minutes (45 or 60).
-     */
-    private void updateDurationSelection(int duration)
-    {
-        selectedDuration = duration;
-
-        if (duration == 45)
-        {
-            btnDuration45.setBackgroundResource(R.drawable.bg_button_black);
-            btnDuration45.setTextColor(Color.parseColor("#FFFFFF"));
-
-            btnDuration60.setBackgroundResource(R.drawable.bg_button_gray);
-            btnDuration60.setTextColor(Color.parseColor("#000000"));
-        } else
-        {
-            btnDuration60.setBackgroundResource(R.drawable.bg_button_black);
-            btnDuration60.setTextColor(Color.parseColor("#FFFFFF"));
-
-            btnDuration45.setBackgroundResource(R.drawable.bg_button_gray);
-            btnDuration45.setTextColor(Color.parseColor("#000000"));
-        }
-    }
-
-    /**
      * Handles the click event for the generate slots button.
      * Validates input and shows a confirmation dialog before generating.
      */
@@ -240,11 +223,11 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
 
         if (startText.isEmpty() || endText.isEmpty())
         {
-            android.widget.Toast.makeText(requireContext(), "Please select start and end hours", android.widget.Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please select start and end hours", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        new AlertDialog.Builder(requireContext())
                 .setTitle("Generate Time Slots")
                 .setMessage("This action will generate new time slots and overwrite any existing slots for " + selectedDate + ".\nAre you sure you want to proceed?")
                 .setPositiveButton("Generate", (dialog, which) -> generateSlotsAlgorithm(startText, endText))
@@ -270,7 +253,7 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
 
             if (startMins >= endMins)
             {
-                android.widget.Toast.makeText(requireContext(), "Start hour must be before end hour", android.widget.Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Start hour must be before end hour", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -300,7 +283,7 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
 
         } catch (Exception e)
         {
-            android.widget.Toast.makeText(requireContext(), "Error parsing time", android.widget.Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Error parsing time", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -323,8 +306,7 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
     }
 
     /**
-     * Saves the newly generated time slots to Firebase.
-     * Prevents the Race Condition bug by temporarily detaching the listener.
+     * Saves the newly generated time slots to Firebase atomically.
      */
     private void saveTimeSlotsToFirebase()
     {
@@ -342,16 +324,25 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
             dayRef.removeEventListener(timeSlotsListener);
         }
 
-        dayRef.removeValue().addOnCompleteListener(task ->
+        java.util.Map<String, Object> slotsMap = new java.util.HashMap<>();
+        for (TimeSlot slot : timeSlotList)
         {
+            slotsMap.put(slot.getStartTime(), slot);
+        }
 
-            for (TimeSlot slot : timeSlotList)
+        dayRef.setValue(slotsMap).addOnCompleteListener(task ->
+        {
+            pbHoursManagerOverlay.setVisibility(View.GONE);
+
+            if (task.isSuccessful())
             {
-                dayRef.child(slot.getStartTime()).setValue(slot);
+                android.widget.Toast.makeText(requireContext(), "Slots updated successfully", android.widget.Toast.LENGTH_SHORT).show();
             }
 
-            pbHoursManagerOverlay.setVisibility(View.GONE);
-            android.widget.Toast.makeText(requireContext(), "Slots updated successfully", android.widget.Toast.LENGTH_SHORT).show();
+            else
+            {
+                android.widget.Toast.makeText(requireContext(), "Failed to save slots", android.widget.Toast.LENGTH_SHORT).show();
+            }
 
             if (timeSlotsListener != null)
             {
@@ -362,7 +353,7 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
 
     /**
      * Loads time slots from Firebase for the selected date.
-     * Attach a ValueEventListener to keep data synced.
+     * Attaches a ValueEventListener to keep data synced.
      *
      * @param date The selected date in dd-MM-yyyy format.
      */
@@ -409,7 +400,7 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
             public void onCancelled(@NonNull DatabaseError error)
             {
                 pbHoursManagerOverlay.setVisibility(View.GONE);
-                android.widget.Toast.makeText(requireContext(), "Failed to load schedule", android.widget.Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Failed to load schedule", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -429,6 +420,12 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
                 .child("status");
 
         slotStatusRef.setValue(newStatus);
+    }
+
+    @Override
+    public void onStudentTimeSlotClicked(TimeSlot timeSlot)
+    {
+        // Intentionally left blank for this fragment
     }
 
     @Override

@@ -24,19 +24,22 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
     private List<TimeSlot> timeSlotList;
     private Context context;
     private final OnTimeSlotStatusChangeListener listener;
+    private boolean isStudentView;
 
     /**
-     * Interface to handle availability switch toggle events.
+     * Interface to handle events in the adapter.
      */
     public interface OnTimeSlotStatusChangeListener
     {
         void onStatusChanged(TimeSlot timeSlot, String newStatus, int position);
+        void onStudentTimeSlotClicked(TimeSlot timeSlot);
     }
 
-    public TimeSlotAdapter(Context context, List<TimeSlot> timeSlotList, OnTimeSlotStatusChangeListener listener)
+    public TimeSlotAdapter(Context context, List<TimeSlot> timeSlotList, boolean isStudentView, OnTimeSlotStatusChangeListener listener)
     {
         this.context = context;
         this.timeSlotList = timeSlotList;
+        this.isStudentView = isStudentView;
         this.listener = listener;
     }
 
@@ -53,80 +56,97 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
     {
         TimeSlot currentSlot = timeSlotList.get(position);
 
+        // Always display the time, regardless of whether it's a student or teacher
         String timeText = currentSlot.getStartTime() + " - " + currentSlot.getEndTime();
         holder.tvTimeRange.setText(timeText);
 
-        switch (currentSlot.getStatus())
+        if (isStudentView)
         {
-            case TimeSlot.STATUS_BOOKED:
-                holder.tvStatusBadge.setVisibility(View.VISIBLE);
-                holder.tvStatusBadge.setText("Booked");
-                holder.switchAvailability.setVisibility(View.GONE);
-                setNormalStyle(holder);
-                break;
+            // Student Mode: Hide controls and make the row clickable
+            holder.switchAvailability.setVisibility(View.GONE);
+            holder.tvStatusBadge.setVisibility(View.GONE);
+            setNormalStyle(holder);
 
-            case TimeSlot.STATUS_UNAVAILABLE:
-                holder.tvStatusBadge.setVisibility(View.GONE);
-                holder.switchAvailability.setVisibility(View.VISIBLE);
-                holder.switchAvailability.setEnabled(true);
-                holder.switchAvailability.setChecked(false);
-                setDisabledStyle(holder);
-                break;
-
-            case TimeSlot.STATUS_AVAILABLE:
-            default:
-                holder.tvStatusBadge.setVisibility(View.GONE);
-                holder.switchAvailability.setVisibility(View.VISIBLE);
-                holder.switchAvailability.setEnabled(true);
-                holder.switchAvailability.setChecked(true);
-                setNormalStyle(holder);
-                break;
+            holder.itemView.setOnClickListener(v -> {
+                if (listener != null)
+                {
+                    listener.onStudentTimeSlotClicked(currentSlot);
+                }
+            });
         }
-
-        holder.switchAvailability.setOnClickListener(v ->
+        else
         {
-            boolean isCheckedNow = holder.switchAvailability.isChecked();
+            // Teacher Mode: Show controls based on status
+            switch (currentSlot.getStatus())
+            {
+                case TimeSlot.STATUS_BOOKED:
+                    holder.tvStatusBadge.setVisibility(View.VISIBLE);
+                    holder.tvStatusBadge.setText("Booked");
+                    holder.switchAvailability.setVisibility(View.GONE);
+                    setNormalStyle(holder);
+                    break;
 
-            boolean previousState = !isCheckedNow;
+                case TimeSlot.STATUS_REQUESTED:
+                    holder.tvStatusBadge.setVisibility(View.VISIBLE);
+                    holder.tvStatusBadge.setText("Requested");
+                    holder.switchAvailability.setVisibility(View.GONE);
+                    setNormalStyle(holder);
+                    break;
 
-            String dialogTitle = "Change Time Slot Status";
-            String dialogMessage = isCheckedNow
-                    ? "Do you want to mark this time slot as available for lessons?"
-                    : "Do you want to cancel this time slot? Students will not be able to book a lesson during this time.";
+                case TimeSlot.STATUS_UNAVAILABLE:
+                    holder.tvStatusBadge.setVisibility(View.GONE);
+                    holder.switchAvailability.setVisibility(View.VISIBLE);
+                    holder.switchAvailability.setEnabled(true);
+                    holder.switchAvailability.setChecked(false);
+                    setDisabledStyle(holder);
+                    break;
 
-            new AlertDialog.Builder(context)
-                    .setTitle(dialogTitle)
-                    .setMessage(dialogMessage)
-                    .setPositiveButton("Yes, Confirm", (dialog, which) ->
-                    {
-                        // User confirmed! Update the object and the UI
-                        String newStatus = isCheckedNow ? TimeSlot.STATUS_AVAILABLE : TimeSlot.STATUS_UNAVAILABLE;
-                        currentSlot.setStatus(newStatus);
+                case TimeSlot.STATUS_AVAILABLE:
+                default:
+                    holder.tvStatusBadge.setVisibility(View.GONE);
+                    holder.switchAvailability.setVisibility(View.VISIBLE);
+                    holder.switchAvailability.setEnabled(true);
+                    holder.switchAvailability.setChecked(true);
+                    setNormalStyle(holder);
+                    break;
+            }
 
-                        if (isCheckedNow)
+            holder.switchAvailability.setOnClickListener(v ->
+            {
+                boolean isCheckedNow = holder.switchAvailability.isChecked();
+                boolean previousState = !isCheckedNow;
+
+                String dialogTitle = "Change Time Slot Status";
+                String dialogMessage = isCheckedNow
+                        ? "Do you want to mark this time slot as available for lessons?"
+                        : "Do you want to cancel this time slot? Students will not be able to book a lesson during this time.";
+
+                new AlertDialog.Builder(context)
+                        .setTitle(dialogTitle)
+                        .setMessage(dialogMessage)
+                        .setPositiveButton("Yes, Confirm", (dialog, which) ->
                         {
-                            setNormalStyle(holder);
-                        } else
-                        {
-                            setDisabledStyle(holder);
-                        }
+                            String newStatus = isCheckedNow ? TimeSlot.STATUS_AVAILABLE : TimeSlot.STATUS_UNAVAILABLE;
+                            currentSlot.setStatus(newStatus);
 
-                        // Notify the fragment to update Firebase
-                        if (listener != null)
-                        {
-                            listener.onStatusChanged(currentSlot, newStatus, position);
-                        }
-                    })
-                    .setNegativeButton("Cancel", (dialog, which) ->
-                    {
-                        holder.switchAvailability.setChecked(previousState);
-                    })
-                    .setOnCancelListener(dialog ->
-                    {
-                        holder.switchAvailability.setChecked(previousState);
-                    })
-                    .show();
-        });
+                            if (isCheckedNow)
+                            {
+                                setNormalStyle(holder);
+                            } else
+                            {
+                                setDisabledStyle(holder);
+                            }
+
+                            if (listener != null)
+                            {
+                                listener.onStatusChanged(currentSlot, newStatus, position);
+                            }
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> holder.switchAvailability.setChecked(previousState))
+                        .setOnCancelListener(dialog -> holder.switchAvailability.setChecked(previousState))
+                        .show();
+            });
+        }
     }
 
     @Override
@@ -174,4 +194,4 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
             switchAvailability = itemView.findViewById(R.id.switchAvailability);
         }
     }
-}
+}  

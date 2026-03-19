@@ -8,6 +8,7 @@ public class TimeSlot
     public static final String STATUS_AVAILABLE = "AVAILABLE";
     public static final String STATUS_UNAVAILABLE = "UNAVAILABLE";
     public static final String STATUS_BOOKED = "BOOKED";
+    public static final String STATUS_REQUESTED = "REQUESTED";
 
     private int duration;
     private String status;

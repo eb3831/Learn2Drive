@@ -31,10 +31,20 @@ public class MasterActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
     }
 
+    /**
+     * Replaces the current fragment with a new one in the specified container.
+     *
+     * @param fragment       The new fragment to display.
+     * @param addToBackStack Whether to add this transaction to the back stack.
+     * @param tag            The tag for the fragment.
+     * @param containerId    The ID of the layout container where the fragment should be placed.
+     */
     public void replaceFragment(Fragment fragment, boolean addToBackStack, String tag, int containerId)
     {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.teacherFragmentContainer, fragment, tag);
+
+        // Fix: Use the dynamic containerId instead of the hardcoded one
+        transaction.replace(containerId, fragment, tag);
 
         if (addToBackStack)
         {
