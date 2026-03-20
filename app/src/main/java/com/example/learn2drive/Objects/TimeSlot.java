@@ -108,4 +108,22 @@ public class TimeSlot
     {
         this.endTime = endTime;
     }
+
+    /**
+     * Checks if the time slot is currently pending approval.
+     *
+     * @return true if status is REQUESTED, false otherwise.
+     */
+    public boolean isRequested() {
+        return STATUS_REQUESTED.equals(this.status);
+    }
+
+    /**
+     * Checks if the time slot is available for booking.
+     *
+     * @return true if status is AVAILABLE, false otherwise.
+     */
+    public boolean isAvailable() {
+        return STATUS_AVAILABLE.equals(this.status);
+    }
 }

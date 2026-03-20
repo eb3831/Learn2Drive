@@ -199,10 +199,7 @@ public class ScheduleLessonFragment extends Fragment implements TimeSlotAdapter.
             timetableRef.removeEventListener(timetableListener);
         }
 
-        timetableRef = refTeachersTimeTable
-                .child(teacherUid)
-                .child("Available Hours")
-                .child(dateStr);
+        timetableRef = refTeachersTimeTable.child(teacherUid).child(dateStr);
 
         timetableListener = new ValueEventListener()
         {
@@ -214,7 +211,7 @@ public class ScheduleLessonFragment extends Fragment implements TimeSlotAdapter.
                 for (DataSnapshot timeSnapshot : snapshot.getChildren())
                 {
                     TimeSlot slot = timeSnapshot.getValue(TimeSlot.class);
-                    if (slot != null && TimeSlot.STATUS_AVAILABLE.equals(slot.getStatus()))
+                    if (slot != null && slot.isAvailable())
                     {
                         timeSlotList.add(slot);
                     }
@@ -287,7 +284,6 @@ public class ScheduleLessonFragment extends Fragment implements TimeSlotAdapter.
 
         DatabaseReference slotRef = refTeachersTimeTable
                 .child(teacherUid)
-                .child("Available Hours")
                 .child(selectedDateStr)
                 .child(timeSlot.getStartTime());
 

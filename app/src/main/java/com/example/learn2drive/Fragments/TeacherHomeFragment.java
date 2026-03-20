@@ -38,7 +38,7 @@ public class TeacherHomeFragment extends Fragment
     private SimpleDateFormat dateTimeFormatter;
     private ProgressBar pbLoading;
     private LinearLayout layoutEmptyState;
-    private LinearLayout btnHoursManager;
+    private LinearLayout btnHoursManager, btnLessonRequests;
 
     public TeacherHomeFragment()
     {
@@ -73,6 +73,7 @@ public class TeacherHomeFragment extends Fragment
         pbLoading = view.findViewById(R.id.teacherHomePb);
         layoutEmptyState = view.findViewById(R.id.teacherHomeEmptyStateLayout);
         btnHoursManager = view.findViewById(R.id.btnHoursManager);
+        btnLessonRequests = view.findViewById(R.id.btnLessonRequests);
 
         teacherRvScheduledLessons.setLayoutManager(new LinearLayoutManager(getContext()));
         lessonList = new ArrayList<>();

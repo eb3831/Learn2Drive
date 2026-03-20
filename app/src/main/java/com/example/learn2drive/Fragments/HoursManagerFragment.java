@@ -34,8 +34,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Fragment responsible for allowing teachers to manage their working hours.
@@ -312,9 +314,8 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
     {
         if (FBRef.uid == null) return;
 
-        DatabaseReference dayRef = FBRef.FB_DB.getReference("Teachers Timetable")
+        DatabaseReference dayRef = FBRef.refTeachersTimeTable
                 .child(FBRef.uid)
-                .child("Available Hours")
                 .child(selectedDate);
 
         pbHoursManagerOverlay.setVisibility(View.VISIBLE);
@@ -324,7 +325,7 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
             dayRef.removeEventListener(timeSlotsListener);
         }
 
-        java.util.Map<String, Object> slotsMap = new java.util.HashMap<>();
+        Map<String, Object> slotsMap = new HashMap<>();
         for (TimeSlot slot : timeSlotList)
         {
             slotsMap.put(slot.getStartTime(), slot);
@@ -367,9 +368,8 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
             currentDayRef.removeEventListener(timeSlotsListener);
         }
 
-        currentDayRef = FBRef.FB_DB.getReference("Teachers Timetable")
+        currentDayRef = FBRef.refTeachersTimeTable
                 .child(FBRef.uid)
-                .child("Available Hours")
                 .child(date);
 
         pbHoursManagerOverlay.setVisibility(View.VISIBLE);
@@ -412,9 +412,8 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
     {
         if (FBRef.uid == null) return;
 
-        DatabaseReference slotStatusRef = FBRef.FB_DB.getReference("Teachers Timetable")
+        DatabaseReference slotStatusRef = FBRef.refTeachersTimeTable
                 .child(FBRef.uid)
-                .child("Available Hours")
                 .child(selectedDate)
                 .child(timeSlot.getStartTime())
                 .child("status");
