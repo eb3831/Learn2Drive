@@ -83,6 +83,10 @@ public class TeacherHomeFragment extends Fragment
         btnHoursManager.setOnClickListener(v -> ((TeacherMainActivity) requireActivity()).
                 replaceFragment(HoursManagerFragment.newInstance(), true,
                         "HoursManagerFragment"));
+
+        btnLessonRequests.setOnClickListener(v -> ((TeacherMainActivity) requireActivity()).
+                replaceFragment(LessonRequestsFragment.newInstance(), true,
+                        "LessonRequestsFragment"));
     }
 
     /**
@@ -111,7 +115,7 @@ public class TeacherHomeFragment extends Fragment
                     {
                         ScheduledLesson lesson = lessonSnapshot.getValue(ScheduledLesson.class);
 
-                        if (lesson != null && lesson.getLessonStatus() == ScheduledLesson.ACCEPTED)
+                        if (lesson != null)
                         {
                             lessonList.add(lesson);
                         }

@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -84,6 +85,7 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
                             Glide.with(context)
                                     .load(uri)
                                     .placeholder(R.drawable.profile) // Shows this while loading
+                                    .circleCrop()
                                     .into(holder.ivStudentProfile);
                         }
                     })
@@ -118,7 +120,7 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
     public static class RequestViewHolder extends RecyclerView.ViewHolder
     {
         TextView tvRequestDate, tvRequestTime, tvStudentName, tvStudentId;
-        ShapeableImageView ivStudentProfile;
+        ImageView ivStudentProfile;
         AppCompatButton btnAccept, btnDecline;
 
         public RequestViewHolder(@NonNull View itemView)

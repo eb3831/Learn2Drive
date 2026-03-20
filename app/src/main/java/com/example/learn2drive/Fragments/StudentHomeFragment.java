@@ -166,7 +166,7 @@ public class StudentHomeFragment extends Fragment
                         {
                             ScheduledLesson lesson = lessonSnapshot.getValue(ScheduledLesson.class);
 
-                            if (lesson != null && lesson.getLessonStatus() == ScheduledLesson.ACCEPTED)
+                            if (lesson != null)
                             {
                                 lessonList.add(lesson);
                             }

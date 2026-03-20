@@ -2,17 +2,12 @@ package com.example.learn2drive.Objects;
 
 public class ScheduledLesson
 {
-    public static int PENDING = 0;
-    public static int ACCEPTED = 1;
-    public static int REJECTED = 2;
-
     private int lessonNumber;
     private String teacherUID;
     private String studentUID;
     private String studentID;
     private String dateAndTime;
     private int duration;
-    private int lessonStatus;
     private String studentName;
 
     public ScheduledLesson()
@@ -23,13 +18,12 @@ public class ScheduledLesson
         this.studentID = "";
         this.dateAndTime = "";
         this.duration = 0;
-        this.lessonStatus = 0;
         this.studentName = "";
     }
 
 
     public ScheduledLesson(int lessonNumber, String teacherUID, String studentUID, String studentID,
-                           String dateAndTime, int duration, int lessonStatus, String studentName)
+                           String dateAndTime, int duration, String studentName)
     {
         this.lessonNumber = lessonNumber;
         this.teacherUID = teacherUID;
@@ -37,7 +31,6 @@ public class ScheduledLesson
         this.studentID = studentID;
         this.dateAndTime = dateAndTime;
         this.duration = duration;
-        this.lessonStatus = lessonStatus;
         this.studentName = studentName;
     }
 
@@ -98,16 +91,6 @@ public class ScheduledLesson
     public int getDuration()
     {
         return duration;
-    }
-
-    public void setLessonStatus(int lessonStatus)
-    {
-        this.lessonStatus = lessonStatus;
-    }
-
-    public int getLessonStatus()
-    {
-        return lessonStatus;
     }
 
     public void setStudentName(String studentName)

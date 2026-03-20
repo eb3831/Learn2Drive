@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -36,6 +38,8 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
     private ImageButton btnBack;
     private TextView tvPendingCount;
     private RecyclerView rvLessonRequests;
+    private ProgressBar progressBar;
+    private LinearLayout layoutEmptyState;
 
     private LessonRequestsAdapter adapter;
     private List<LessonRequestModel> requestList;
@@ -69,12 +73,24 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
         btnBack = view.findViewById(R.id.btnBack);
         tvPendingCount = view.findViewById(R.id.tvPendingCount);
         rvLessonRequests = view.findViewById(R.id.rvLessonRequests);
+        progressBar = view.findViewById(R.id.progressBar);
+        layoutEmptyState = view.findViewById(R.id.layoutEmptyState);
 
         btnBack.setOnClickListener(v -> {
             if (getActivity() != null) {
                 getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
+    }
+
+    /**
+     * Factory method to create a new instance of this fragment.
+     *
+     * @return A new instance of LessonRequestsFragment.
+     */
+    public static LessonRequestsFragment newInstance()
+    {
+        return new LessonRequestsFragment();
     }
 
     /**
@@ -89,12 +105,43 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
     }
 
     /**
+     * Updates the UI visibility based on the loading state and data availability.
+     *
+     * @param isLoading True if data is currently being loaded, false otherwise.
+     */
+    private void updateUIState(boolean isLoading)
+    {
+        if (isLoading)
+        {
+            progressBar.setVisibility(View.VISIBLE);
+            rvLessonRequests.setVisibility(View.GONE);
+            layoutEmptyState.setVisibility(View.GONE);
+        }
+        else
+        {
+            progressBar.setVisibility(View.GONE);
+            if (requestList.isEmpty())
+            {
+                rvLessonRequests.setVisibility(View.GONE);
+                layoutEmptyState.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                rvLessonRequests.setVisibility(View.VISIBLE);
+                layoutEmptyState.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    /**
      * Loads lesson requests from the Firebase Realtime Database.
      * Listens to the teacher's timetable and fetches student details for requested slots.
      */
     private void loadLessonRequests()
     {
         if (FBRef.uid == null || FBRef.uid.isEmpty()) return;
+
+        updateUIState(true);
 
         timetableListener = new ValueEventListener()
         {
@@ -103,9 +150,11 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
             {
                 requestList.clear();
                 adapter.notifyDataSetChanged();
-                updatePendingCount();
 
-                // Iterate through all dates in the timetable
+                int expectedCount = 0;
+                List<TimeSlot> pendingSlots = new ArrayList<>();
+                List<String> pendingDates = new ArrayList<>();
+
                 for (DataSnapshot dateSnapshot : snapshot.getChildren())
                 {
                     String date = dateSnapshot.getKey();
@@ -116,8 +165,23 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
 
                         if (slot != null && slot.isRequested() && slot.getStudentUid() != null)
                         {
-                            fetchStudentDataAndAddToList(slot, date);
+                            pendingSlots.add(slot);
+                            pendingDates.add(date);
+                            expectedCount++;
                         }
+                    }
+                }
+
+                if (expectedCount == 0)
+                {
+                    updatePendingCount();
+                    updateUIState(false);
+                }
+                else
+                {
+                    for (int i = 0; i < pendingSlots.size(); i++)
+                    {
+                        fetchStudentDataAndAddToList(pendingSlots.get(i), pendingDates.get(i), expectedCount);
                     }
                 }
             }
@@ -126,6 +190,7 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
             public void onCancelled(@NonNull DatabaseError error)
             {
                 Log.e("LessonRequests", "Error loading timetable: " + error.getMessage());
+                updateUIState(false);
             }
         };
 
@@ -135,10 +200,11 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
     /**
      * Fetches the student details from Firebase and adds the combined request to the list.
      *
-     * @param slot The requested time slot.
-     * @param date The date of the request.
+     * @param slot          The requested time slot.
+     * @param date          The date of the request.
+     * @param expectedTotal The total number of requests expected to be loaded.
      */
-    private void fetchStudentDataAndAddToList(TimeSlot slot, String date)
+    private void fetchStudentDataAndAddToList(TimeSlot slot, String date, int expectedTotal)
     {
         FBRef.refStudents.child(slot.getStudentUid()).addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -153,12 +219,18 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
                     adapter.notifyDataSetChanged();
                     updatePendingCount();
                 }
+
+                if (requestList.size() == expectedTotal)
+                {
+                    updateUIState(false);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error)
             {
                 Log.e("LessonRequests", "Error loading student: " + error.getMessage());
+                updateUIState(false);
             }
         });
     }
@@ -187,11 +259,9 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
                     TimeSlot slot = request.getTimeSlot();
                     Student student = request.getStudent();
 
-                    // Update the TimeSlot status to BOOKED
                     slot.setStatus(TimeSlot.STATUS_BOOKED);
                     FBRef.refTeachersTimeTable.child(teacherId).child(date).child(slot.getStartTime()).setValue(slot);
 
-                    // Query Firebase to count existing scheduled lessons for this student
                     FBRef.refScheduledLessons.child(teacherId).child(student.getUid())
                             .addListenerForSingleValueEvent(new ValueEventListener()
                             {
@@ -211,11 +281,9 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
                                             student.getIdNumber(),
                                             dateAndTime,
                                             slot.getDuration(),
-                                            ScheduledLesson.ACCEPTED,
                                             student.getFullName()
                                     );
 
-                                    // Save the new lesson using the DateAndTime as the unique key
                                     FBRef.refScheduledLessons.child(teacherId).
                                             child(student.getUid()).child(dateAndTime).
                                             setValue(newLesson);
