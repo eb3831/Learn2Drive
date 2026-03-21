@@ -1,5 +1,7 @@
 package com.example.learn2drive.Objects;
 
+import com.google.firebase.database.Exclude; // IMPORTANT: Add this import
+
 /**
  * Represents a single time slot for a teacher's schedule.
  */
@@ -111,19 +113,25 @@ public class TimeSlot
 
     /**
      * Checks if the time slot is currently pending approval.
+     * Excluded from Firebase serialization to prevent creating redundant database fields.
      *
      * @return true if status is REQUESTED, false otherwise.
      */
-    public boolean isRequested() {
+    @Exclude
+    public boolean isRequested()
+    {
         return STATUS_REQUESTED.equals(this.status);
     }
 
     /**
      * Checks if the time slot is available for booking.
+     * Excluded from Firebase serialization to prevent creating redundant database fields.
      *
      * @return true if status is AVAILABLE, false otherwise.
      */
-    public boolean isAvailable() {
+    @Exclude
+    public boolean isAvailable()
+    {
         return STATUS_AVAILABLE.equals(this.status);
     }
 }
