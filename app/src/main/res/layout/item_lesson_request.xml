@@ -79,7 +79,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/ivStudentProfile"
+            android:id="@+id/ivLessonRequestProfile"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@drawable/bg_profile_circle"

@@ -89,14 +89,15 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
 
                             Glide.with(context)
                                     .load(uri)
-                                    .placeholder(R.drawable.profile) // Shows this while loading
+                                    .placeholder(R.drawable.user) // Shows this while loading
                                     .circleCrop()
+                                    .error(R.drawable.user)
                                     .into(holder.ivStudentProfile);
                         }
                     })
                     .addOnFailureListener(e ->
                     {
-                        holder.ivStudentProfile.setImageResource(R.drawable.profile);
+                        holder.ivStudentProfile.setImageResource(R.drawable.user);
                     });
         }
 
@@ -140,7 +141,7 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
             tvRequestTime = itemView.findViewById(R.id.tvRequestTime);
             tvStudentName = itemView.findViewById(R.id.tvStudentName);
             tvStudentId = itemView.findViewById(R.id.tvStudentId);
-            ivStudentProfile = itemView.findViewById(R.id.ivStudentProfile);
+            ivStudentProfile = itemView.findViewById(R.id.ivLessonRequestProfile);
             btnAccept = itemView.findViewById(R.id.btnAccept);
             btnDecline = itemView.findViewById(R.id.btnDecline);
         }

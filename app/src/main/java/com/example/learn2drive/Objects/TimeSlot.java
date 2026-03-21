@@ -1,6 +1,6 @@
 package com.example.learn2drive.Objects;
 
-import com.google.firebase.database.Exclude; // IMPORTANT: Add this import
+import com.google.firebase.database.Exclude;
 
 /**
  * Represents a single time slot for a teacher's schedule.
