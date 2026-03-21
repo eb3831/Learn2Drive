@@ -60,7 +60,7 @@ public class StudentHomeFragment extends Fragment
         initViews(view);
         setupListeners();
 
-        dateTimeFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
+        dateTimeFormatter = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault());
 
         fetchTeacherUidAndLessons();
 
