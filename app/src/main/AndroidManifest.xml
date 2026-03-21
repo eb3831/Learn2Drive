@@ -13,9 +13,12 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RTC_WAKEUP" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" /> <!-- הוספת queries כדי שאנדרואיד 11+ יזהה את המצלמה -->
+        android:maxSdkVersion="28" />
+
     <queries>
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
@@ -31,6 +34,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Learn2Drive">
+        <receiver
+            android:name=".Receivers.LessonReminderReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity
             android:name=".Activities.MasterActivity"
             android:exported="false" />

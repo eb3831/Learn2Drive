@@ -1,5 +1,8 @@
 package com.example.learn2drive.Fragments;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +12,14 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.learn2drive.Activities.StudentMainActivity;
 import com.example.learn2drive.Adapters.StudentLessonAdapter;
+import com.example.learn2drive.Helpers.AlarmHelper;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.ScheduledLesson;
 import com.example.learn2drive.R;
@@ -31,10 +36,12 @@ import java.util.Locale;
 
 /**
  * Fragment representing the student's home dashboard.
- * Displays upcoming lessons and provides navigation to scheduling and history.
+ * Displays upcoming lessons, handles notification permissions (legacy style), and manages database listeners.
  */
 public class StudentHomeFragment extends Fragment
 {
+    private static final int REQUEST_NOTIFICATION_PERMISSION = 102;
+
     private RecyclerView studentRvScheduledLessons;
     private StudentLessonAdapter adapter;
     private ArrayList<ScheduledLesson> lessonList;
@@ -43,6 +50,8 @@ public class StudentHomeFragment extends Fragment
     private LinearLayout layoutEmptyState;
     private LinearLayout btnSchedule;
     private String teacherUid;
+
+    private ValueEventListener scheduledLessonsListener;
 
     /**
      * Required empty public constructor.
@@ -59,6 +68,7 @@ public class StudentHomeFragment extends Fragment
 
         initViews(view);
         setupListeners();
+        checkNotificationPermission();
 
         dateTimeFormatter = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault());
 
@@ -110,6 +120,39 @@ public class StudentHomeFragment extends Fragment
     }
 
     /**
+     * Checks if the app has permission to post notifications (Android 13+).
+     * Requests permission using the legacy approach to maintain project consistency.
+     */
+    private void checkNotificationPermission()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+            {
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATION_PERMISSION);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_NOTIFICATION_PERMISSION)
+        {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                // Permission granted, alarms will be shown properly
+            }
+            else
+            {
+                Toast.makeText(getContext(), "Notifications disabled. You won't receive lesson reminders.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    /**
      * Fetches the teacher's UID and loads scheduled lessons.
      */
     private void fetchTeacherUidAndLessons()
@@ -147,41 +190,48 @@ public class StudentHomeFragment extends Fragment
     }
 
     /**
-     * Loads the student's accepted lessons from Firebase.
-     * Path: Lessons -> Scheduled -> TeacherUID -> StudentUID -> LessonNumber
+     * Loads the student's scheduled lessons from Firebase and manages the listener.
+     * Path: Lessons -> Scheduled -> TeacherUID -> StudentUID -> DateAndTime
      *
      * @param teacherUid The UID of the assigned teacher.
      */
     private void loadScheduledLessons(String teacherUid)
     {
-        FBRef.refScheduledLessons.child(teacherUid).child(FBRef.uid).addValueEventListener(
-                new ValueEventListener()
+        scheduledLessonsListener = new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot)
+            {
+                lessonList.clear();
+
+                for (DataSnapshot lessonSnapshot : snapshot.getChildren())
                 {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot)
+                    ScheduledLesson lesson = lessonSnapshot.getValue(ScheduledLesson.class);
+
+                    if (lesson != null)
                     {
-                        lessonList.clear();
-
-                        for (DataSnapshot lessonSnapshot : snapshot.getChildren())
-                        {
-                            ScheduledLesson lesson = lessonSnapshot.getValue(ScheduledLesson.class);
-
-                            if (lesson != null)
-                            {
-                                lessonList.add(lesson);
-                            }
-                        }
-
-                        sortLessonsByDate();
-                        updateUIState();
+                        lessonList.add(lesson);
                     }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error)
-                    {
-                        pbLoading.setVisibility(View.GONE);
-                    }
-                });
+                sortLessonsByDate();
+                updateUIState();
+
+                // Schedule alarms for all future lessons
+                for (ScheduledLesson lesson : lessonList)
+                {
+                    AlarmHelper.scheduleLessonReminder(requireContext(), lesson);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error)
+            {
+                pbLoading.setVisibility(View.GONE);
+            }
+        };
+
+        FBRef.refScheduledLessons.child(teacherUid).child(FBRef.uid).addValueEventListener(scheduledLessonsListener);
     }
 
     /**
@@ -226,5 +276,16 @@ public class StudentHomeFragment extends Fragment
                 }
             }
         });
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+
+        if (scheduledLessonsListener != null && teacherUid != null && FBRef.uid != null)
+        {
+            FBRef.refScheduledLessons.child(teacherUid).child(FBRef.uid).removeEventListener(scheduledLessonsListener);
+        }
     }
 }
