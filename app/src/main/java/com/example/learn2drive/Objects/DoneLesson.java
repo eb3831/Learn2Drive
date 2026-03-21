@@ -11,10 +11,9 @@ public class DoneLesson extends ScheduledLesson
     }
 
     public DoneLesson(int lessonNumber, String teacherUID, String studentUID, String studentID,
-                      String dateAndTime, int duration, int lessonStatus, String studentName,
-                      Payment payment)
+                      String dateAndTime, int duration, String studentName, Payment payment)
     {
-        super(lessonNumber, teacherUID, studentUID, studentID, dateAndTime, duration, lessonStatus,
+        super(lessonNumber, teacherUID, studentUID, studentID, dateAndTime, duration,
                 studentName);
         this.payment = payment;
     }

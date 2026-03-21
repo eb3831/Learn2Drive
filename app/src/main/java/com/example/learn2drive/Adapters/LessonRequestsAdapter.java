@@ -17,7 +17,6 @@ import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.LessonRequestModel;
 import com.example.learn2drive.R;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 
@@ -33,6 +32,7 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
     public interface OnRequestClickListener
     {
         void onAcceptClick(LessonRequestModel request);
+
         void onDeclineClick(LessonRequestModel request);
     }
 
@@ -79,9 +79,14 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
 
             // Fetch and load profile picture using Glide and Firebase Storage
             FBRef.refProfilePics.child(currentRequest.getStudent().getUid()).child("profile.jpg").getDownloadUrl()
-                    .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    .addOnSuccessListener(new OnSuccessListener<Uri>()
+                    {
                         @Override
-                        public void onSuccess(Uri uri) {
+                        public void onSuccess(Uri uri)
+                        {
+                            holder.ivStudentProfile.setImageTintList(null);
+                            holder.ivStudentProfile.setPadding(0, 0, 0, 0);
+
                             Glide.with(context)
                                     .load(uri)
                                     .placeholder(R.drawable.profile) // Shows this while loading
@@ -89,20 +94,25 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
                                     .into(holder.ivStudentProfile);
                         }
                     })
-                    .addOnFailureListener(e -> {
+                    .addOnFailureListener(e ->
+                    {
                         holder.ivStudentProfile.setImageResource(R.drawable.profile);
                     });
         }
 
         // Set click listeners for the buttons
-        holder.btnAccept.setOnClickListener(v -> {
-            if (listener != null) {
+        holder.btnAccept.setOnClickListener(v ->
+        {
+            if (listener != null)
+            {
                 listener.onAcceptClick(currentRequest);
             }
         });
 
-        holder.btnDecline.setOnClickListener(v -> {
-            if (listener != null) {
+        holder.btnDecline.setOnClickListener(v ->
+        {
+            if (listener != null)
+            {
                 listener.onDeclineClick(currentRequest);
             }
         });
