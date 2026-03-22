@@ -16,16 +16,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#000000"
+            android:elevation="4dp"
             android:orientation="vertical"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
             android:paddingStart="24dp"
+            android:paddingTop="16dp"
             android:paddingEnd="24dp"
-            android:elevation="4dp">
+            android:paddingBottom="16dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:contentDescription="Back"
+                    android:focusable="true"
+                    android:padding="6dp"
+                    android:src="@drawable/arrow_left"
+                    app:tint="#FFFFFF" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -44,8 +58,8 @@
                             android:id="@+id/vRecordingIndicator"
                             android:layout_width="10dp"
                             android:layout_height="10dp"
-                            android:background="@drawable/bg_circle_red"
-                            android:layout_marginEnd="6dp" />
+                            android:layout_marginEnd="6dp"
+                            android:background="@drawable/bg_circle_red" />
 
                         <TextView
                             android:id="@+id/tvRecordingStatus"
@@ -61,11 +75,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="monospace"
+                        android:letterSpacing="0.1"
                         android:text="00:08:36"
                         android:textColor="#FFFFFF"
                         android:textSize="32sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.1" />
+                        android:textStyle="bold" />
                 </LinearLayout>
             </RelativeLayout>
 
@@ -102,14 +116,14 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
                     android:background="@drawable/bg_pill_black_translucent"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="12dp"
                     android:paddingTop="6dp"
                     android:paddingEnd="12dp"
-                    android:paddingBottom="6dp"
-                    android:layout_marginEnd="12dp">
+                    android:paddingBottom="6dp">
 
                     <ImageView
                         android:layout_width="16dp"

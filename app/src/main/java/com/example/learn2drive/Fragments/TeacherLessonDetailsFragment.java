@@ -1,52 +1,71 @@
 package com.example.learn2drive.Fragments;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.learn2drive.Activities.TeacherMainActivity;
+import com.example.learn2drive.Helpers.FBRef;
+import com.example.learn2drive.Objects.ScheduledLesson;
+import com.example.learn2drive.Objects.TimeSlot;
 import com.example.learn2drive.R;
+import com.google.android.material.button.MaterialButton;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link TeacherLessonDetailsFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment responsible for displaying the details of a specific scheduled lesson for a teacher.
+ * Handles starting the lesson or cancelling it with timetable updates using the FBRef helper class.
  */
 public class TeacherLessonDetailsFragment extends Fragment
 {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_LESSON = "scheduledLesson";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private ScheduledLesson currentLesson;
+    private String date = "";
+    private String time = "";
 
+    private ImageView ivBack;
+    private TextView tvLessonStatus;
+    private ImageView ivStudentProfile;
+    private ProgressBar pbProfilePicLoading;
+    private TextView tvStudentName;
+    private TextView tvLessonDate;
+    private TextView tvLessonTime;
+    private TextView tvLessonDuration;
+    private MaterialButton btnStartLesson;
+    private MaterialButton btnCancelLesson;
+    private FrameLayout lessonLoadingOverlay;
+
+    /**
+     * Required empty public constructor.
+     */
     public TeacherLessonDetailsFragment()
     {
-        // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * Factory method to create a new instance of this fragment using a ScheduledLesson object.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param lesson The complete ScheduledLesson object.
      * @return A new instance of fragment TeacherLessonDetailsFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static TeacherLessonDetailsFragment newInstance(String param1, String param2)
+    public static TeacherLessonDetailsFragment newInstance(ScheduledLesson lesson)
     {
         TeacherLessonDetailsFragment fragment = new TeacherLessonDetailsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(ARG_LESSON, lesson);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,16 +76,178 @@ public class TeacherLessonDetailsFragment extends Fragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            currentLesson = (ScheduledLesson) getArguments().getSerializable(ARG_LESSON);
+
+            if (currentLesson != null && currentLesson.getDateAndTime() != null)
+            {
+                String fullDateTime = currentLesson.getDateAndTime();
+                if (fullDateTime.contains(" "))
+                {
+                    String[] parts = fullDateTime.split(" ");
+                    date = parts[0];
+                    time = parts[1];
+                } else
+                {
+                    date = fullDateTime;
+                }
+            }
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_teacher_lesson_details, container, false);
+        View view = inflater.inflate(R.layout.fragment_teacher_lesson_details, container, false);
+        initViews(view);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (currentLesson != null)
+        {
+            populateUI();
+        }
+        setupClickListeners();
+    }
+
+    /**
+     * Initializes all UI components by finding their references from the layout.
+     *
+     * @param view The root view of the fragment containing the UI elements.
+     */
+    private void initViews(View view)
+    {
+        ivBack = view.findViewById(R.id.ivBack);
+        tvLessonStatus = view.findViewById(R.id.tvLessonStatus);
+        ivStudentProfile = view.findViewById(R.id.ivStudentProfile);
+        pbProfilePicLoading = view.findViewById(R.id.pbProfilePicLoading);
+        tvStudentName = view.findViewById(R.id.tvStudentName);
+        tvLessonDate = view.findViewById(R.id.tvLessonDate);
+        tvLessonTime = view.findViewById(R.id.tvLessonTime);
+        tvLessonDuration = view.findViewById(R.id.tvLessonDuration);
+        btnStartLesson = view.findViewById(R.id.btnStartLesson);
+        btnCancelLesson = view.findViewById(R.id.btnCancelLesson);
+        lessonLoadingOverlay = view.findViewById(R.id.lessonLoadingOverlay);
+    }
+
+    /**
+     * Populates the UI fields directly from the passed ScheduledLesson object.
+     */
+    private void populateUI()
+    {
+        tvStudentName.setText(currentLesson.getStudentName());
+        tvLessonDate.setText(date);
+        tvLessonTime.setText(time);
+        tvLessonDuration.setText(currentLesson.getDuration() + " minutes");
+    }
+
+    /**
+     * Sets up click listeners for the buttons and interactive views.
+     */
+    private void setupClickListeners()
+    {
+        ivBack.setOnClickListener(v ->
+        {
+            if (getActivity() != null)
+            {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+
+        btnStartLesson.setOnClickListener(v ->
+        {
+            // Note for developer: Pass the full object or specific details to ActiveLessonFragment as needed
+            Fragment activeLessonFragment = new ActiveLessonFragment();
+
+
+            ((TeacherMainActivity) requireActivity()).replaceFragment(activeLessonFragment, true, "ActiveLessonFragment");
+        });
+
+        btnCancelLesson.setOnClickListener(v -> showCancelLessonDialog());
+    }
+
+    /**
+     * Displays a standard AlertDialog with cancellation options for the scheduled lesson.
+     * Uses standard dialog buttons instead of a list of items.
+     */
+    private void showCancelLessonDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Cancel Lesson");
+        builder.setMessage("How would you like to cancel this lesson?");
+
+        builder.setPositiveButton("Cancel & Make Available", (dialog, which) ->
+        {
+            processLessonCancellation(true);
+        });
+
+        builder.setNegativeButton("Cancel & Mark Unavailable", (dialog, which) ->
+        {
+            processLessonCancellation(false);
+        });
+
+        builder.setNeutralButton("Back", (dialog, which) ->
+        {
+            dialog.dismiss();
+        });
+
+        builder.show();
+    }
+
+    /**
+     * Removes the scheduled lesson using FBRef and updates the teacher's timetable status.
+     *
+     * @param makeAvailable True if the time slot should be marked as AVAILABLE, false for UNAVAILABLE.
+     */
+    private void processLessonCancellation(boolean makeAvailable)
+    {
+        if (FBRef.uid == null || currentLesson == null) return;
+
+        lessonLoadingOverlay.setVisibility(View.VISIBLE);
+        String dateTimeKey = currentLesson.getDateAndTime();
+
+        // Using FBRef to remove the lesson
+        FBRef.refScheduledLessons.child(FBRef.uid).child(currentLesson.getStudentUID())
+                .child(dateTimeKey).removeValue().addOnSuccessListener(aVoid ->
+                {
+
+                    String newStatus = makeAvailable ? TimeSlot.STATUS_AVAILABLE : TimeSlot.STATUS_UNAVAILABLE;
+
+                    // Using FBRef to update the timetable status
+                    FBRef.refTeachersTimeTable.child(FBRef.uid).child(date).child(time)
+                            .child("status").setValue(newStatus).addOnSuccessListener(aVoid1 ->
+                            {
+                                // Clear the studentUid since the lesson is cancelled
+                                FBRef.refTeachersTimeTable.child(FBRef.uid).child(date).child(time)
+                                        .child("studentUid").setValue("").addOnSuccessListener(aVoid2 ->
+                                        {
+                                            lessonLoadingOverlay.setVisibility(View.GONE);
+                                            Toast.makeText(getContext(), "Lesson cancelled successfully", Toast.LENGTH_SHORT).show();
+
+                                            if (getActivity() != null)
+                                            {
+                                                getActivity().getSupportFragmentManager().popBackStack();
+                                            }
+                                        }).addOnFailureListener(e ->
+                                        {
+                                            lessonLoadingOverlay.setVisibility(View.GONE);
+                                            Toast.makeText(getContext(), "Failed to clear student UID", Toast.LENGTH_SHORT).show();
+                                        });
+
+                            }).addOnFailureListener(e ->
+                            {
+                                lessonLoadingOverlay.setVisibility(View.GONE);
+                                Toast.makeText(getContext(), "Failed to update timetable", Toast.LENGTH_SHORT).show();
+                            });
+
+                }).addOnFailureListener(e ->
+                {
+                    lessonLoadingOverlay.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Failed to cancel lesson", Toast.LENGTH_SHORT).show();
+                });
     }
 }

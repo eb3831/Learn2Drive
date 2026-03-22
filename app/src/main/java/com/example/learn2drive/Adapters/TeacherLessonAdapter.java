@@ -1,6 +1,5 @@
 package com.example.learn2drive.Adapters;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +13,33 @@ import com.example.learn2drive.R;
 
 import java.util.ArrayList;
 
-public class TeacherLessonAdapter extends
-        RecyclerView.Adapter<TeacherLessonAdapter.LessonViewHolder>
+/**
+ * Adapter for displaying a list of scheduled lessons in a RecyclerView.
+ */
+public class TeacherLessonAdapter extends RecyclerView.Adapter<TeacherLessonAdapter.LessonViewHolder>
 {
 
     private ArrayList<ScheduledLesson> lessonList;
+    private OnLessonClickListener listener;
 
-    public TeacherLessonAdapter(ArrayList<ScheduledLesson> lessonList)
+    /**
+     * Interface for handling clicks on lesson items.
+     */
+    public interface OnLessonClickListener
+    {
+        void onLessonClicked(ScheduledLesson lesson);
+    }
+
+    /**
+     * Constructor for the TeacherLessonAdapter.
+     *
+     * @param lessonList The list of scheduled lessons to display.
+     * @param listener   The listener to handle item click events.
+     */
+    public TeacherLessonAdapter(ArrayList<ScheduledLesson> lessonList, OnLessonClickListener listener)
     {
         this.lessonList = lessonList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -38,27 +55,31 @@ public class TeacherLessonAdapter extends
     {
         ScheduledLesson lesson = lessonList.get(position);
 
-        // Handles date and time string, splits it
         String fullDateTime = lesson.getDateAndTime();
 
         if (fullDateTime != null && fullDateTime.contains(" "))
         {
             String[] parts = fullDateTime.split(" ");
-            holder.tvDate.setText(parts[0]); // DD.MM.YYYY
-            holder.tvTime.setText(parts[1]); // HH:mm
-        }
-
-        else
+            holder.tvDate.setText(parts[0]);
+            holder.tvTime.setText(parts[1]);
+        } else
         {
             holder.tvDate.setText(fullDateTime);
             holder.tvTime.setText("--:--");
         }
 
-        // Sets student and lesson details
         holder.tvStudentName.setText(lesson.getStudentName());
         holder.tvIDNumber.setText(lesson.getStudentID());
         holder.tvDurationDetails.setText(lesson.getDuration() + " min");
         holder.tvDurationBadge.setText(lesson.getDuration() + "m");
+
+        holder.itemView.setOnClickListener(v ->
+        {
+            if (listener != null)
+            {
+                listener.onLessonClicked(lesson);
+            }
+        });
     }
 
     @Override
@@ -67,6 +88,9 @@ public class TeacherLessonAdapter extends
         return lessonList != null ? lessonList.size() : 0;
     }
 
+    /**
+     * ViewHolder class for lesson items.
+     */
     public static class LessonViewHolder extends RecyclerView.ViewHolder
     {
         TextView tvDate, tvTime, tvStudentName, tvIDNumber, tvDurationDetails, tvDurationBadge;

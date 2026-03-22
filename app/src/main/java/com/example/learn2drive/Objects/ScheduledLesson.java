@@ -1,6 +1,8 @@
 package com.example.learn2drive.Objects;
 
-public class ScheduledLesson
+import java.io.Serializable;
+
+public class ScheduledLesson implements Serializable
 {
     private int lessonNumber;
     private String teacherUID;

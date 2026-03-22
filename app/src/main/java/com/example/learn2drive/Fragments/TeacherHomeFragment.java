@@ -4,12 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,8 +28,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 
+/**
+ * Fragment displaying the teacher's scheduled lessons on their home screen.
+ */
 public class TeacherHomeFragment extends Fragment
 {
+
     private RecyclerView teacherRvScheduledLessons;
     private TeacherLessonAdapter adapter;
     private ArrayList<ScheduledLesson> lessonList;
@@ -46,26 +48,23 @@ public class TeacherHomeFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_teacher_home, container, false);
 
-        // Initialize UI components
         initViews(view);
 
-        // Initialize Date Formatter for sorting (Format: DD.MM.YYYY HH:mm)
         dateTimeFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
 
-        // Start listening to Firebase data
         loadScheduledLessons();
 
         return view;
     }
 
     /**
-     * Links the UI components and sets up the RecyclerView with its adapter.
+     * Links the UI components and sets up the RecyclerView with its adapter and click listeners.
+     *
+     * @param view The root view of the fragment.
      */
     private void initViews(View view)
     {
@@ -77,16 +76,30 @@ public class TeacherHomeFragment extends Fragment
 
         teacherRvScheduledLessons.setLayoutManager(new LinearLayoutManager(getContext()));
         lessonList = new ArrayList<>();
-        adapter = new TeacherLessonAdapter(lessonList);
+
+        adapter = new TeacherLessonAdapter(lessonList, lesson ->
+        {
+
+            // Passing the entire lesson object!
+            TeacherLessonDetailsFragment fragment = TeacherLessonDetailsFragment.newInstance(lesson);
+
+            if (getActivity() instanceof TeacherMainActivity)
+            {
+                ((TeacherMainActivity) getActivity()).replaceFragment(
+                        fragment,
+                        true,
+                        "TeacherLessonDetailsFragment"
+                );
+            }
+        });
+
         teacherRvScheduledLessons.setAdapter(adapter);
 
         btnHoursManager.setOnClickListener(v -> ((TeacherMainActivity) requireActivity()).
-                replaceFragment(HoursManagerFragment.newInstance(), true,
-                        "HoursManagerFragment"));
+                replaceFragment(HoursManagerFragment.newInstance(), true, "HoursManagerFragment"));
 
         btnLessonRequests.setOnClickListener(v -> ((TeacherMainActivity) requireActivity()).
-                replaceFragment(LessonRequestsFragment.newInstance(), true,
-                        "LessonRequestsFragment"));
+                replaceFragment(LessonRequestsFragment.newInstance(), true, "LessonRequestsFragment"));
     }
 
     /**
@@ -97,7 +110,6 @@ public class TeacherHomeFragment extends Fragment
     {
         if (FBRef.uid == null) return;
 
-        // STEP A: Before starting the request, show the loader and hide everything else
         pbLoading.setVisibility(View.VISIBLE);
         teacherRvScheduledLessons.setVisibility(View.GONE);
         layoutEmptyState.setVisibility(View.GONE);
@@ -123,15 +135,12 @@ public class TeacherHomeFragment extends Fragment
                 }
 
                 sortLessonsByDate();
-
-                // STEP B: Update the UI based on the results
                 updateUIState();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error)
             {
-                // Hide loader even if there is an error
                 pbLoading.setVisibility(View.GONE);
             }
         });
@@ -142,23 +151,17 @@ public class TeacherHomeFragment extends Fragment
      */
     private void updateUIState()
     {
-        // Data has arrived, so always hide the loading spinner
         pbLoading.setVisibility(View.GONE);
 
-        // No lessons found: Show Empty State, Hide List
         if (lessonList.isEmpty())
         {
             teacherRvScheduledLessons.setVisibility(View.GONE);
             layoutEmptyState.setVisibility(View.VISIBLE);
         }
-
-        // Lessons found: Show List, Hide Empty State
         else
         {
             teacherRvScheduledLessons.setVisibility(View.VISIBLE);
             layoutEmptyState.setVisibility(View.GONE);
-
-            // Refresh the adapter with the new data
             adapter.notifyDataSetChanged();
         }
     }
@@ -179,10 +182,9 @@ public class TeacherHomeFragment extends Fragment
                     return dateTimeFormatter.parse(l1.getDateAndTime())
                             .compareTo(dateTimeFormatter.parse(l2.getDateAndTime()));
                 }
-
                 catch (ParseException e)
                 {
-                    return 0; // If parsing fails, keep the original order
+                    return 0;
                 }
             }
         });
