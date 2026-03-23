@@ -16,6 +16,7 @@ import com.google.ai.client.generativeai.type.ImagePart;
 import com.google.ai.client.generativeai.type.Part;
 import com.google.ai.client.generativeai.type.TextPart;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,4 +100,76 @@ public class GeminiManager
                 });
     }
 
+    /**
+     * Sends a text prompt along with an audio file to the Gemini model.
+     *
+     * @param prompt   The text prompt instructing Gemini what to do.
+     * @param audioFile The recorded audio file.
+     * @param callback The callback to receive the summarized response.
+     */
+    public void sendAudioPrompt(String prompt, File audioFile, GeminiCallBack callback)
+    {
+        try
+        {
+            byte[] audioBytes = readFileToByteArray(audioFile);
+
+            Part audioPart = new BlobPart("audio/mp4", audioBytes);
+            Part textPart = new TextPart(prompt);
+
+            List<Part> parts = new ArrayList<>();
+            parts.add(textPart);
+            parts.add(audioPart);
+
+            Content content = new Content(parts);
+
+            gemini.generateContent(new Content[]{content},
+                    new Continuation<GenerateContentResponse>()
+                    {
+                        @NonNull
+                        @Override
+                        public CoroutineContext getContext()
+                        {
+                            return EmptyCoroutineContext.INSTANCE;
+                        }
+
+                        @Override
+                        public void resumeWith(@NonNull Object result)
+                        {
+                            if (result instanceof Result.Failure)
+                            {
+                                Log.e("GeminiManager", "Error: " + ((Result.Failure) result).exception.getMessage());
+                                callback.onFailure(((Result.Failure) result).exception);
+                            }
+                            else
+                            {
+                                callback.onSuccess(((GenerateContentResponse) result).getText());
+                            }
+                        }
+                    });
+        }
+        catch (Exception e)
+        {
+            Log.e("GeminiManager", "Failed to process audio file", e);
+            callback.onFailure(e);
+        }
+    }
+
+    /**
+     * Helper method to convert a File into a byte array.
+     */
+    private byte[] readFileToByteArray(File file) throws java.io.IOException
+    {
+        java.io.FileInputStream fis = new java.io.FileInputStream(file);
+        java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+
+        while ((bytesRead = fis.read(buffer)) != -1)
+        {
+            bos.write(buffer, 0, bytesRead);
+        }
+
+        fis.close();
+        return bos.toByteArray();
+    }
 }

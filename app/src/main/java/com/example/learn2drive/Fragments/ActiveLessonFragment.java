@@ -1,5 +1,8 @@
 package com.example.learn2drive.Fragments;
 
+import static com.example.learn2drive.Helpers.Prompts.ID_CARD_SCHEMA;
+import static com.example.learn2drive.Helpers.Prompts.LESSON_SUMMARY_SCHEMA;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -22,6 +25,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.learn2drive.Helpers.AudioRecorderHelper;
+import com.example.learn2drive.Helpers.GeminiCallBack;
+import com.example.learn2drive.Helpers.GeminiManager;
+import com.example.learn2drive.Helpers.Prompts;
 import com.example.learn2drive.Objects.ScheduledLesson;
 import com.example.learn2drive.R;
 import com.google.android.material.button.MaterialButton;
@@ -133,7 +139,7 @@ public class ActiveLessonFragment extends Fragment
      */
     private void setupAudioRecorder()
     {
-        audioFile = new File(requireContext().getExternalCacheDir(), "lesson_recording.m4a");
+        audioFile = new File(requireContext().getCacheDir(), "lesson_recording.m4a");
         audioRecorderHelper = new AudioRecorderHelper(audioFile.getAbsolutePath());
     }
 
@@ -188,6 +194,11 @@ public class ActiveLessonFragment extends Fragment
      */
     private void startLesson()
     {
+        if (audioFile != null && audioFile.exists())
+        {
+            audioFile.delete();
+        }
+
         startTimer();
         try
         {
@@ -260,7 +271,7 @@ public class ActiveLessonFragment extends Fragment
 
     /**
      * Handles the final steps of ending a lesson: stopping timer and recording,
-     * and displaying the loading overlay.
+     * displaying the loading overlay, and sending the audio to Gemini for summarization.
      */
     private void processLessonEnd()
     {
@@ -269,9 +280,52 @@ public class ActiveLessonFragment extends Fragment
         updateRecordingUI(false);
         tvRecordingStatus.setText("Processing...");
 
+        // Show loading screen so the user can't click anything else
         activeLessonLoadingOverlay.setVisibility(View.VISIBLE);
 
-        // TODO: Next step - Send audio to Gemini and save to Firebase
+        String finalPrompt = Prompts.LESSON_SUMMARY_PROMPT +
+                "\n\nReturn the data strictly according to this JSON schema:\n" +
+                LESSON_SUMMARY_SCHEMA;
+
+        if (!audioFile.exists() || audioFile.length() == 0)
+        {
+            activeLessonLoadingOverlay.setVisibility(View.GONE);
+            Toast.makeText(requireContext(), "Error: Audio file was not saved properly.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Send to Gemini
+        GeminiManager.getInstance().sendAudioPrompt(finalPrompt, audioFile, new GeminiCallBack()
+        {
+            @Override
+            public void onSuccess(String result)
+            {
+                requireActivity().runOnUiThread(() ->
+                {
+                    activeLessonLoadingOverlay.setVisibility(View.GONE);
+
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle("Lesson Summary")
+                            .setMessage(result)
+                            .setPositiveButton("Save to Firebase", (dialog, which) -> {
+                                // TODO: Step 6 - Save 'result' and 'audioFile' to Firebase
+                                Toast.makeText(requireContext(), "Preparing to save...", Toast.LENGTH_SHORT).show();
+                            })
+                            .setCancelable(false)
+                            .show();
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable error)
+            {
+                requireActivity().runOnUiThread(() ->
+                {
+                    activeLessonLoadingOverlay.setVisibility(View.GONE);
+                    Toast.makeText(requireContext(), "Failed to summarize lesson: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                });
+            }
+        });
     }
 
     /**

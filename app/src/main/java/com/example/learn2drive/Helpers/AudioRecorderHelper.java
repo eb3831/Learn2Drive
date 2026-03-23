@@ -45,6 +45,10 @@ public class AudioRecorderHelper
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mediaRecorder.setOutputFile(outputFilePath);
 
+        // Optimizes file size
+        mediaRecorder.setAudioEncodingBitRate(16000); // 16 kbps
+        mediaRecorder.setAudioSamplingRate(16000); // 16 kHz
+
         mediaRecorder.prepare();
         mediaRecorder.start();
 
