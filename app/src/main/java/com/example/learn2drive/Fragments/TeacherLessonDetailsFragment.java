@@ -210,7 +210,7 @@ public class TeacherLessonDetailsFragment extends Fragment
 
             builder.setPositiveButton("Start", (dialog, which) ->
             {
-                Fragment activeLessonFragment = new ActiveLessonFragment();
+                Fragment activeLessonFragment = ActiveLessonFragment.newInstance(currentLesson);
                 ((TeacherMainActivity) requireActivity()).replaceFragment(activeLessonFragment, true, "ActiveLessonFragment");
             });
 
