@@ -265,28 +265,25 @@ public class TeacherLessonDetailsFragment extends Fragment
         lessonLoadingOverlay.setVisibility(View.VISIBLE);
         String dateTimeKey = currentLesson.getDateAndTime();
 
-        // Using FBRef to remove the lesson
+        // Removes the scheduled lesson
         FBRef.refScheduledLessons.child(FBRef.uid).child(currentLesson.getStudentUID())
                 .child(dateTimeKey).removeValue().addOnSuccessListener(aVoid ->
                 {
 
                     String newStatus = makeAvailable ? TimeSlot.STATUS_AVAILABLE : TimeSlot.STATUS_UNAVAILABLE;
 
-                    // Using FBRef to update the timetable status
+                    // Updates timetable status and clears studentUid
                     FBRef.refTeachersTimeTable.child(FBRef.uid).child(date).child(time)
                             .child("status").setValue(newStatus).addOnSuccessListener(aVoid1 ->
                             {
-                                // Clear the studentUid since the lesson is cancelled
                                 FBRef.refTeachersTimeTable.child(FBRef.uid).child(date).child(time)
                                         .child("studentUid").setValue("").addOnSuccessListener(aVoid2 ->
                                         {
                                             lessonLoadingOverlay.setVisibility(View.GONE);
                                             Toast.makeText(getContext(), "Lesson cancelled successfully", Toast.LENGTH_SHORT).show();
 
-                                            if (getActivity() != null)
-                                            {
-                                                getActivity().getSupportFragmentManager().popBackStack();
-                                            }
+                                            getActivity().getSupportFragmentManager().popBackStack();
+
                                         }).addOnFailureListener(e ->
                                         {
                                             lessonLoadingOverlay.setVisibility(View.GONE);
