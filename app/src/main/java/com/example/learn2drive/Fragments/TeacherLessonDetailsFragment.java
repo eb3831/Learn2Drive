@@ -204,10 +204,22 @@ public class TeacherLessonDetailsFragment extends Fragment
 
         btnStartLesson.setOnClickListener(v ->
         {
-            Fragment activeLessonFragment = new ActiveLessonFragment();
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Start Lesson");
+            builder.setMessage("Are you sure you want to start this lesson?");
 
+            builder.setPositiveButton("Start", (dialog, which) ->
+            {
+                Fragment activeLessonFragment = new ActiveLessonFragment();
+                ((TeacherMainActivity) requireActivity()).replaceFragment(activeLessonFragment, true, "ActiveLessonFragment");
+            });
 
-            ((TeacherMainActivity) requireActivity()).replaceFragment(activeLessonFragment, true, "ActiveLessonFragment");
+            builder.setNegativeButton("Cancel", (dialog, which) ->
+            {
+                dialog.dismiss();
+            });
+
+            builder.show();
         });
 
         btnCancelLesson.setOnClickListener(v -> showCancelLessonDialog());
