@@ -1,5 +1,7 @@
 package com.example.learn2drive.Fragments;
 
+import static com.example.learn2drive.Helpers.FBRef.refProfilePics;
+
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,12 +18,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
 import com.example.learn2drive.Activities.TeacherMainActivity;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.ScheduledLesson;
 import com.example.learn2drive.Objects.TimeSlot;
 import com.example.learn2drive.R;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.storage.StorageReference;
 
 /**
  * Fragment responsible for displaying the details of a specific scheduled lesson for a teacher.
@@ -37,7 +41,6 @@ public class TeacherLessonDetailsFragment extends Fragment
     private String time = "";
 
     private ImageView ivBack;
-    private TextView tvLessonStatus;
     private ImageView ivStudentProfile;
     private ProgressBar pbProfilePicLoading;
     private TextView tvStudentName;
@@ -122,7 +125,6 @@ public class TeacherLessonDetailsFragment extends Fragment
     private void initViews(View view)
     {
         ivBack = view.findViewById(R.id.ivBack);
-        tvLessonStatus = view.findViewById(R.id.tvLessonStatus);
         ivStudentProfile = view.findViewById(R.id.ivStudentProfile);
         pbProfilePicLoading = view.findViewById(R.id.pbProfilePicLoading);
         tvStudentName = view.findViewById(R.id.tvStudentName);
@@ -143,6 +145,48 @@ public class TeacherLessonDetailsFragment extends Fragment
         tvLessonDate.setText(date);
         tvLessonTime.setText(time);
         tvLessonDuration.setText(currentLesson.getDuration() + " minutes");
+
+        loadStudentProfilePicture();
+    }
+
+    /**
+     * Fetches the student's profile picture download URL from Firebase Storage
+     * and loads it into the ImageView using Glide.
+     */
+    private void loadStudentProfilePicture()
+    {
+        if (currentLesson == null || currentLesson.getStudentUID() == null)
+        {
+            pbProfilePicLoading.setVisibility(View.GONE);
+            return;
+        }
+
+        pbProfilePicLoading.setVisibility(View.VISIBLE);
+
+        StorageReference profilePicRef = refProfilePics.child(currentLesson.getStudentUID())
+                .child("profile.jpg");
+
+        profilePicRef.getDownloadUrl().addOnSuccessListener(uri ->
+        {
+            if (isAdded() && getContext() != null)
+            {
+                ivStudentProfile.setImageTintList(null);
+                ivStudentProfile.setPadding(0, 0, 0, 0);
+
+                Glide.with(getContext())
+                        .load(uri)
+                        .placeholder(R.drawable.user)
+                        .error(R.drawable.user)
+                        .circleCrop()
+                        .into(ivStudentProfile);
+
+                pbProfilePicLoading.setVisibility(View.GONE);
+            }
+        }).addOnFailureListener(e ->
+        {
+            pbProfilePicLoading.setVisibility(View.GONE);
+            ivStudentProfile.setImageResource(R.drawable.user);
+        });
     }
 
     /**
@@ -160,7 +204,6 @@ public class TeacherLessonDetailsFragment extends Fragment
 
         btnStartLesson.setOnClickListener(v ->
         {
-            // Note for developer: Pass the full object or specific details to ActiveLessonFragment as needed
             Fragment activeLessonFragment = new ActiveLessonFragment();
 
 

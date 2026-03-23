@@ -42,6 +42,8 @@ public class TeacherHomeFragment extends Fragment
     private LinearLayout layoutEmptyState;
     private LinearLayout btnHoursManager, btnLessonRequests;
 
+    private ValueEventListener lessonsListener;
+
     public TeacherHomeFragment()
     {
         // Required empty public constructor
@@ -79,8 +81,6 @@ public class TeacherHomeFragment extends Fragment
 
         adapter = new TeacherLessonAdapter(lessonList, lesson ->
         {
-
-            // Passing the entire lesson object!
             TeacherLessonDetailsFragment fragment = TeacherLessonDetailsFragment.newInstance(lesson);
 
             if (getActivity() instanceof TeacherMainActivity)
@@ -103,8 +103,7 @@ public class TeacherHomeFragment extends Fragment
     }
 
     /**
-     * Fetches lessons from Firebase Realtime DB.
-     * Path: Lessons -> Scheduled -> TeacherUID -> StudentUID -> LessonNumber
+     * Fetches lessons from Firebase Realtime DB and attaches a listener.
      */
     private void loadScheduledLessons()
     {
@@ -114,7 +113,7 @@ public class TeacherHomeFragment extends Fragment
         teacherRvScheduledLessons.setVisibility(View.GONE);
         layoutEmptyState.setVisibility(View.GONE);
 
-        FBRef.refScheduledLessons.child(FBRef.uid).addValueEventListener(new ValueEventListener()
+        lessonsListener = new ValueEventListener()
         {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot)
@@ -126,7 +125,6 @@ public class TeacherHomeFragment extends Fragment
                     for (DataSnapshot lessonSnapshot : studentSnapshot.getChildren())
                     {
                         ScheduledLesson lesson = lessonSnapshot.getValue(ScheduledLesson.class);
-
                         if (lesson != null)
                         {
                             lessonList.add(lesson);
@@ -141,9 +139,14 @@ public class TeacherHomeFragment extends Fragment
             @Override
             public void onCancelled(@NonNull DatabaseError error)
             {
-                pbLoading.setVisibility(View.GONE);
+                if (pbLoading != null)
+                {
+                    pbLoading.setVisibility(View.GONE);
+                }
             }
-        });
+        };
+
+        FBRef.refScheduledLessons.child(FBRef.uid).addValueEventListener(lessonsListener);
     }
 
     /**
@@ -168,7 +171,6 @@ public class TeacherHomeFragment extends Fragment
 
     /**
      * Sorts the lessonList based on date and time.
-     * The nearest lesson will appear at the top of the list.
      */
     private void sortLessonsByDate()
     {
@@ -188,5 +190,18 @@ public class TeacherHomeFragment extends Fragment
                 }
             }
         });
+    }
+
+    /**
+     * Removes the Firebase listener when the fragment is stopped to prevent memory leaks.
+     */
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        if (lessonsListener != null && FBRef.uid != null)
+        {
+            FBRef.refScheduledLessons.child(FBRef.uid).removeEventListener(lessonsListener);
+        }
     }
 }
