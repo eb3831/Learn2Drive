@@ -399,7 +399,7 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
                             .setMessage(result)
                             .setPositiveButton("Save to Firebase", (dialog, which) ->
                             {
-                                // TODO: Step 6 - Save 'result' and 'audioFile' to Firebase
+                                uploadGpxAndSaveLesson(result);
                                 Toast.makeText(requireContext(), "Preparing to save...", Toast.LENGTH_SHORT).show();
                             })
                             .setCancelable(false)
