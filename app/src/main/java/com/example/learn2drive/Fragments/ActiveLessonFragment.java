@@ -4,21 +4,29 @@ import static com.example.learn2drive.Helpers.Prompts.ID_CARD_SCHEMA;
 import static com.example.learn2drive.Helpers.Prompts.LESSON_SUMMARY_SCHEMA;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -27,22 +35,34 @@ import androidx.fragment.app.Fragment;
 import com.example.learn2drive.Helpers.AudioRecorderHelper;
 import com.example.learn2drive.Helpers.GeminiCallBack;
 import com.example.learn2drive.Helpers.GeminiManager;
+import com.example.learn2drive.Helpers.LocationTrackingHelper;
 import com.example.learn2drive.Helpers.Prompts;
 import com.example.learn2drive.Objects.ScheduledLesson;
 import com.example.learn2drive.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.material.button.MaterialButton;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * Fragment responsible for managing an active driving lesson.
  * Handles UI updates, timer, audio recording, and ending the lesson.
  */
-public class ActiveLessonFragment extends Fragment
+public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback,
+        LocationTrackingHelper.LocationUpdateListener
 {
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 300;
+    private static final int REQUEST_PERMISSIONS_CODE = 300;
 
     private ImageView btnBack;
     private View vRecordingIndicator;
@@ -62,6 +82,13 @@ public class ActiveLessonFragment extends Fragment
     private long startTimeMillis;
     private long pausedTimeMillis = 0;
     private boolean isTimerRunning = false;
+
+    private GoogleMap mMap;
+
+    private LocationTrackingHelper locationHelper;
+    private ArrayList<Location> recordedLocations;
+    private Polyline routePolyline;
+    private FusedLocationProviderClient fusedLocationClient;
 
     public ActiveLessonFragment()
     {
@@ -99,7 +126,29 @@ public class ActiveLessonFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+        setupMap();
         checkPermissionsAndStart();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        recordedLocations = new ArrayList<>();
+    }
+
+    /**
+     * Initializes the Google Map fragment using the child fragment manager.
+     */
+    private void setupMap()
+    {
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFragment);
+        if (mapFragment != null)
+        {
+            mapFragment.getMapAsync(this);
+        }
     }
 
     /**
@@ -156,18 +205,33 @@ public class ActiveLessonFragment extends Fragment
     }
 
     /**
-     * Checks if the RECORD_AUDIO permission is granted.
-     * Starts the lesson immediately if granted, otherwise requests the permission.
+     * Checks if both Audio and Location permissions are granted.
+     * Starts the lesson immediately if granted, otherwise requests them.
      */
     private void checkPermissionsAndStart()
     {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+        String[] permissions = {
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        };
+
+        boolean allGranted = true;
+        for (String permission : permissions)
         {
-            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
+            if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED)
+            {
+                allGranted = false;
+                break;
+            }
         }
-        else
+
+        if (!allGranted)
         {
-            startLesson();
+            requestPermissions(permissions, REQUEST_PERMISSIONS_CODE);
+        } else
+        {
+            checkLocationEnabledAndStart();
         }
     }
 
@@ -175,15 +239,30 @@ public class ActiveLessonFragment extends Fragment
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION)
+        if (requestCode == REQUEST_PERMISSIONS_CODE)
         {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            boolean allGranted = true;
+            if (grantResults.length > 0)
             {
-                startLesson();
+                for (int result : grantResults)
+                {
+                    if (result != PackageManager.PERMISSION_GRANTED)
+                    {
+                        allGranted = false;
+                        break;
+                    }
+                }
+            } else
+            {
+                allGranted = false;
             }
-            else
+
+            if (allGranted)
             {
-                Toast.makeText(requireContext(), "Microphone permission is required to record the lesson.", Toast.LENGTH_LONG).show();
+                checkLocationEnabledAndStart();
+            } else
+            {
+                Toast.makeText(requireContext(), "Microphone and Location permissions are required for the lesson.", Toast.LENGTH_LONG).show();
                 requireActivity().onBackPressed();
             }
         }
@@ -204,11 +283,49 @@ public class ActiveLessonFragment extends Fragment
         {
             audioRecorderHelper.startRecording();
             updateRecordingUI(true);
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             Toast.makeText(requireContext(), "Failed to start recording", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * Prepares the environment for the active lesson: keeps the screen on,
+     * enables the map's user location tracking, initializes tracking helper,
+     * sets up the Polyline, and starts the timer/audio.
+     */
+    @SuppressLint("MissingPermission")
+    private void startLessonAndMap()
+    {
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        if (mMap != null)
+        {
+            mMap.setMyLocationEnabled(true);
+
+            // Set up the Polyline (the red line that will be drawn on the map)
+            com.google.android.gms.maps.model.PolylineOptions polylineOptions = new com.google.android.gms.maps.model.PolylineOptions()
+                    .color(android.graphics.Color.RED)
+                    .width(12f)
+                    .geodesic(true);
+            routePolyline = mMap.addPolyline(polylineOptions);
+
+            // Get the last known location and zoom the camera to it
+            fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location ->
+            {
+                if (location != null)
+                {
+                    LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f));
+                }
+            });
+        }
+
+        // Initialize and start our custom location helper
+        locationHelper = new LocationTrackingHelper(requireContext(), this);
+        locationHelper.startTracking();
+
+        startLesson();
     }
 
     /**
@@ -224,8 +341,7 @@ public class ActiveLessonFragment extends Fragment
                 resumeTimer();
                 btnPauseRecording.setText("Pause Recording");
                 updateRecordingUI(true);
-            }
-            else
+            } else
             {
                 audioRecorderHelper.pauseRecording();
                 pauseTimer();
@@ -247,8 +363,7 @@ public class ActiveLessonFragment extends Fragment
             vRecordingIndicator.setBackgroundResource(R.drawable.bg_circle_red); // Assuming this exists
             tvRecordingStatus.setText("Recording");
             tvRecordingStatus.setTextColor(Color.parseColor("#D1D5DB"));
-        }
-        else
+        } else
         {
             vRecordingIndicator.setBackgroundColor(Color.parseColor("#808080")); // Gray out when paused
             tvRecordingStatus.setText("Paused");
@@ -283,6 +398,11 @@ public class ActiveLessonFragment extends Fragment
         // Show loading screen so the user can't click anything else
         activeLessonLoadingOverlay.setVisibility(View.VISIBLE);
 
+        if (locationHelper != null)
+        {
+            locationHelper.stopTracking();
+        }
+
         String finalPrompt = Prompts.LESSON_SUMMARY_PROMPT +
                 "\n\nReturn the data strictly according to this JSON schema:\n" +
                 LESSON_SUMMARY_SCHEMA;
@@ -307,7 +427,8 @@ public class ActiveLessonFragment extends Fragment
                     new AlertDialog.Builder(requireContext())
                             .setTitle("Lesson Summary")
                             .setMessage(result)
-                            .setPositiveButton("Save to Firebase", (dialog, which) -> {
+                            .setPositiveButton("Save to Firebase", (dialog, which) ->
+                            {
                                 // TODO: Step 6 - Save 'result' and 'audioFile' to Firebase
                                 Toast.makeText(requireContext(), "Preparing to save...", Toast.LENGTH_SHORT).show();
                             })
@@ -396,6 +517,101 @@ public class ActiveLessonFragment extends Fragment
         if (audioRecorderHelper != null)
         {
             audioRecorderHelper.stopRecording();
+        }
+        if (getActivity() != null)
+        {
+            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        if (locationHelper != null)
+        {
+            locationHelper.stopTracking();
+        }
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap)
+    {
+        mMap = googleMap;
+    }
+
+    /**
+     * Checks if the device's location services (GPS or Network) are currently enabled.
+     *
+     * @return true if enabled, false otherwise.
+     */
+    private boolean isLocationEnabled()
+    {
+        LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null)
+        {
+            return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                    locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        }
+        return false;
+    }
+
+    /**
+     * Prompts the user to enable location services by directing them to the device settings.
+     * If the user cancels, the lesson cannot proceed and the fragment is closed.
+     */
+    private void promptEnableLocation()
+    {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Enable Location Services")
+                .setMessage("GPS is required to track the driving route. Please enable it in the settings.")
+                .setPositiveButton("Settings", (dialog, which) ->
+                {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Cancel", (dialog, which) ->
+                {
+                    Toast.makeText(requireContext(), "Location services are required to start the lesson.", Toast.LENGTH_SHORT).show();
+                    requireActivity().onBackPressed();
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    /**
+     * Verifies if the GPS is turned on before starting the lesson.
+     * If off, prompts the user to turn it on.
+     */
+    private void checkLocationEnabledAndStart()
+    {
+        if (!isLocationEnabled())
+        {
+            promptEnableLocation();
+        } else
+        {
+            startLessonAndMap();
+        }
+    }
+
+    /**
+     * Callback triggered by LocationTrackingHelper whenever a new location is available.
+     * Records the location and updates the map polyline if the lesson is not paused.
+     *
+     * @param location The new location object.
+     */
+    @Override
+    public void onLocationUpdated(Location location)
+    {
+        if (isTimerRunning)
+        {
+            recordedLocations.add(location);
+
+            if (mMap != null && routePolyline != null)
+            {
+                // Get the current points of the polyline, add the new one, and update it
+                List<LatLng> points = routePolyline.getPoints();
+                LatLng newPoint = new LatLng(location.getLatitude(), location.getLongitude());
+                points.add(newPoint);
+                routePolyline.setPoints(points);
+
+                // Smoothly move the camera to follow the car
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(newPoint));
+            }
         }
     }
 }
