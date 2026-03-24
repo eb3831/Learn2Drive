@@ -18,6 +18,22 @@ public class DoneLesson extends ScheduledLesson
         this.payment = payment;
     }
 
+    public DoneLesson(ScheduledLesson lesson, Payment payment)
+    {
+        super(lesson.getLessonNumber(), lesson.getTeacherUID(), lesson.getStudentUID(),
+                lesson.getStudentID(), lesson.getDateAndTime(), lesson.getDuration(),
+                lesson.getStudentName());
+        this.payment = payment;
+    }
+
+    public DoneLesson(ScheduledLesson lesson)
+    {
+        super(lesson.getLessonNumber(), lesson.getTeacherUID(), lesson.getStudentUID(),
+                lesson.getStudentID(), lesson.getDateAndTime(), lesson.getDuration(),
+                lesson.getStudentName());
+        this.payment = new Payment();
+    }
+
     public void setPayment(Payment payment)
     {
         this.payment = payment;

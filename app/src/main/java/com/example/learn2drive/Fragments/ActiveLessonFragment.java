@@ -1,5 +1,7 @@
 package com.example.learn2drive.Fragments;
 
+import static com.example.learn2drive.Helpers.FBRef.refDoneLessons;
+import static com.example.learn2drive.Helpers.FBRef.refLessonsDetails;
 import static com.example.learn2drive.Helpers.Prompts.ID_CARD_SCHEMA;
 import static com.example.learn2drive.Helpers.Prompts.LESSON_SUMMARY_SCHEMA;
 
@@ -13,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -35,8 +38,10 @@ import androidx.fragment.app.Fragment;
 import com.example.learn2drive.Helpers.AudioRecorderHelper;
 import com.example.learn2drive.Helpers.GeminiCallBack;
 import com.example.learn2drive.Helpers.GeminiManager;
+import com.example.learn2drive.Helpers.GpxGeneratorHelper;
 import com.example.learn2drive.Helpers.LocationTrackingHelper;
 import com.example.learn2drive.Helpers.Prompts;
+import com.example.learn2drive.Objects.DoneLesson;
 import com.example.learn2drive.Objects.ScheduledLesson;
 import com.example.learn2drive.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -47,7 +52,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,6 +70,7 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         LocationTrackingHelper.LocationUpdateListener
 {
     private static final int REQUEST_PERMISSIONS_CODE = 300;
+    private static final int REQUEST_ENABLE_GPS = 1001;
 
     private ImageView btnBack;
     private View vRecordingIndicator;
@@ -126,7 +134,6 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        setupMap();
         checkPermissionsAndStart();
     }
 
@@ -283,49 +290,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         {
             audioRecorderHelper.startRecording();
             updateRecordingUI(true);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Toast.makeText(requireContext(), "Failed to start recording", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    /**
-     * Prepares the environment for the active lesson: keeps the screen on,
-     * enables the map's user location tracking, initializes tracking helper,
-     * sets up the Polyline, and starts the timer/audio.
-     */
-    @SuppressLint("MissingPermission")
-    private void startLessonAndMap()
-    {
-        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        if (mMap != null)
-        {
-            mMap.setMyLocationEnabled(true);
-
-            // Set up the Polyline (the red line that will be drawn on the map)
-            com.google.android.gms.maps.model.PolylineOptions polylineOptions = new com.google.android.gms.maps.model.PolylineOptions()
-                    .color(android.graphics.Color.RED)
-                    .width(12f)
-                    .geodesic(true);
-            routePolyline = mMap.addPolyline(polylineOptions);
-
-            // Get the last known location and zoom the camera to it
-            fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location ->
-            {
-                if (location != null)
-                {
-                    LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f));
-                }
-            });
-        }
-
-        // Initialize and start our custom location helper
-        locationHelper = new LocationTrackingHelper(requireContext(), this);
-        locationHelper.startTracking();
-
-        startLesson();
     }
 
     /**
@@ -341,7 +310,8 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
                 resumeTimer();
                 btnPauseRecording.setText("Pause Recording");
                 updateRecordingUI(true);
-            } else
+            }
+            else
             {
                 audioRecorderHelper.pauseRecording();
                 pauseTimer();
@@ -528,10 +498,30 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap)
     {
         mMap = googleMap;
+
+        mMap.setMyLocationEnabled(true);
+
+        PolylineOptions polylineOptions = new PolylineOptions()
+                .color(android.graphics.Color.RED)
+                .width(12f)
+                .geodesic(true);
+        routePolyline = mMap.addPolyline(polylineOptions);
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location ->
+        {
+            if (location != null)
+            {
+                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f));
+            }
+        });
+
+        startLessonLogic();
     }
 
     /**
@@ -551,40 +541,80 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     }
 
     /**
-     * Prompts the user to enable location services by directing them to the device settings.
-     * If the user cancels, the lesson cannot proceed and the fragment is closed.
+     * Prompts the user to enable location services.
+     * If they agree, opens settings using startActivityForResult.
+     * If they refuse, starts an audio-only lesson.
      */
     private void promptEnableLocation()
     {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Enable Location Services")
-                .setMessage("GPS is required to track the driving route. Please enable it in the settings.")
+                .setMessage("GPS is required to track the driving route. Would you like to enable it in the settings? (If not, only audio will be recorded).")
                 .setPositiveButton("Settings", (dialog, which) ->
                 {
                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivity(intent);
+                    startActivityForResult(intent, REQUEST_ENABLE_GPS);
                 })
-                .setNegativeButton("Cancel", (dialog, which) ->
+                .setNegativeButton("Continue without GPS", (dialog, which) ->
                 {
-                    Toast.makeText(requireContext(), "Location services are required to start the lesson.", Toast.LENGTH_SHORT).show();
-                    requireActivity().onBackPressed();
+                    Toast.makeText(requireContext(), "Starting audio-only lesson.", Toast.LENGTH_SHORT).show();
+                    startAudioOnlyLesson();
                 })
                 .setCancelable(false)
                 .show();
     }
 
     /**
+     * Handles the return from the device Settings screen.
+     * Checks if the user actually enabled the GPS after visiting settings.
+     *
+     * @param requestCode The integer request code originally supplied to startActivityForResult().
+     * @param resultCode  The integer result code returned by the child activity.
+     * @param data        An Intent, which can return result data to the caller.
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_ENABLE_GPS)
+        {
+            if (isLocationEnabled())
+            {
+                setupMap();
+            }
+            else
+            {
+                // User went to settings but didn't turn it on, or turned it off.
+                Toast.makeText(requireContext(), "GPS still disabled. Starting audio-only lesson.", Toast.LENGTH_SHORT).show();
+                startAudioOnlyLesson();
+            }
+        }
+    }
+
+    /**
+     * Starts the lesson with only timer and audio recording.
+     * Bypasses the map and location tracking logic entirely.
+     */
+    private void startAudioOnlyLesson()
+    {
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        startLesson();
+    }
+
+    /**
      * Verifies if the GPS is turned on before starting the lesson.
-     * If off, prompts the user to turn it on.
+     * If off, prompts the user to turn it on. If on, initializes the map.
      */
     private void checkLocationEnabledAndStart()
     {
         if (!isLocationEnabled())
         {
             promptEnableLocation();
-        } else
+        }
+        else
         {
-            startLessonAndMap();
+            setupMap();
         }
     }
 
@@ -613,5 +643,71 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(newPoint));
             }
         }
+    }
+
+    /**
+     * Prepares the environment for the active lesson: keeps the screen on,
+     * initializes tracking helper, and starts the timer/audio.
+     */
+    private void startLessonLogic()
+    {
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // Initialize and start our custom location helper
+        locationHelper = new LocationTrackingHelper(requireContext(), this);
+        locationHelper.startTracking();
+
+        startLesson();
+    }
+
+    /**
+     * Generates a GPX file from the recorded locations and uploads it to Firebase Storage.
+     * Upon successful upload, it retrieves the download URL to be saved in the Realtime Database.
+     *
+     * @param geminiSummary The summary generated by Gemini to be saved alongside the lesson.
+     */
+    private void uploadGpxAndSaveLesson(String geminiSummary)
+    {
+        if (recordedLocations == null || recordedLocations.isEmpty())
+        {
+            Toast.makeText(requireContext(), "No location data to save.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        File gpxFile = new File(requireContext().getCacheDir(), "track.gpx");
+
+        try
+        {
+            GpxGeneratorHelper.generateGpxFile(recordedLocations, gpxFile);
+        }
+        catch (IOException e)
+        {
+            Toast.makeText(requireContext(), "Failed to generate track file.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String teacherUid = currentLesson.getTeacherUID();
+        String studentUid = currentLesson.getStudentUID();
+        String dateTime = currentLesson.getDateAndTime();
+
+        StorageReference trackRef = refLessonsDetails.child(teacherUid).child(studentUid)
+                .child(dateTime).child("track.gpx");
+
+        Uri fileUri = Uri.fromFile(gpxFile);
+
+        trackRef.putFile(fileUri)
+                .addOnSuccessListener(taskSnapshot ->
+                {
+                    // TODO: Remove existing ScheduledLesson from FB, and save lesson summary
+
+                    DoneLesson doneLesson = new DoneLesson(currentLesson);
+                    refDoneLessons.child(teacherUid).child(studentUid).child(dateTime).setValue(doneLesson);
+
+                    Toast.makeText(requireContext(), "Track uploaded successfully!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e ->
+                {
+                    Toast.makeText(requireContext(), "Failed to upload track: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 }
