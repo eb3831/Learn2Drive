@@ -361,6 +361,7 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     /**
      * Handles the final steps of ending a lesson: stopping timer and recording,
      * displaying the loading overlay, and sending the audio to Gemini for summarization.
+     * Automatically saves the result and navigates back upon success.
      */
     private void processLessonEnd()
     {
@@ -369,7 +370,6 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         updateRecordingUI(false);
         tvRecordingStatus.setText("Processing...");
 
-        // Show loading screen so the user can't click anything else
         activeLessonLoadingOverlay.setVisibility(View.VISIBLE);
 
         if (locationHelper != null)
@@ -388,7 +388,6 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
             return;
         }
 
-        // Send to Gemini
         GeminiManager.getInstance().sendAudioPrompt(finalPrompt, audioFile, new GeminiCallBack()
         {
             @Override
@@ -396,18 +395,8 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
             {
                 requireActivity().runOnUiThread(() ->
                 {
-                    activeLessonLoadingOverlay.setVisibility(View.GONE);
-
-                    new AlertDialog.Builder(requireContext())
-                            .setTitle("Lesson Summary")
-                            .setMessage(result)
-                            .setPositiveButton("Save to Firebase", (dialog, which) ->
-                            {
-                                uploadGpxAndSaveLesson(result);
-                                Toast.makeText(requireContext(), "Preparing to save...", Toast.LENGTH_SHORT).show();
-                            })
-                            .setCancelable(false)
-                            .show();
+                    Toast.makeText(requireContext(), "Processing complete. Saving lesson...", Toast.LENGTH_SHORT).show();
+                    uploadGpxAndSaveLesson(result);
                 });
             }
 
@@ -416,8 +405,8 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
             {
                 requireActivity().runOnUiThread(() ->
                 {
-                    activeLessonLoadingOverlay.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to summarize lesson: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    uploadGpxAndSaveLesson("{}");
                 });
             }
         });
@@ -677,6 +666,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         {
             Gson gson = new Gson();
             tempSummary = gson.fromJson(geminiSummary, LessonSummary.class);
+
+            if (tempSummary == null)
+            {
+                tempSummary = new LessonSummary();
+            }
         }
         catch (Exception e)
         {
