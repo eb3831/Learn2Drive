@@ -3,14 +3,12 @@ package com.example.learn2drive.Fragments;
 import static com.example.learn2drive.Helpers.FBRef.refDoneLessons;
 import static com.example.learn2drive.Helpers.FBRef.refLessonsDetails;
 import static com.example.learn2drive.Helpers.FBRef.refScheduledLessons;
-import static com.example.learn2drive.Helpers.Prompts.ID_CARD_SCHEMA;
 import static com.example.learn2drive.Helpers.Prompts.LESSON_SUMMARY_SCHEMA;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -21,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -312,6 +310,7 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
         catch (IOException e)
         {
+            Log.e("ActiveLesson", "Error starting recording: ", e);
             Toast.makeText(requireContext(), "Failed to start recording", Toast.LENGTH_SHORT).show();
         }
     }
@@ -398,6 +397,7 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
                 activeLessonLoadingOverlay.setVisibility(View.GONE);
                 Toast.makeText(requireContext(), "Error: Audio file was not saved properly.", Toast.LENGTH_LONG).show();
                 uploadGpxAndSaveLesson("{}");
+                return;
             }
 
             String finalPrompt = Prompts.LESSON_SUMMARY_PROMPT +

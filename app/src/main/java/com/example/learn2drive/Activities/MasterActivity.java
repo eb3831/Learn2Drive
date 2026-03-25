@@ -54,4 +54,10 @@ public class MasterActivity extends AppCompatActivity
         transaction.commit();
         invalidateOptionsMenu();
     }
+
+    public void clearStack()
+    {
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+    }
 }
