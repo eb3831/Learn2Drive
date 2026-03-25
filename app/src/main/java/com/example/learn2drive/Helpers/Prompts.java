@@ -77,9 +77,11 @@ public class Prompts
             "      }\n" +
             "    },\n" +
             "    \"recommendations\": {\n" +
-            "      \"type\": \"string\",\n" +
-            "      \"description\": \"Specific goals or focus areas recommended for the next driving lesson, written in Hebrew.\",\n" +
-            "      \"example\": \"בשיעור הבא נתמקד בשמירת מרחק נכונה ובלימות רכות יותר.\"\n" +
+            "      \"type\": \"array\",\n" +
+            "      \"description\": \"A list of specific goals or focus areas recommended for the next driving lesson, written in Hebrew.\",\n" +
+            "      \"items\": {\n" +
+            "        \"type\": \"string\"\n" +
+            "      }\n" +
             "    }\n" +
             "  },\n" +
             "  \"required\": [\"lessonSummary\", \"topicsCovered\", \"strengths\", \"areasForImprovement\", \"recommendations\"]\n" +
