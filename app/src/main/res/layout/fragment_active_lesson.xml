@@ -114,6 +114,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
+                    android:id="@+id/llAudioBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="12dp"
@@ -141,6 +142,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/llLocationBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_pill_black_translucent"

@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,6 +85,8 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     private MaterialButton btnPauseRecording;
     private MaterialButton btnEndLesson;
     private FrameLayout activeLessonLoadingOverlay;
+    private LinearLayout llAudioBadge;
+    private LinearLayout llLocationBadge;
 
     private ScheduledLesson currentLesson;
     private AudioRecorderHelper audioRecorderHelper;
@@ -101,6 +104,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     private ArrayList<Location> recordedLocations;
     private Polyline routePolyline;
     private FusedLocationProviderClient fusedLocationClient;
+
+    private boolean isAudioEnabledForLesson = false;
+    private boolean isLocationEnabledForLesson = false;
 
     public ActiveLessonFragment()
     {
@@ -177,6 +183,8 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         btnPauseRecording = view.findViewById(R.id.btnPauseRecording);
         btnEndLesson = view.findViewById(R.id.btnEndLesson);
         activeLessonLoadingOverlay = view.findViewById(R.id.activeLessonLoadingOverlay);
+        llAudioBadge = view.findViewById(R.id.llAudioBadge);
+        llLocationBadge = view.findViewById(R.id.llLocationBadge);
     }
 
     /**
@@ -216,33 +224,35 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     }
 
     /**
-     * Checks if both Audio and Location permissions are granted.
-     * Starts the lesson immediately if granted, otherwise requests them.
+     * Checks for required permissions (Audio and Location).
+     * If permissions are missing, it requests them.
+     * If they are already granted, it proceeds to evaluate the current permission state.
      */
     private void checkPermissionsAndStart()
     {
-        String[] permissions = {
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-        };
+        boolean hasAudioPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        boolean hasLocationPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 
-        boolean allGranted = true;
-        for (String permission : permissions)
+        List<String> permissionsToRequest = new ArrayList<>();
+
+        if (!hasAudioPermission)
         {
-            if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED)
-            {
-                allGranted = false;
-                break;
-            }
+            permissionsToRequest.add(Manifest.permission.RECORD_AUDIO);
+        }
+        if (!hasLocationPermission)
+        {
+            permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            permissionsToRequest.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
-        if (!allGranted)
+        if (!permissionsToRequest.isEmpty())
         {
-            requestPermissions(permissions, REQUEST_PERMISSIONS_CODE);
-        } else
+            requestPermissions(permissionsToRequest.toArray(new String[0]), REQUEST_PERMISSIONS_CODE);
+        }
+        else
         {
-            checkLocationEnabledAndStart();
+            // All previously requested permissions are granted (or were already granted)
+            evaluatePermissionsAndStart(true, true);
         }
     }
 
@@ -250,33 +260,38 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == REQUEST_PERMISSIONS_CODE)
         {
-            boolean allGranted = true;
-            if (grantResults.length > 0)
-            {
-                for (int result : grantResults)
-                {
-                    if (result != PackageManager.PERMISSION_GRANTED)
-                    {
-                        allGranted = false;
-                        break;
-                    }
-                }
-            } else
-            {
-                allGranted = false;
-            }
+            boolean audioGranted = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+            boolean locationGranted = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 
-            if (allGranted)
+            evaluatePermissionsAndStart(audioGranted, locationGranted);
+        }
+    }
+
+    /**
+     * Evaluates the granted permissions and decides how to start the lesson.
+     * It also checks if the GPS hardware is actually enabled if location permission is granted.
+     *
+     * @param hasAudio    True if audio recording permission is granted.
+     * @param hasLocation True if location access permission is granted.
+     */
+    private void evaluatePermissionsAndStart(boolean hasAudio, boolean hasLocation)
+    {
+        if (hasLocation)
+        {
+            if (!isLocationEnabled())
             {
-                checkLocationEnabledAndStart();
-            } else
-            {
-                Toast.makeText(requireContext(), "Microphone and Location permissions are required for the lesson.", Toast.LENGTH_LONG).show();
-                requireActivity().onBackPressed();
+                // Has permission, but GPS is turned off. Prompt the user.
+                // We pass the audio state so the prompt knows what fallback to use.
+                promptEnableLocation(hasAudio);
+                return;
             }
         }
+
+        // Proceed to start the lesson with the finalized capabilities
+        startLessonWithCapabilities(hasAudio, hasLocation);
     }
 
     /**
@@ -359,57 +374,65 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     }
 
     /**
-     * Handles the final steps of ending a lesson: stopping timer and recording,
-     * displaying the loading overlay, and sending the audio to Gemini for summarization.
-     * Automatically saves the result and navigates back upon success.
+     * Handles the final steps of ending a lesson.
+     * Stops tracking, recording, and delegates to Gemini or directly saves depending on capabilities.
      */
     private void processLessonEnd()
     {
         pauseTimer();
-        audioRecorderHelper.stopRecording();
-        updateRecordingUI(false);
-        tvRecordingStatus.setText("Processing...");
-
         activeLessonLoadingOverlay.setVisibility(View.VISIBLE);
 
-        if (locationHelper != null)
+        if (isLocationEnabledForLesson && locationHelper != null)
         {
             locationHelper.stopTracking();
         }
 
-        String finalPrompt = Prompts.LESSON_SUMMARY_PROMPT +
-                "\n\nReturn the data strictly according to this JSON schema:\n" +
-                LESSON_SUMMARY_SCHEMA;
-
-        if (!audioFile.exists() || audioFile.length() == 0)
+        if (isAudioEnabledForLesson)
         {
-            activeLessonLoadingOverlay.setVisibility(View.GONE);
-            Toast.makeText(requireContext(), "Error: Audio file was not saved properly.", Toast.LENGTH_LONG).show();
-            return;
+            audioRecorderHelper.stopRecording();
+            updateRecordingUI(false);
+            tvRecordingStatus.setText("Processing...");
+
+            if (!audioFile.exists() || audioFile.length() == 0)
+            {
+                activeLessonLoadingOverlay.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), "Error: Audio file was not saved properly.", Toast.LENGTH_LONG).show();
+                uploadGpxAndSaveLesson("{}");
+            }
+
+            String finalPrompt = Prompts.LESSON_SUMMARY_PROMPT +
+                    "\n\nReturn the data strictly according to this JSON schema:\n" +
+                    LESSON_SUMMARY_SCHEMA;
+
+            GeminiManager.getInstance().sendAudioPrompt(finalPrompt, audioFile, new GeminiCallBack()
+            {
+                @Override
+                public void onSuccess(String result)
+                {
+                    requireActivity().runOnUiThread(() ->
+                    {
+                        Toast.makeText(requireContext(), "Processing complete. Saving lesson...", Toast.LENGTH_SHORT).show();
+                        uploadGpxAndSaveLesson(result);
+                    });
+                }
+
+                @Override
+                public void onFailure(Throwable error)
+                {
+                    requireActivity().runOnUiThread(() ->
+                    {
+                        Toast.makeText(requireContext(), "Failed to summarize lesson: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                        uploadGpxAndSaveLesson("{}");
+                    });
+                }
+            });
         }
-
-        GeminiManager.getInstance().sendAudioPrompt(finalPrompt, audioFile, new GeminiCallBack()
+        else
         {
-            @Override
-            public void onSuccess(String result)
-            {
-                requireActivity().runOnUiThread(() ->
-                {
-                    Toast.makeText(requireContext(), "Processing complete. Saving lesson...", Toast.LENGTH_SHORT).show();
-                    uploadGpxAndSaveLesson(result);
-                });
-            }
-
-            @Override
-            public void onFailure(Throwable error)
-            {
-                requireActivity().runOnUiThread(() ->
-                {
-                    Toast.makeText(requireContext(), "Failed to summarize lesson: " + error.getMessage(), Toast.LENGTH_LONG).show();
-                    uploadGpxAndSaveLesson("{}");
-                });
-            }
-        });
+            // No Audio -> Skip Gemini completely
+            Toast.makeText(requireContext(), "No audio recorded. Saving lesson...", Toast.LENGTH_SHORT).show();
+            uploadGpxAndSaveLesson("{}");
+        }
     }
 
     /**
@@ -534,37 +557,31 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     }
 
     /**
-     * Prompts the user to enable location services.
-     * If they agree, opens settings using startActivityForResult.
-     * If they refuse, starts an audio-only lesson.
+     * Prompts the user to enable location services if the hardware is off.
+     *
+     * @param hasAudio Indicates if audio permission was granted, to pass it along.
      */
-    private void promptEnableLocation()
+    private void promptEnableLocation(boolean hasAudio)
     {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Enable Location Services")
-                .setMessage("GPS is required to track the driving route. Would you like to enable it in the settings? (If not, only audio will be recorded).")
+                .setMessage("GPS is required to track the driving route. Would you like to enable it in the settings?")
                 .setPositiveButton("Settings", (dialog, which) ->
                 {
+                    // Temporarily store audio state to use when returning from settings
+                    isAudioEnabledForLesson = hasAudio;
                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     startActivityForResult(intent, REQUEST_ENABLE_GPS);
                 })
                 .setNegativeButton("Continue without GPS", (dialog, which) ->
                 {
-                    Toast.makeText(requireContext(), "Starting audio-only lesson.", Toast.LENGTH_SHORT).show();
-                    startAudioOnlyLesson();
+                    Toast.makeText(requireContext(), "Starting without location tracking.", Toast.LENGTH_SHORT).show();
+                    startLessonWithCapabilities(hasAudio, false);
                 })
                 .setCancelable(false)
                 .show();
     }
 
-    /**
-     * Handles the return from the device Settings screen.
-     * Checks if the user actually enabled the GPS after visiting settings.
-     *
-     * @param requestCode The integer request code originally supplied to startActivityForResult().
-     * @param resultCode  The integer result code returned by the child activity.
-     * @param data        An Intent, which can return result data to the caller.
-     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
@@ -574,40 +591,69 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         {
             if (isLocationEnabled())
             {
-                setupMap();
+                startLessonWithCapabilities(isAudioEnabledForLesson, true);
             }
             else
             {
-                // User went to settings but didn't turn it on, or turned it off.
-                Toast.makeText(requireContext(), "GPS still disabled. Starting audio-only lesson.", Toast.LENGTH_SHORT).show();
-                startAudioOnlyLesson();
+                Toast.makeText(requireContext(), "GPS still disabled. Starting without location tracking.", Toast.LENGTH_SHORT).show();
+                startLessonWithCapabilities(isAudioEnabledForLesson, false);
             }
         }
     }
 
     /**
-     * Starts the lesson with only timer and audio recording.
-     * Bypasses the map and location tracking logic entirely.
+     * Starts the lesson based on the finalized capabilities.
+     * Updates UI badges, starts the timer, and optionally starts audio/location tracking.
+     *
+     * @param audioEnabled    true if audio should be recorded.
+     * @param locationEnabled true if location should be tracked.
      */
-    private void startAudioOnlyLesson()
+    private void startLessonWithCapabilities(boolean audioEnabled, boolean locationEnabled)
     {
-        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        startLesson();
-    }
+        isAudioEnabledForLesson = audioEnabled;
+        isLocationEnabledForLesson = locationEnabled;
 
-    /**
-     * Verifies if the GPS is turned on before starting the lesson.
-     * If off, prompts the user to turn it on. If on, initializes the map.
-     */
-    private void checkLocationEnabledAndStart()
-    {
-        if (!isLocationEnabled())
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        llAudioBadge.setVisibility(audioEnabled ? View.VISIBLE : View.GONE);
+        llLocationBadge.setVisibility(locationEnabled ? View.VISIBLE : View.GONE);
+
+        startTimer();
+
+        // Handles Audio
+        if (audioEnabled)
         {
-            promptEnableLocation();
+            if (audioFile != null && audioFile.exists())
+            {
+                audioFile.delete();
+            }
+            try
+            {
+                audioRecorderHelper.startRecording();
+                updateRecordingUI(true);
+            }
+            catch (IOException e)
+            {
+                Toast.makeText(requireContext(), "Failed to start recording", Toast.LENGTH_SHORT).show();
+                isAudioEnabledForLesson = false;
+                llAudioBadge.setVisibility(View.GONE);
+            }
         }
         else
         {
+            // Updates UI for NO AUDIO
+            vRecordingIndicator.setBackgroundColor(Color.parseColor("#808080"));
+            tvRecordingStatus.setText("No Audio");
+            tvRecordingStatus.setTextColor(Color.parseColor("#808080"));
+            btnPauseRecording.setEnabled(false);
+        }
+
+        // Handles Location
+        if (locationEnabled)
+        {
             setupMap();
+            locationHelper = new LocationTrackingHelper(requireContext(), this);
+            locationHelper.startTracking();
         }
     }
 
@@ -654,10 +700,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     }
 
     /**
-     * Processes the lesson end. If location data exists, uploads GPX to Storage first,
-     * then saves to Database. If audio-only (no locations), skips Storage and saves directly to Database.
+     * Processes the generated summary and decides whether to upload a GPX track
+     * based on the lesson's location capabilities, then saves the final lesson data.
+     * Ensures that in all scenarios, the lesson is saved to the database.
      *
-     * @param geminiSummary The JSON summary generated by Gemini.
+     * @param geminiSummary The JSON summary generated by Gemini, or "{}" if unavailable.
      */
     private void uploadGpxAndSaveLesson(String geminiSummary)
     {
@@ -666,7 +713,6 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         {
             Gson gson = new Gson();
             tempSummary = gson.fromJson(geminiSummary, LessonSummary.class);
-
             if (tempSummary == null)
             {
                 tempSummary = new LessonSummary();
@@ -674,20 +720,19 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
         catch (Exception e)
         {
-            Toast.makeText(requireContext(), "Error parsing Gemini summary.", Toast.LENGTH_LONG).show();
             tempSummary = new LessonSummary();
         }
 
         final LessonSummary finalParsedSummary = tempSummary;
 
-        // Audio only, without saving track
-        if (recordedLocations == null || recordedLocations.isEmpty())
+        // Skip Storage upload if location tracking was disabled or no locations were recorded
+        if (!isLocationEnabledForLesson || recordedLocations == null || recordedLocations.isEmpty())
         {
             saveLessonDataToDatabase(finalParsedSummary);
             return;
         }
 
-        // Saves the track
+        // Location tracking was enabled, proceed to generate and upload the GPX file
         File gpxFile = new File(requireContext().getCacheDir(), "track.gpx");
         try
         {
@@ -695,7 +740,8 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
         catch (IOException e)
         {
-            Toast.makeText(requireContext(), "Failed to generate track file.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Failed to generate track file. Saving lesson...", Toast.LENGTH_SHORT).show();
+            saveLessonDataToDatabase(finalParsedSummary);
             return;
         }
 
@@ -709,13 +755,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         Uri fileUri = Uri.fromFile(gpxFile);
 
         trackRef.putFile(fileUri)
-                .addOnSuccessListener(taskSnapshot ->
-                {
-                    saveLessonDataToDatabase(finalParsedSummary);
-                })
+                .addOnSuccessListener(taskSnapshot -> saveLessonDataToDatabase(finalParsedSummary))
                 .addOnFailureListener(e ->
                 {
-                    Toast.makeText(requireContext(), "Failed to upload track: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(requireContext(), "Failed to upload track, but saving lesson...", Toast.LENGTH_SHORT).show();
+                    saveLessonDataToDatabase(finalParsedSummary);
                 });
     }
 
