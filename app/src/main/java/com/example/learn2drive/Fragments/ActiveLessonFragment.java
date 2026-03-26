@@ -294,25 +294,32 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
 
     /**
      * Starts the lesson timer and the audio recording.
+     * This is the SINGLE point where the lesson actually starts to prevent race conditions.
      */
     private void startLesson()
     {
-        if (audioFile != null && audioFile.exists())
+        if (isAudioEnabledForLesson)
         {
-            audioFile.delete();
+            if (audioFile != null && audioFile.exists())
+            {
+                audioFile.delete();
+            }
+            try
+            {
+                audioRecorderHelper.startRecording();
+                updateRecordingUI(true);
+            }
+            catch (IOException e)
+            {
+                Log.e("ActiveLesson", "Error starting recording: ", e);
+                Toast.makeText(requireContext(), "Failed to start recording", Toast.LENGTH_SHORT).show();
+                isAudioEnabledForLesson = false;
+                llAudioBadge.setVisibility(View.GONE);
+                updateRecordingUI(false);
+            }
         }
 
         startTimer();
-        try
-        {
-            audioRecorderHelper.startRecording();
-            updateRecordingUI(true);
-        }
-        catch (IOException e)
-        {
-            Log.e("ActiveLesson", "Error starting recording: ", e);
-            Toast.makeText(requireContext(), "Failed to start recording", Toast.LENGTH_SHORT).show();
-        }
     }
 
     /**
@@ -603,7 +610,7 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
 
     /**
      * Starts the lesson based on the finalized capabilities.
-     * Updates UI badges, starts the timer, and optionally starts audio/location tracking.
+     * Updates UI badges, and coordinates the start of location tracking or starts the lesson immediately.
      *
      * @param audioEnabled    true if audio should be recorded.
      * @param locationEnabled true if location should be tracked.
@@ -618,42 +625,23 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         llAudioBadge.setVisibility(audioEnabled ? View.VISIBLE : View.GONE);
         llLocationBadge.setVisibility(locationEnabled ? View.VISIBLE : View.GONE);
 
-        startTimer();
-
-        // Handles Audio
-        if (audioEnabled)
+        // Updates UI for NO AUDIO
+        if (!audioEnabled)
         {
-            if (audioFile != null && audioFile.exists())
-            {
-                audioFile.delete();
-            }
-            try
-            {
-                audioRecorderHelper.startRecording();
-                updateRecordingUI(true);
-            }
-            catch (IOException e)
-            {
-                Toast.makeText(requireContext(), "Failed to start recording", Toast.LENGTH_SHORT).show();
-                isAudioEnabledForLesson = false;
-                llAudioBadge.setVisibility(View.GONE);
-            }
-        }
-        else
-        {
-            // Updates UI for NO AUDIO
             vRecordingIndicator.setBackgroundColor(Color.parseColor("#808080"));
             tvRecordingStatus.setText("No Audio");
             tvRecordingStatus.setTextColor(Color.parseColor("#808080"));
             btnPauseRecording.setEnabled(false);
         }
 
-        // Handles Location
+        // Handles Location and Lesson Start
         if (locationEnabled)
         {
             setupMap();
-            locationHelper = new LocationTrackingHelper(requireContext(), this);
-            locationHelper.startTracking();
+        }
+        else
+        {
+            startLesson();
         }
     }
 
@@ -685,17 +673,15 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     }
 
     /**
-     * Prepares the environment for the active lesson: keeps the screen on,
-     * initializes tracking helper, and starts the timer/audio.
+     * Prepares the environment for the active lesson when location is enabled.
+     * Initializes tracking helper, and delegates to startLesson().
      */
     private void startLessonLogic()
     {
-        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        // Initialize and start our custom location helper
         locationHelper = new LocationTrackingHelper(requireContext(), this);
         locationHelper.startTracking();
 
+        // Start timer and audio
         startLesson();
     }
 

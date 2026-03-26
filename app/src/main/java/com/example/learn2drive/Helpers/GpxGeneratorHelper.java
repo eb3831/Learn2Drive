@@ -2,6 +2,7 @@ package com.example.learn2drive.Helpers;
 
 import android.location.Location;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,14 +20,19 @@ public class GpxGeneratorHelper
 {
     /**
      * Converts a list of Location objects into a standard GPX XML format
-     * and writes it to the specified file.
+     * and writes it to the specified file using a BufferedWriter for optimal performance.
      *
      * @param locations The list of locations recorded during the driving lesson.
      * @param gpxFile   The destination File where the GPX data will be saved.
-     * @throws IOException If an error occurs during the file writing process.
+     * @throws IOException If an error occurs during the file writing process or if the list is empty.
      */
     public static void generateGpxFile(List<Location> locations, File gpxFile) throws IOException
     {
+        if (locations == null || locations.isEmpty())
+        {
+            throw new IOException("Location list is empty or null. Cannot generate GPX file.");
+        }
+
         String header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<gpx version=\"1.1\" creator=\"Learn2Drive\">\n" +
                 "  <trk>\n" +
@@ -37,11 +43,10 @@ public class GpxGeneratorHelper
                 "  </trk>\n" +
                 "</gpx>";
 
-        // GPX files require time to be in ISO 8601 format (UTC time)
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        try (FileWriter writer = new FileWriter(gpxFile))
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(gpxFile)))
         {
             writer.write(header);
 
