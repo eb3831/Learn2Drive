@@ -24,7 +24,7 @@
             android:background="@drawable/bg_circle_black"
             android:contentDescription="User Icon"
             android:padding="16dp"
-            android:src="@drawable/user"
+            android:src="@drawable/user_ic"
             app:tint="@color/white" />
 
         <TextView
@@ -73,7 +73,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/user"
+                    android:src="@drawable/user_ic"
                     app:tint="@color/gray_400" />
 
                 <EditText

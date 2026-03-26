@@ -176,8 +176,8 @@ public class TeacherLessonDetailsFragment extends Fragment
 
                 Glide.with(getContext())
                         .load(uri)
-                        .placeholder(R.drawable.user)
-                        .error(R.drawable.user)
+                        .placeholder(R.drawable.user_ic)
+                        .error(R.drawable.user_ic)
                         .circleCrop()
                         .into(ivStudentProfile);
 
@@ -186,7 +186,7 @@ public class TeacherLessonDetailsFragment extends Fragment
         }).addOnFailureListener(e ->
         {
             pbProfilePicLoading.setVisibility(View.GONE);
-            ivStudentProfile.setImageResource(R.drawable.user);
+            ivStudentProfile.setImageResource(R.drawable.user_ic);
         });
     }
 

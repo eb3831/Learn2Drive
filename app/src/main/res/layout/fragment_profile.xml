@@ -61,7 +61,7 @@
                         android:layout_height="match_parent"
                         android:background="@drawable/bg_profile_circle"
                         android:padding="28dp"
-                        android:src="@drawable/user"
+                        android:src="@drawable/user_ic"
                         app:tint="#9CA3AF" />
 
                     <ProgressBar
@@ -101,7 +101,7 @@
                         <ImageView
                             android:layout_width="14dp"
                             android:layout_height="14dp"
-                            android:src="@drawable/user"
+                            android:src="@drawable/user_ic"
                             app:tint="#6B7280" />
 
                         <TextView

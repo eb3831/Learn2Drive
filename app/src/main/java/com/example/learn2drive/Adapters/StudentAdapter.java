@@ -62,8 +62,8 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
 
                         Glide.with(context)
                                 .load(uri)
-                                .placeholder(R.drawable.user)
-                                .error(R.drawable.user)
+                                .placeholder(R.drawable.user_ic)
+                                .error(R.drawable.user_ic)
                                 .circleCrop()
                                 .into(holder.ivStudentProfile);
                     }
