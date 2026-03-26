@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
+import com.example.learn2drive.Activities.MasterActivity;
 import com.example.learn2drive.Activities.TeacherMainActivity;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.ScheduledLesson;
@@ -301,5 +302,19 @@ public class TeacherLessonDetailsFragment extends Fragment
                     lessonLoadingOverlay.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "Failed to cancel lesson", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MasterActivity) getActivity()).hideBottomNav();
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        ((MasterActivity) getActivity()).showBottomNav();
     }
 }

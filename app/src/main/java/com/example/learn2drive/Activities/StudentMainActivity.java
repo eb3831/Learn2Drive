@@ -17,9 +17,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class StudentMainActivity extends MasterActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener
 {
-
-    private BottomNavigationView studentBottomNav;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -31,11 +28,9 @@ public class StudentMainActivity extends MasterActivity implements
 
     private void initViews()
     {
-        studentBottomNav = findViewById(R.id.studentBottomNav);
-        studentBottomNav.setOnNavigationItemSelectedListener(this);
-
-        // Set default fragment
-        studentBottomNav.setSelectedItemId(R.id.menu_student_home);
+        bottomNavigationView = findViewById(R.id.studentBottomNav);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        bottomNavigationView.setSelectedItemId(R.id.menu_student_home);
     }
 
     @Override

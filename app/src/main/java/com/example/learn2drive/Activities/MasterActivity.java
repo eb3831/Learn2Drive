@@ -1,6 +1,7 @@
 package com.example.learn2drive.Activities;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,10 +13,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.learn2drive.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MasterActivity extends AppCompatActivity
 {
     private FragmentManager fragmentManager;
+    protected BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -58,6 +61,27 @@ public class MasterActivity extends AppCompatActivity
     public void clearStack()
     {
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
 
+    /**
+     * Hides the bottom navigation bar across any child activity.
+     */
+    public void hideBottomNav()
+    {
+        if (bottomNavigationView != null)
+        {
+            bottomNavigationView.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Shows the bottom navigation bar across any child activity.
+     */
+    public void showBottomNav()
+    {
+        if (bottomNavigationView != null)
+        {
+            bottomNavigationView.setVisibility(View.VISIBLE);
+        }
     }
 }

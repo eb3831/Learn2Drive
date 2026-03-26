@@ -35,6 +35,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.learn2drive.Activities.MasterActivity;
+import com.example.learn2drive.Activities.TeacherMainActivity;
 import com.example.learn2drive.Helpers.AudioRecorderHelper;
 import com.example.learn2drive.Helpers.GeminiCallBack;
 import com.example.learn2drive.Helpers.GeminiManager;
@@ -214,7 +216,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
      */
     private void setupClickListeners()
     {
-        btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
+        btnBack.setOnClickListener(v -> Toast.makeText(requireContext(),
+                "You can't leave this screen while a lesson is active, yet!",
+                Toast.LENGTH_SHORT).show());
 
         btnPauseRecording.setOnClickListener(v -> handlePauseResumeClick());
 
@@ -697,8 +701,20 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         LessonSummary tempSummary;
         try
         {
+            // Clean the string from Markdown formatting if Gemini added it
+            String cleanJson = geminiSummary;
+            if (cleanJson.startsWith("```json"))
+            {
+                cleanJson = cleanJson.replace("```json", "").replace("```", "").trim();
+            }
+
+            else if (cleanJson.startsWith("```"))
+            {
+                cleanJson = cleanJson.replace("```", "").trim();
+            }
+
             Gson gson = new Gson();
-            tempSummary = gson.fromJson(geminiSummary, LessonSummary.class);
+            tempSummary = gson.fromJson(cleanJson, LessonSummary.class);
             if (tempSummary == null)
             {
                 tempSummary = new LessonSummary();
@@ -706,6 +722,7 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
         catch (Exception e)
         {
+            Log.e("ActiveLesson", "Gson parsing error: " + e.getMessage());
             tempSummary = new LessonSummary();
         }
 
@@ -771,19 +788,44 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
                             .addOnSuccessListener(aVoid1 ->
                             {
                                 Toast.makeText(requireContext(), "Lesson saved successfully!", Toast.LENGTH_SHORT).show();
-                                requireActivity().onBackPressed();
+                                returnToHome();
                             })
                             .addOnFailureListener(e ->
                             {
                                 Toast.makeText(requireContext(), "Lesson saved, but failed to remove from schedule: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                requireActivity().onBackPressed();
+                                returnToHome();
 
                             });
                 })
                 .addOnFailureListener(e ->
                 {
                     Toast.makeText(requireContext(), "Failed to save done lesson: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    requireActivity().onBackPressed();
+                    returnToHome();
                 });
+    }
+
+    /**
+     * Clears the fragment back stack and returns the user to the home screen.
+     */
+    private void returnToHome()
+    {
+        TeacherMainActivity activity = (TeacherMainActivity) requireActivity();
+
+        activity.clearStack();
+        activity.replaceFragment(TeacherHomeFragment.newInstance(), false, "TeacherHomeFragment");
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MasterActivity) getActivity()).hideBottomNav();
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        ((MasterActivity) getActivity()).showBottomNav();
     }
 }

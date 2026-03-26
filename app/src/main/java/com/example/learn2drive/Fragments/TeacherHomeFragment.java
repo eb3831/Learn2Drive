@@ -49,6 +49,21 @@ public class TeacherHomeFragment extends Fragment
         // Required empty public constructor
     }
 
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment.
+     *
+     * @return A new instance of fragment TeacherHomeFragment.
+     */
+    public static TeacherHomeFragment newInstance()
+    {
+        TeacherHomeFragment fragment = new TeacherHomeFragment();
+        Bundle args = new Bundle();
+        // Add parameters to the bundle here if needed in the future
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
