@@ -89,15 +89,15 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
 
                             Glide.with(context)
                                     .load(uri)
-                                    .placeholder(R.drawable.user_ic) // Shows this while loading
+                                    .placeholder(R.drawable.ic_user) // Shows this while loading
                                     .circleCrop()
-                                    .error(R.drawable.user_ic)
+                                    .error(R.drawable.ic_user)
                                     .into(holder.ivStudentProfile);
                         }
                     })
                     .addOnFailureListener(e ->
                     {
-                        holder.ivStudentProfile.setImageResource(R.drawable.user_ic);
+                        holder.ivStudentProfile.setImageResource(R.drawable.ic_user);
                     });
         }
 

@@ -16,7 +16,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.example.learn2drive.Activities.MasterActivity;
@@ -176,8 +175,8 @@ public class TeacherLessonDetailsFragment extends Fragment
 
                 Glide.with(getContext())
                         .load(uri)
-                        .placeholder(R.drawable.user_ic)
-                        .error(R.drawable.user_ic)
+                        .placeholder(R.drawable.ic_user)
+                        .error(R.drawable.ic_user)
                         .circleCrop()
                         .into(ivStudentProfile);
 
@@ -186,7 +185,7 @@ public class TeacherLessonDetailsFragment extends Fragment
         }).addOnFailureListener(e ->
         {
             pbProfilePicLoading.setVisibility(View.GONE);
-            ivStudentProfile.setImageResource(R.drawable.user_ic);
+            ivStudentProfile.setImageResource(R.drawable.ic_user);
         });
     }
 

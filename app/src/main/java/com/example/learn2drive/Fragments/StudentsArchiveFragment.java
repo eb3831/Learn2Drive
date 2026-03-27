@@ -89,7 +89,7 @@ public class StudentsArchiveFragment extends Fragment
                             restoreStudent(student);
                         })
                         .setNegativeButton("Cancel", null)
-                        .setIcon(R.drawable.user_ic)
+                        .setIcon(R.drawable.ic_user)
                         .show();
             }
         });

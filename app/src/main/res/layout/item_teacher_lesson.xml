@@ -89,7 +89,7 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/user_ic"
+                android:src="@drawable/ic_user"
                 app:tint="#6B7280" />
 
             <TextView
