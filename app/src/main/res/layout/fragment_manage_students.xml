@@ -106,7 +106,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="8dp"
-                    android:src="@drawable/user_plus"
+                    android:src="@drawable/ic_user_plus"
                     app:tint="#000000" />
 
                 <TextView
@@ -132,7 +132,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="8dp"
-                    android:src="@drawable/archive"
+                    android:src="@drawable/ic_archive"
                     app:tint="#000000" />
 
                 <TextView

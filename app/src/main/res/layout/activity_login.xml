@@ -19,7 +19,7 @@
         android:background="@drawable/bg_circle_black"
         android:contentDescription="Lock Icon"
         android:padding="16dp"
-        android:src="@drawable/lock"
+        android:src="@drawable/ic_lock"
         app:tint="@color/white" />
 
     <Space
@@ -77,7 +77,7 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/mail"
+                android:src="@drawable/ic_mail"
                 app:tint="@color/gray_400" />
 
             <EditText
@@ -129,7 +129,7 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/lock"
+                android:src="@drawable/ic_lock"
                 app:tint="@color/gray_400" />
 
             <EditText

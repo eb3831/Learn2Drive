@@ -14,7 +14,7 @@
         android:id="@+id/ivClockIcon"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:src="@drawable/clock"
+        android:src="@drawable/ic_clock"
         app:tint="#6B7280" />
 
     <TextView

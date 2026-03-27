@@ -44,7 +44,7 @@
             <ImageView
                 android:layout_width="14dp"
                 android:layout_height="14dp"
-                android:src="@drawable/id_card"
+                android:src="@drawable/ic_id_card"
                 app:tint="#6B7280" />
 
             <TextView
@@ -66,7 +66,7 @@
             <ImageView
                 android:layout_width="14dp"
                 android:layout_height="14dp"
-                android:src="@drawable/book"
+                android:src="@drawable/ic_book"
                 app:tint="#6B7280" />
 
             <TextView

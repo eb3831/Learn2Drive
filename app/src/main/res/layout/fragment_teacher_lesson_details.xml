@@ -27,7 +27,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:src="@drawable/arrow_left"
+                android:src="@drawable/ic_arrow_left"
                 app:tint="#FFFFFF" />
 
             <LinearLayout
@@ -161,7 +161,7 @@
                             <ImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-                                android:src="@drawable/calendar"
+                                android:src="@drawable/ic_calendar"
                                 app:tint="#6B7280" />
 
                             <LinearLayout
@@ -198,7 +198,7 @@
                             <ImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-                                android:src="@drawable/clock"
+                                android:src="@drawable/ic_clock"
                                 app:tint="#6B7280" />
 
                             <LinearLayout
@@ -234,7 +234,7 @@
                             <ImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-                                android:src="@drawable/timer"
+                                android:src="@drawable/ic_timer"
                                 app:tint="#6B7280" />
 
                             <LinearLayout
@@ -278,7 +278,7 @@
                     android:textStyle="bold"
                     app:backgroundTint="#000000"
                     app:cornerRadius="8dp"
-                    app:icon="@drawable/circle_play"
+                    app:icon="@drawable/ic_circle_play"
                     app:iconGravity="textStart"
                     app:iconTint="#FFFFFF" />
 
@@ -294,7 +294,7 @@
                     android:textStyle="bold"
                     app:backgroundTint="#F3F4F6"
                     app:cornerRadius="8dp"
-                    app:icon="@drawable/circle_x"
+                    app:icon="@drawable/ic_circle_x"
                     app:iconGravity="textStart"
                     app:iconTint="#DC2626"
                     app:strokeColor="#D1D5DB"

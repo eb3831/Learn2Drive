@@ -38,7 +38,7 @@
                     android:contentDescription="Back"
                     android:focusable="true"
                     android:padding="6dp"
-                    android:src="@drawable/arrow_left"
+                    android:src="@drawable/ic_arrow_left"
                     app:tint="#FFFFFF" />
 
                 <LinearLayout
@@ -129,7 +129,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/mic"
+                        android:src="@drawable/ic_mic"
                         app:tint="#FCA5A5" />
 
                     <TextView
@@ -156,7 +156,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/map"
+                        android:src="@drawable/ic_map_pin"
                         app:tint="#FCA5A5" />
 
                     <TextView
@@ -189,7 +189,7 @@
                 android:textStyle="bold"
                 app:backgroundTint="#FFFFFF"
                 app:cornerRadius="8dp"
-                app:icon="@drawable/square"
+                app:icon="@drawable/ic_square"
                 app:iconGravity="textStart"
                 app:iconTint="#DC2626"
                 app:strokeColor="#DC2626"
@@ -207,7 +207,7 @@
                 android:textStyle="bold"
                 app:backgroundTint="#DC2626"
                 app:cornerRadius="8dp"
-                app:icon="@drawable/circle_stop"
+                app:icon="@drawable/ic_circle_stop"
                 app:iconGravity="textStart"
                 app:iconTint="#FFFFFF" />
         </LinearLayout>

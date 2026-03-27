@@ -25,7 +25,7 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
                 android:contentDescription="Back button"
-                android:src="@drawable/arrow_left"
+                android:src="@drawable/ic_arrow_left"
                 app:tint="#FFFFFF" />
 
             <LinearLayout
@@ -73,7 +73,7 @@
         <ImageView
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@drawable/x"
+            android:src="@drawable/ic_x"
             app:tint="#D1D5DB" />
 
         <TextView

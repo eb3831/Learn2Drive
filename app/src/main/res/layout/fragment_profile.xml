@@ -81,7 +81,7 @@
                         android:layout_marginBottom="4dp"
                         android:background="@drawable/bg_camera_badge"
                         android:padding="6dp"
-                        android:src="@drawable/camera"
+                        android:src="@drawable/ic_camera"
                         app:tint="#FFFFFF" />
                 </FrameLayout>
 
@@ -139,7 +139,7 @@
                         <ImageView
                             android:layout_width="14dp"
                             android:layout_height="14dp"
-                            android:src="@drawable/id_card"
+                            android:src="@drawable/ic_id_card"
                             app:tint="#6B7280" />
 
                         <TextView
@@ -177,7 +177,7 @@
                         <ImageView
                             android:layout_width="14dp"
                             android:layout_height="14dp"
-                            android:src="@drawable/calendar"
+                            android:src="@drawable/ic_calendar"
                             app:tint="#6B7280" />
 
                         <TextView
@@ -216,7 +216,7 @@
                         <ImageView
                             android:layout_width="14dp"
                             android:layout_height="14dp"
-                            android:src="@drawable/cap"
+                            android:src="@drawable/ic_cap"
                             app:tint="#6B7280" />
 
                         <TextView

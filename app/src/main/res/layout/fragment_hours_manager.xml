@@ -24,7 +24,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/arrow_left"
+                android:src="@drawable/ic_arrow_left"
                 app:tint="#FFFFFF" />
 
             <LinearLayout
@@ -73,7 +73,7 @@
                     <ImageView
                         android:layout_width="14dp"
                         android:layout_height="14dp"
-                        android:src="@drawable/calendar"
+                        android:src="@drawable/ic_calendar"
                         app:tint="#6B7280" />
 
                     <TextView
@@ -120,7 +120,7 @@
                             <ImageView
                                 android:layout_width="14dp"
                                 android:layout_height="14dp"
-                                android:src="@drawable/clock"
+                                android:src="@drawable/ic_clock"
                                 app:tint="#6B7280" />
 
                             <TextView
@@ -160,7 +160,7 @@
                             <ImageView
                                 android:layout_width="14dp"
                                 android:layout_height="14dp"
-                                android:src="@drawable/clock"
+                                android:src="@drawable/ic_clock"
                                 app:tint="#6B7280" />
 
                             <TextView
@@ -278,7 +278,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:alpha="0.2"
-                        android:src="@drawable/clock"
+                        android:src="@drawable/ic_clock"
                         app:tint="#000000" />
 
                     <TextView

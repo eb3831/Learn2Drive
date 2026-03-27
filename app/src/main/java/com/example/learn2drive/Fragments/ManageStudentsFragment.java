@@ -148,7 +148,7 @@ public class ManageStudentsFragment extends Fragment
                     archiveStudent(student);
                 })
                 .setNegativeButton("Cancel", null)
-                .setIcon(R.drawable.book)
+                .setIcon(R.drawable.ic_book)
                 .show();
     }
 

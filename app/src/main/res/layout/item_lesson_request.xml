@@ -24,7 +24,7 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/calendar"
+                android:src="@drawable/ic_calendar"
                 app:tint="#6B7280" />
 
             <TextView
@@ -52,7 +52,7 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/clock"
+                android:src="@drawable/ic_clock"
                 app:tint="#6B7280" />
 
             <TextView
@@ -113,7 +113,7 @@
                 <ImageView
                     android:layout_width="12dp"
                     android:layout_height="12dp"
-                    android:src="@drawable/id_card"
+                    android:src="@drawable/ic_id_card"
                     app:tint="#6B7280" />
 
                 <TextView

@@ -125,7 +125,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/mail"
+                    android:src="@drawable/ic_mail"
                     app:tint="@color/gray_400" />
 
                 <EditText
@@ -177,7 +177,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/phone"
+                    android:src="@drawable/ic_phone"
                     app:tint="@color/gray_400" />
 
                 <EditText
@@ -229,7 +229,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/lock"
+                    android:src="@drawable/ic_lock"
                     app:tint="@color/gray_400" />
 
                 <EditText
@@ -289,7 +289,7 @@
                     android:layout_gravity="bottom"
                     android:foregroundGravity="right"
                     android:paddingEnd="5dp"
-                    app:srcCompat="@drawable/scan" />
+                    app:srcCompat="@drawable/ic_scan" />
 
                 <TextView
                     android:id="@+id/btnScanID"
@@ -317,7 +317,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/calendar"
+                    android:src="@drawable/ic_calendar"
                     app:tint="@color/gray_400" />
 
                 <EditText
@@ -372,7 +372,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/id_card"
+                    android:src="@drawable/ic_id_card"
                     app:tint="@color/gray_400" />
 
                 <EditText

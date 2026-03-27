@@ -27,7 +27,7 @@
             android:focusable="true"
             android:onClick="onBackClicked"
             android:contentDescription="Back"
-            android:src="@drawable/arrow_left"
+            android:src="@drawable/ic_arrow_left"
             app:tint="@color/gray_600" />
 
         <TextView
@@ -153,7 +153,7 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/search"
+                        android:src="@drawable/ic_search"
                         app:tint="@color/gray_400" />
 
                     <EditText
