@@ -1,5 +1,6 @@
 package com.example.learn2drive.Fragments;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +15,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.learn2drive.Objects.DoneLesson;
+import com.example.learn2drive.Objects.LessonSummary;
 import com.example.learn2drive.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -211,12 +214,61 @@ public class LessonDetailsFragment extends Fragment
     }
 
     /**
-     * Displays an AlertDialog containing the AI-generated lesson summary.
+     * Displays a custom AlertDialog containing the AI-generated lesson summary.
+     * Inflates a custom layout and populates it without using dynamic views.
      */
     private void showSummaryDialog()
     {
-        // TODO: Implement AlertDialog construction using currentLesson.getSummary()
-        Toast.makeText(getContext(), "Opening Summary Dialog...", Toast.LENGTH_SHORT).show();
+        if (getContext() == null || currentLesson.getSummary() == null) return;
+
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_lesson_summary, null);
+
+        TextView tvOverview = dialogView.findViewById(R.id.tvOverviewContent);
+        TextView tvTopics = dialogView.findViewById(R.id.tvTopicsContent);
+        TextView tvStrengths = dialogView.findViewById(R.id.tvStrengthsContent);
+        TextView tvImprovements = dialogView.findViewById(R.id.tvImprovementsContent);
+        TextView tvRecommendations = dialogView.findViewById(R.id.tvRecommendationsContent);
+        LinearLayout btnClose = dialogView.findViewById(R.id.btnCloseDialog);
+
+        LessonSummary summary = currentLesson.getSummary();
+
+        tvOverview.setText(summary.getLessonSummary() != null ? summary.getLessonSummary() : "No overview available.");
+        tvTopics.setText(formatListToBullets(summary.getTopicsCovered()));
+        tvStrengths.setText(formatListToBullets(summary.getStrengths()));
+        tvImprovements.setText(formatListToBullets(summary.getAreasForImprovement()));
+        tvRecommendations.setText(formatListToBullets(summary.getRecommendations()));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(dialogView);
+        AlertDialog alertDialog = builder.create();
+
+        btnClose.setOnClickListener(v -> alertDialog.dismiss());
+
+        alertDialog.show();
+    }
+
+    /**
+     * Helper method to convert a List of Strings into a single bulleted String.
+     *
+     * @param list The list of strings to format.
+     * @return A single formatted string with bullet points and newlines.
+     */
+    private String formatListToBullets(List<String> list)
+    {
+        if (list == null || list.isEmpty())
+        {
+
+            return "None";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (String item : list)
+        {
+            builder.append("• ").append(item).append("\n");
+        }
+
+        // Remove the very last newline character to avoid extra empty space at the bottom
+        return builder.toString().trim();
     }
 
     /**
