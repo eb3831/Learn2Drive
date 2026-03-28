@@ -55,6 +55,21 @@ public class LessonTrackFragment extends Fragment implements OnMapReadyCallback
         // Required empty public constructor
     }
 
+    /**
+     * Factory method to create a new instance of this fragment.
+     *
+     * @param lesson The completed lesson object containing the necessary data to fetch the track.
+     * @return A new instance of fragment LessonTrackFragment.
+     */
+    public static LessonTrackFragment newInstance(DoneLesson lesson)
+    {
+        LessonTrackFragment fragment = new LessonTrackFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("lesson_data", lesson);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)

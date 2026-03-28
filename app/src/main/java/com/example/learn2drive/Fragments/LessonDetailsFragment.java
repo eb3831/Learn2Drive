@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.learn2drive.Activities.StudentMainActivity;
+import com.example.learn2drive.Activities.TeacherMainActivity;
 import com.example.learn2drive.Objects.DoneLesson;
 import com.example.learn2drive.Objects.LessonSummary;
 import com.example.learn2drive.R;
@@ -276,7 +278,18 @@ public class LessonDetailsFragment extends Fragment
      */
     private void navigateToTrackMap()
     {
-        // TODO: Implement FragmentManager transaction to the map fragment
-        Toast.makeText(getContext(), "Navigating to Track Map...", Toast.LENGTH_SHORT).show();
+        if(isStudent)
+        {
+            ((StudentMainActivity)requireActivity()).replaceFragment(
+                    LessonTrackFragment.newInstance(currentLesson),
+                    true, "LESSON_TRACK_FRAGMENT");
+        }
+
+        else
+        {
+            ((TeacherMainActivity)requireActivity()).replaceFragment(
+                    LessonTrackFragment.newInstance(currentLesson),
+                    true, "LESSON_TRACK_FRAGMENT");
+        }
     }
 }
