@@ -778,7 +778,8 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         String studentUid = currentLesson.getStudentUID();
         String dateTime = currentLesson.getDateAndTime();
 
-        DoneLesson doneLesson = new DoneLesson(currentLesson, new Payment(), parsedSummary);
+        DoneLesson doneLesson = new DoneLesson(currentLesson, new Payment(), parsedSummary,
+                isLocationEnabledForLesson, isAudioEnabledForLesson);
 
         refDoneLessons.child(teacherUid).child(studentUid).child(dateTime).setValue(doneLesson)
                 .addOnSuccessListener(aVoid ->

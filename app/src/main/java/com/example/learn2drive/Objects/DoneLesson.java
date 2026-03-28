@@ -1,13 +1,17 @@
 package com.example.learn2drive.Objects;
 
+import java.io.Serializable;
+
 /**
  * Model class representing a completed driving lesson.
  * Extends ScheduledLesson and includes payment details and an AI-generated summary.
  */
-public class DoneLesson extends ScheduledLesson
+public class DoneLesson extends ScheduledLesson implements Serializable
 {
     private Payment payment;
     private LessonSummary summary;
+    private boolean hasTrack;
+    private boolean hasSummary;
 
     /**
      * Default constructor required for Firebase Realtime Database.
@@ -17,6 +21,8 @@ public class DoneLesson extends ScheduledLesson
         super();
         this.payment = new Payment();
         this.summary = new LessonSummary();
+        this.hasTrack = false;
+        this.hasSummary = false;
     }
 
     /**
@@ -34,11 +40,13 @@ public class DoneLesson extends ScheduledLesson
      */
     public DoneLesson(int lessonNumber, String teacherUID, String studentUID, String studentID,
                       String dateAndTime, int duration, String studentName,
-                      Payment payment, LessonSummary summary)
+                      Payment payment, LessonSummary summary, boolean hasTrack, boolean hasSummary)
     {
         super(lessonNumber, teacherUID, studentUID, studentID, dateAndTime, duration, studentName);
         this.payment = payment;
         this.summary = summary;
+        this.hasTrack = hasTrack;
+        this.hasSummary = hasSummary;
     }
 
     /**
@@ -48,13 +56,16 @@ public class DoneLesson extends ScheduledLesson
      * @param payment The payment details.
      * @param summary The AI-generated lesson summary.
      */
-    public DoneLesson(ScheduledLesson lesson, Payment payment, LessonSummary summary)
+    public DoneLesson(ScheduledLesson lesson, Payment payment, LessonSummary summary,
+                      boolean hasTrack, boolean hasSummary)
     {
         super(lesson.getLessonNumber(), lesson.getTeacherUID(), lesson.getStudentUID(),
                 lesson.getStudentID(), lesson.getDateAndTime(), lesson.getDuration(),
                 lesson.getStudentName());
         this.payment = payment;
         this.summary = summary;
+        this.hasTrack = hasTrack;
+        this.hasSummary = hasSummary;
     }
 
     /**
@@ -90,5 +101,25 @@ public class DoneLesson extends ScheduledLesson
     public void setSummary(LessonSummary summary)
     {
         this.summary = summary;
+    }
+
+    public void setHasTrack(boolean hasTrack)
+    {
+        this.hasTrack = hasTrack;
+    }
+
+    public boolean getHasTrack()
+    {
+        return hasTrack;
+    }
+
+    public void setHasSummary(boolean hasSummary)
+    {
+        this.hasSummary = hasSummary;
+    }
+
+    public boolean getHasSummary()
+    {
+        return hasSummary;
     }
 }

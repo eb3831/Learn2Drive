@@ -1,5 +1,6 @@
 package com.example.learn2drive.Objects;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import java.util.List;
  * Model class representing the AI-generated summary of a completed driving lesson.
  * Designed to perfectly match the JSON schema returned by Gemini.
  */
-public class LessonSummary
+public class LessonSummary implements Serializable
 {
     private String lessonSummary;
     private List<String> topicsCovered;

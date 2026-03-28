@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.learn2drive.Activities.MasterActivity;
+import com.example.learn2drive.Activities.StudentMainActivity;
 import com.example.learn2drive.Adapters.StudentLessonAdapter;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.DoneLesson;
@@ -124,7 +125,10 @@ public class StudentHistoryFragment extends Fragment
             if (lesson instanceof DoneLesson)
             {
                 DoneLesson clickedLesson = (DoneLesson) lesson;
-                // TODO: Open lesson details fragment
+                ((StudentMainActivity)requireActivity()).replaceFragment(
+                        LessonDetailsFragment.newInstance(clickedLesson, true),
+                        true,
+                        "LessonDetailsFragment");
             }
             else
             {

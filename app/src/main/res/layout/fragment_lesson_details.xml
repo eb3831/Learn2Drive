@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context=".LessonDetailsFragment">
+    tools:context="Fragments.LessonDetailsFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,7 +78,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@drawable/ic_person"
+                                android:src="@drawable/ic_user"
                                 app:tint="#4B5563" />
                         </LinearLayout>
 
@@ -122,7 +122,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@drawable/ic_badge"
+                                android:src="@drawable/ic_id_card"
                                 app:tint="#4B5563" />
                         </LinearLayout>
 

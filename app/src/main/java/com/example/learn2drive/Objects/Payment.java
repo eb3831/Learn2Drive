@@ -1,6 +1,8 @@
 package com.example.learn2drive.Objects;
 
-public class Payment
+import java.io.Serializable;
+
+public class Payment implements Serializable
 {
     private int price;
     private  int method;
