@@ -21,6 +21,7 @@ import com.example.learn2drive.Activities.StudentMainActivity;
 import com.example.learn2drive.Adapters.StudentLessonAdapter;
 import com.example.learn2drive.Helpers.AlarmHelper;
 import com.example.learn2drive.Helpers.FBRef;
+import com.example.learn2drive.Objects.DoneLesson;
 import com.example.learn2drive.Objects.ScheduledLesson;
 import com.example.learn2drive.R;
 import com.google.firebase.database.DataSnapshot;
@@ -47,7 +48,7 @@ public class StudentHomeFragment extends Fragment
     private ArrayList<ScheduledLesson> lessonList;
     private SimpleDateFormat dateTimeFormatter;
     private ProgressBar pbLoading;
-    private LinearLayout layoutEmptyState;
+    private LinearLayout layoutEmptyState, btnHistoryStudent;
     private LinearLayout btnSchedule;
     private String teacherUid;
 
@@ -88,10 +89,15 @@ public class StudentHomeFragment extends Fragment
         pbLoading = view.findViewById(R.id.studentHomePb);
         layoutEmptyState = view.findViewById(R.id.studentHomeEmptyStateLayout);
         btnSchedule = view.findViewById(R.id.btnSchedule);
+        btnHistoryStudent = view.findViewById(R.id.btnHistoryStudent);
+
+        btnHistoryStudent.setOnClickListener(v ->( (StudentMainActivity) requireActivity()).
+                replaceFragment(StudentHistoryFragment.newInstance(), true,
+                        "STUDENT_HISTORY"));
 
         studentRvScheduledLessons.setLayoutManager(new LinearLayoutManager(getContext()));
         lessonList = new ArrayList<>();
-        adapter = new StudentLessonAdapter(lessonList);
+        adapter = new StudentLessonAdapter(lessonList, lesson -> {});
         studentRvScheduledLessons.setAdapter(adapter);
     }
 

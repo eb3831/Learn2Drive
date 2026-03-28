@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.learn2drive.Activities.MasterActivity;
 import com.example.learn2drive.Adapters.StudentLessonAdapter;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.DoneLesson;
@@ -45,7 +46,7 @@ public class StudentHistoryFragment extends Fragment
 {
     private ImageView ivBack;
     private RecyclerView rvLessonsHistory;
-    private LinearLayout layoutEmptyState;
+    private LinearLayout layoutEmptyState, btnHistoryStudent;
     private LinearLayout layoutStatsSummary;
     private TextView tvTotalLessons;
     private TextView tvTotalHours;
@@ -57,12 +58,26 @@ public class StudentHistoryFragment extends Fragment
     private DatabaseReference lessonsRef;
     private ValueEventListener lessonsListener;
 
-    // TODO: Replace with actual teacher UID from your local Student object
     private String teacherUID = "TEACHER_UID_PLACEHOLDER";
 
     public StudentHistoryFragment()
     {
         // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment. You can add parameters here in the future if needed.
+     *
+     * @return A new instance of fragment StudentHistoryFragment.
+     */
+    public static StudentHistoryFragment newInstance()
+    {
+        StudentHistoryFragment fragment = new StudentHistoryFragment();
+        Bundle args = new Bundle();
+
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -102,7 +117,21 @@ public class StudentHistoryFragment extends Fragment
     {
         lessonsList = new ArrayList<>();
         rvLessonsHistory.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new StudentLessonAdapter(lessonsList);
+
+        // Initialize adapter with the click listener interface
+        adapter = new StudentLessonAdapter(lessonsList, lesson ->
+        {
+            if (lesson instanceof DoneLesson)
+            {
+                DoneLesson clickedLesson = (DoneLesson) lesson;
+                // TODO: Open lesson details fragment
+            }
+            else
+            {
+                Toast.makeText(getContext(), "Cannot open details for this lesson", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         rvLessonsHistory.setAdapter(adapter);
     }
 
@@ -260,5 +289,13 @@ public class StudentHistoryFragment extends Fragment
         {
             lessonsRef.removeEventListener(lessonsListener);
         }
+        ((MasterActivity) getActivity()).showBottomNav();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MasterActivity) getActivity()).hideBottomNav();
     }
 }

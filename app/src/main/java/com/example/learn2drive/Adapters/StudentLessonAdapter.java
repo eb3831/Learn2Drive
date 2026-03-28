@@ -19,15 +19,26 @@ import java.util.ArrayList;
 public class StudentLessonAdapter extends RecyclerView.Adapter<StudentLessonAdapter.LessonViewHolder>
 {
     private ArrayList<ScheduledLesson> lessonList;
+    private OnItemClickListener listener;
+
+    /**
+     * Interface for handling clicks on lesson items.
+     */
+    public interface OnItemClickListener
+    {
+        void onItemClick(ScheduledLesson lesson);
+    }
 
     /**
      * Constructor for StudentLessonAdapter.
      *
      * @param lessonList The list of lessons to display.
+     * @param listener   The callback interface for item click events.
      */
-    public StudentLessonAdapter(ArrayList<ScheduledLesson> lessonList)
+    public StudentLessonAdapter(ArrayList<ScheduledLesson> lessonList, OnItemClickListener listener)
     {
         this.lessonList = lessonList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -62,6 +73,14 @@ public class StudentLessonAdapter extends RecyclerView.Adapter<StudentLessonAdap
         holder.tvDurationDetails.setText(lesson.getDuration() + " min");
         holder.tvDurationBadge.setText(lesson.getDuration() + "m");
         holder.tvLessonNumber.setText("Lesson " + lesson.getLessonNumber());
+
+        holder.itemView.setOnClickListener(v ->
+        {
+            if (listener != null)
+            {
+                listener.onItemClick(lesson);
+            }
+        });
     }
 
     @Override
@@ -74,14 +93,8 @@ public class StudentLessonAdapter extends RecyclerView.Adapter<StudentLessonAdap
      */
     public static class LessonViewHolder extends RecyclerView.ViewHolder
     {
-
         TextView tvDate, tvTime, tvDurationDetails, tvDurationBadge, tvLessonNumber;
 
-        /**
-         * Constructor for the LessonViewHolder.
-         *
-         * @param itemView The view of the individual list item.
-         */
         public LessonViewHolder(@NonNull View itemView)
         {
             super(itemView);
