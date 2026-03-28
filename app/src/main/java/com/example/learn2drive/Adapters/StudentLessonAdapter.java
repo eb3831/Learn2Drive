@@ -13,11 +13,18 @@ import com.example.learn2drive.R;
 
 import java.util.ArrayList;
 
-public class StudentLessonAdapter extends
-        RecyclerView.Adapter<StudentLessonAdapter.LessonViewHolder>
+/**
+ * Adapter for displaying a list of student lessons in a RecyclerView.
+ */
+public class StudentLessonAdapter extends RecyclerView.Adapter<StudentLessonAdapter.LessonViewHolder>
 {
     private ArrayList<ScheduledLesson> lessonList;
 
+    /**
+     * Constructor for StudentLessonAdapter.
+     *
+     * @param lessonList The list of lessons to display.
+     */
     public StudentLessonAdapter(ArrayList<ScheduledLesson> lessonList)
     {
         this.lessonList = lessonList;
@@ -54,18 +61,27 @@ public class StudentLessonAdapter extends
         // Sets student and lesson details
         holder.tvDurationDetails.setText(lesson.getDuration() + " min");
         holder.tvDurationBadge.setText(lesson.getDuration() + "m");
+        holder.tvLessonNumber.setText("Lesson " + lesson.getLessonNumber());
     }
 
     @Override
-    public int getItemCount()
-    {
+    public int getItemCount() {
         return lessonList != null ? lessonList.size() : 0;
     }
 
+    /**
+     * ViewHolder class for the lesson items.
+     */
     public static class LessonViewHolder extends RecyclerView.ViewHolder
     {
-        TextView tvDate, tvTime, tvDurationDetails, tvDurationBadge;
 
+        TextView tvDate, tvTime, tvDurationDetails, tvDurationBadge, tvLessonNumber;
+
+        /**
+         * Constructor for the LessonViewHolder.
+         *
+         * @param itemView The view of the individual list item.
+         */
         public LessonViewHolder(@NonNull View itemView)
         {
             super(itemView);
@@ -73,6 +89,7 @@ public class StudentLessonAdapter extends
             tvTime = itemView.findViewById(R.id.tvTime);
             tvDurationDetails = itemView.findViewById(R.id.tvDurationDetails);
             tvDurationBadge = itemView.findViewById(R.id.tvDurationBadge);
+            tvLessonNumber = itemView.findViewById(R.id.tvLessonNumber);
         }
     }
 }
