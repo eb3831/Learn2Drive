@@ -40,7 +40,7 @@ import com.example.learn2drive.Activities.TeacherMainActivity;
 import com.example.learn2drive.Helpers.AudioRecorderHelper;
 import com.example.learn2drive.Helpers.GeminiCallBack;
 import com.example.learn2drive.Helpers.GeminiManager;
-import com.example.learn2drive.Helpers.GpxGeneratorHelper;
+import com.example.learn2drive.Helpers.GpxHelpers;
 import com.example.learn2drive.Helpers.LocationTrackingHelper;
 import com.example.learn2drive.Helpers.Prompts;
 import com.example.learn2drive.Objects.DoneLesson;
@@ -739,7 +739,7 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         File gpxFile = new File(requireContext().getCacheDir(), "track.gpx");
         try
         {
-            GpxGeneratorHelper.generateGpxFile(recordedLocations, gpxFile);
+            GpxHelpers.generateGpxFile(recordedLocations, gpxFile);
         }
         catch (IOException e)
         {
