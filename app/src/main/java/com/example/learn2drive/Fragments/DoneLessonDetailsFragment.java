@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.learn2drive.Activities.MasterActivity;
 import com.example.learn2drive.Activities.StudentMainActivity;
 import com.example.learn2drive.Activities.TeacherMainActivity;
 import com.example.learn2drive.Objects.DoneLesson;
@@ -291,5 +292,19 @@ public class DoneLessonDetailsFragment extends Fragment
                     LessonTrackFragment.newInstance(currentLesson),
                     true, "LESSON_TRACK_FRAGMENT");
         }
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        ((MasterActivity) getActivity()).showBottomNav();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MasterActivity) getActivity()).hideBottomNav();
     }
 }

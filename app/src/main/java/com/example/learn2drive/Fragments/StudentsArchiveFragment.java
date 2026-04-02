@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.learn2drive.Activities.MasterActivity;
 import com.example.learn2drive.Adapters.StudentAdapter;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.Student;
@@ -194,5 +195,19 @@ public class StudentsArchiveFragment extends Fragment
                         Toast.makeText(getContext(), "Error loading archived students", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MasterActivity) getActivity()).hideBottomNav();
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        ((MasterActivity) getActivity()).showBottomNav();
     }
 }

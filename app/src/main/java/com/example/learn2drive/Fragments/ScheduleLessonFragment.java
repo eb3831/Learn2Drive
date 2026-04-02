@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.learn2drive.Activities.MasterActivity;
 import com.example.learn2drive.Adapters.TimeSlotAdapter;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.TimeSlot;
@@ -313,5 +314,14 @@ public class ScheduleLessonFragment extends Fragment implements TimeSlotAdapter.
         {
             timetableRef.removeEventListener(timetableListener);
         }
+
+        ((MasterActivity) getActivity()).showBottomNav();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MasterActivity) getActivity()).hideBottomNav();
     }
 }

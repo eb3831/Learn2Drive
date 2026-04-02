@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.learn2drive.Activities.MasterActivity;
 import com.example.learn2drive.Helpers.GpxHelpers;
 import com.example.learn2drive.Objects.DoneLesson;
 import com.example.learn2drive.R;
@@ -264,5 +265,19 @@ public class LessonTrackFragment extends Fragment implements OnMapReadyCallback
         tvTrackDistance.setText(formattedDistance);
 
         showLoading(false);
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        ((MasterActivity) getActivity()).showBottomNav();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MasterActivity) getActivity()).hideBottomNav();
     }
 }

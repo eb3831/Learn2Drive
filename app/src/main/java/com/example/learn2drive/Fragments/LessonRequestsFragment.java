@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.learn2drive.Activities.MasterActivity;
 import com.example.learn2drive.Adapters.LessonRequestsAdapter;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.LessonRequestModel;
@@ -331,5 +332,13 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
         {
             FBRef.refTeachersTimeTable.child(FBRef.uid).removeEventListener(timetableListener);
         }
+        ((MasterActivity) getActivity()).showBottomNav();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MasterActivity) getActivity()).hideBottomNav();
     }
 }

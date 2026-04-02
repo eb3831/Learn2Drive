@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.learn2drive.Activities.MasterActivity;
 import com.example.learn2drive.Adapters.StudentRequestsAdapter;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.Student;
@@ -340,34 +341,20 @@ public class StudentsRequestsFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-        toggleBottomNavigation(false);
+        ((MasterActivity) getActivity()).hideBottomNav();
     }
 
     @Override
     public void onStop()
     {
         super.onStop();
-        toggleBottomNavigation(true);
 
-        // Remove the listener to avoid memory leaks
         if (requestsRef != null && requestsListener != null)
         {
             requestsRef.removeEventListener(requestsListener);
         }
-    }
 
-    /**
-     * Shows or hides the BottomNavigationView.
-     *
-     * @param isVisible True to show, false to hide.
-     */
-    private void toggleBottomNavigation(boolean isVisible)
-    {
-        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.teacherBottomNav);
-        if (bottomNav != null)
-        {
-            bottomNav.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-        }
+        ((MasterActivity) getActivity()).showBottomNav();
     }
 
     /**

@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.learn2drive.Activities.MasterActivity;
 import com.example.learn2drive.Activities.TeacherMainActivity;
 import com.example.learn2drive.Adapters.StudentAdapter;
 import com.example.learn2drive.Helpers.FBRef;
@@ -294,13 +295,21 @@ public class ManageStudentsFragment extends Fragment
     }
 
     @Override
-    public void onDestroyView()
+    public void onStop()
     {
-        super.onDestroyView();
-        // Remove the listener to avoid memory leaks and duplicate data bugs
+        super.onStop();
+
         if (studentsRef != null && studentsListener != null)
         {
             studentsRef.removeEventListener(studentsListener);
         }
+        ((MasterActivity) getActivity()).showBottomNav();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MasterActivity) getActivity()).hideBottomNav();
     }
 }

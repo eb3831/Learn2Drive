@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.learn2drive.Activities.MasterActivity;
 import com.example.learn2drive.Adapters.TimeSlotAdapter;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.TimeSlot;
@@ -436,5 +437,13 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
         {
             currentDayRef.removeEventListener(timeSlotsListener);
         }
+        ((MasterActivity) getActivity()).showBottomNav();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MasterActivity) getActivity()).hideBottomNav();
     }
 }
