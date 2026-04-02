@@ -40,7 +40,7 @@ public class TeacherHomeFragment extends Fragment
     private SimpleDateFormat dateTimeFormatter;
     private ProgressBar pbLoading;
     private LinearLayout layoutEmptyState;
-    private LinearLayout btnHoursManager, btnLessonRequests;
+    private LinearLayout btnHoursManager, btnLessonRequests, btnTeacherHistory;
 
     private ValueEventListener lessonsListener;
 
@@ -90,6 +90,7 @@ public class TeacherHomeFragment extends Fragment
         layoutEmptyState = view.findViewById(R.id.teacherHomeEmptyStateLayout);
         btnHoursManager = view.findViewById(R.id.btnHoursManager);
         btnLessonRequests = view.findViewById(R.id.btnLessonRequests);
+        btnTeacherHistory = view.findViewById(R.id.btnTeacherHistory);
 
         teacherRvScheduledLessons.setLayoutManager(new LinearLayoutManager(getContext()));
         lessonList = new ArrayList<>();
@@ -115,6 +116,9 @@ public class TeacherHomeFragment extends Fragment
 
         btnLessonRequests.setOnClickListener(v -> ((TeacherMainActivity) requireActivity()).
                 replaceFragment(LessonRequestsFragment.newInstance(), true, "LessonRequestsFragment"));
+
+        btnTeacherHistory.setOnClickListener(v -> ((TeacherMainActivity) requireActivity()).
+                replaceFragment(TeacherHistoryFragment.newInstance(), true, "TeacherHistoryFragment"));
     }
 
     /**

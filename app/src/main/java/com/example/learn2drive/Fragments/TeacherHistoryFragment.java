@@ -1,9 +1,11 @@
 package com.example.learn2drive.Fragments;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,6 +30,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Fragment responsible for displaying the history of completed lessons for a teacher.
@@ -54,6 +58,8 @@ public class TeacherHistoryFragment extends Fragment
     private DatabaseReference databaseReference;
     private ValueEventListener lessonsListener;
 
+    private String selectedDateFilter = "";
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
@@ -64,8 +70,23 @@ public class TeacherHistoryFragment extends Fragment
         setupRecyclerView();
         setupFilterSpinner();
         fetchLessonsFromFirebase();
+        setupListeners();
 
         return view;
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment.
+     *
+     * @return A new instance of fragment TeacherHistoryFragment.
+     */
+    public static TeacherHistoryFragment newInstance()
+    {
+        TeacherHistoryFragment fragment = new TeacherHistoryFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     /**
@@ -233,6 +254,147 @@ public class TeacherHistoryFragment extends Fragment
         {
             rvLessons.setVisibility(View.VISIBLE);
             layoutEmptyState.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Sets up listeners for the filtering UI components (Spinners and DatePicker).
+     */
+    private void setupListeners()
+    {
+        spinnerFilterType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                // Position 0: All, 1: By Student, 2: By Date
+                if (position == 0)
+                {
+                    layoutStudentFilter.setVisibility(View.GONE);
+                    layoutDateFilter.setVisibility(View.GONE);
+                }
+
+                else if (position == 1)
+                {
+                    layoutStudentFilter.setVisibility(View.VISIBLE);
+                    layoutDateFilter.setVisibility(View.GONE);
+                }
+
+                else if (position == 2)
+                {
+                    layoutStudentFilter.setVisibility(View.GONE);
+                    layoutDateFilter.setVisibility(View.VISIBLE);
+                }
+                applyFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        spinnerStudentName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                applyFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+            }
+        });
+
+        tvDatePicker.setOnClickListener(v -> showDatePicker());
+    }
+
+    /**
+     * Displays a DatePickerDialog to allow the teacher to select a date.
+     * Formats the selected date to match the "dd/MM/yyyy" format and applies the filter.
+     */
+    private void showDatePicker()
+    {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, selectedYear, selectedMonth, selectedDay) ->
+        {
+            String formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
+            tvDatePicker.setText(formattedDate);
+            selectedDateFilter = formattedDate;
+            applyFilter();
+        }, year, month, day);
+
+        datePickerDialog.show();
+    }
+
+    /**
+     * Applies the selected filter (All, By Student, By Date) to the master list of lessons
+     * and updates the RecyclerView via the adapter.
+     */
+    private void applyFilter()
+    {
+        displayedLessons.clear();
+        int filterType = spinnerFilterType.getSelectedItemPosition();
+
+        if (filterType == 0)
+        {
+            // No filter, show all
+            displayedLessons.addAll(allLessons);
+
+        }
+
+        else if (filterType == 1)
+        {
+            // Filter by selected student
+            Object selectedItem = spinnerStudentName.getSelectedItem();
+            if (selectedItem != null)
+            {
+                String studentName = selectedItem.toString();
+                for (ScheduledLesson lesson : allLessons)
+                {
+                    if (lesson.getStudentName() != null && lesson.getStudentName().equals(studentName))
+                    {
+                        displayedLessons.add(lesson);
+                    }
+                }
+            }
+
+        }
+        else if (filterType == 2)
+        {
+            // Filter by selected date
+            if (!selectedDateFilter.isEmpty()) {
+                for (ScheduledLesson lesson : allLessons)
+                {
+                    // Using startsWith because dateAndTime contains "dd/MM/yyyy HH:mm"
+                    if (lesson.getDateAndTime() != null && lesson.getDateAndTime().startsWith(selectedDateFilter))
+                    {
+                        displayedLessons.add(lesson);
+                    }
+                }
+            }
+        }
+
+        adapter.updateList(displayedLessons);
+        updateUIState(); // Updates the counter and Empty State visibility
+    }
+
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Removes the Firebase database listener to prevent memory leaks.
+     */
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        if (databaseReference != null && lessonsListener != null)
+        {
+            databaseReference.removeEventListener(lessonsListener);
         }
     }
 }
