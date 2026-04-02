@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.learn2drive.Activities.MasterActivity;
+import com.example.learn2drive.Activities.StudentMainActivity;
+import com.example.learn2drive.Activities.TeacherMainActivity;
 import com.example.learn2drive.Adapters.TeacherLessonAdapter;
 import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.DoneLesson;
@@ -132,7 +136,18 @@ public class TeacherHistoryFragment extends Fragment
             @Override
             public void onLessonClicked(ScheduledLesson lesson)
             {
-                // Future implementation: handle click on a specific completed lesson
+                if (lesson instanceof DoneLesson)
+                {
+                    DoneLesson clickedLesson = (DoneLesson) lesson;
+                    ((TeacherMainActivity)requireActivity()).replaceFragment(
+                            DoneLessonDetailsFragment.newInstance(clickedLesson, false),
+                            true,
+                            "LessonDetailsFragment");
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Cannot open details for this lesson", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -323,7 +338,7 @@ public class TeacherHistoryFragment extends Fragment
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, selectedYear, selectedMonth, selectedDay) ->
         {
-            String formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
+            String formattedDate = String.format(Locale.getDefault(), "%02d-%02d-%04d", selectedDay, selectedMonth + 1, selectedYear);
             tvDatePicker.setText(formattedDate);
             selectedDateFilter = formattedDate;
             applyFilter();
@@ -368,11 +383,14 @@ public class TeacherHistoryFragment extends Fragment
         else if (filterType == 2)
         {
             // Filter by selected date
-            if (!selectedDateFilter.isEmpty()) {
+            if (!selectedDateFilter.isEmpty())
+            {
                 for (ScheduledLesson lesson : allLessons)
                 {
+                    String lessonDate = lesson.getDateAndTime();
+
                     // Using startsWith because dateAndTime contains "dd/MM/yyyy HH:mm"
-                    if (lesson.getDateAndTime() != null && lesson.getDateAndTime().startsWith(selectedDateFilter))
+                    if (lessonDate != null && lessonDate.startsWith(selectedDateFilter))
                     {
                         displayedLessons.add(lesson);
                     }
@@ -396,5 +414,13 @@ public class TeacherHistoryFragment extends Fragment
         {
             databaseReference.removeEventListener(lessonsListener);
         }
+        ((MasterActivity) getActivity()).showBottomNav();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MasterActivity) getActivity()).hideBottomNav();
     }
 }
