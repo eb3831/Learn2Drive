@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.learn2drive.Activities.MasterActivity;
-import com.example.learn2drive.Activities.StudentMainActivity;
 import com.example.learn2drive.Activities.TeacherMainActivity;
 import com.example.learn2drive.Adapters.TeacherLessonAdapter;
 import com.example.learn2drive.Helpers.FBRef;
@@ -73,7 +72,6 @@ public class TeacherHistoryFragment extends Fragment
         initViews(view);
         setupRecyclerView();
         setupFilterSpinner();
-        fetchLessonsFromFirebase();
         setupListeners();
 
         return view;
@@ -403,24 +401,41 @@ public class TeacherHistoryFragment extends Fragment
     }
 
     /**
+     * Called when the fragment is visible to the user and actively running.
+     * Re-attaches the Firebase listener to fetch the most up-to-date lessons,
+     * clears previous data to avoid duplicates, and hides the bottom navigation bar.
+     */
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        ((MasterActivity) getActivity()).hideBottomNav();
+
+        if (adapter != null)
+        {
+            displayedLessons.clear();
+            adapter.updateList(displayedLessons);
+        }
+
+        fetchLessonsFromFirebase();
+    }
+
+    /**
      * Called when the fragment is no longer visible to the user.
-     * Removes the Firebase database listener to prevent memory leaks.
+     * Removes the Firebase database listener to prevent memory leaks
+     * and restores the bottom navigation bar.
      */
     @Override
     public void onStop()
     {
         super.onStop();
+
         if (databaseReference != null && lessonsListener != null)
         {
             databaseReference.removeEventListener(lessonsListener);
         }
-        ((MasterActivity) getActivity()).showBottomNav();
-    }
 
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        ((MasterActivity) getActivity()).hideBottomNav();
+        ((MasterActivity) getActivity()).showBottomNav();
     }
 }
