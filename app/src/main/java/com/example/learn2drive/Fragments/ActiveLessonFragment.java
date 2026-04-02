@@ -3,6 +3,7 @@ package com.example.learn2drive.Fragments;
 import static com.example.learn2drive.Helpers.FBRef.refDoneLessons;
 import static com.example.learn2drive.Helpers.FBRef.refLessonsDetails;
 import static com.example.learn2drive.Helpers.FBRef.refScheduledLessons;
+import static com.example.learn2drive.Helpers.FBRef.refStudents;
 import static com.example.learn2drive.Helpers.Prompts.LESSON_SUMMARY_SCHEMA;
 
 import android.Manifest;
@@ -58,6 +59,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 
@@ -767,8 +769,8 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     }
 
     /**
-     * Helper method to save the DoneLesson object to Realtime Database
-     * and remove the original ScheduledLesson.
+     * Helper method to save the DoneLesson object to Realtime Database,
+     * remove the original ScheduledLesson, and increment the student's lesson count.
      *
      * @param parsedSummary The AI-generated summary object.
      */
@@ -788,19 +790,46 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
                     refScheduledLessons.child(teacherUid).child(studentUid).child(dateTime).removeValue()
                             .addOnSuccessListener(aVoid1 ->
                             {
-                                Toast.makeText(requireContext(), "Lesson saved successfully!", Toast.LENGTH_SHORT).show();
-                                returnToHome();
+                                incrementStudentLessonCount(studentUid);
                             })
                             .addOnFailureListener(e ->
                             {
-                                Toast.makeText(requireContext(), "Lesson saved, but failed to remove from schedule: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                returnToHome();
+                                if (!isAdded() || getContext() == null) return;
 
+                                Toast.makeText(getContext(), "Lesson saved, but failed to remove from schedule: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                returnToHome();
                             });
                 })
                 .addOnFailureListener(e ->
                 {
-                    Toast.makeText(requireContext(), "Failed to save done lesson: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    if (!isAdded() || getContext() == null) return;
+
+                    Toast.makeText(getContext(), "Failed to save done lesson: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    returnToHome();
+                });
+    }
+
+    /**
+     * Increments the lessonsCompleted property of the student by 1.
+     * Uses ServerValue.increment for atomic and thread-safe operations on the server side.
+     *
+     * @param studentUid The UID of the student whose lesson count needs to be updated.
+     */
+    private void incrementStudentLessonCount(String studentUid)
+    {
+        refStudents.child(studentUid).child("lessonsCompleted").setValue(ServerValue.increment(1))
+                .addOnSuccessListener(aVoid ->
+                {
+                    if (!isAdded() || getContext() == null) return;
+
+                    Toast.makeText(getContext(), "Lesson saved and student count updated successfully!", Toast.LENGTH_SHORT).show();
+                    returnToHome();
+                })
+                .addOnFailureListener(e ->
+                {
+                    if (!isAdded() || getContext() == null) return;
+
+                    Toast.makeText(getContext(), "Lesson saved, but failed to update student's count: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     returnToHome();
                 });
     }
