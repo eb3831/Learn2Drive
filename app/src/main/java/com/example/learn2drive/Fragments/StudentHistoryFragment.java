@@ -25,11 +25,9 @@ import com.example.learn2drive.Helpers.FBRef;
 import com.example.learn2drive.Objects.DoneLesson;
 import com.example.learn2drive.Objects.ScheduledLesson;
 import com.example.learn2drive.R;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
@@ -126,7 +124,7 @@ public class StudentHistoryFragment extends Fragment
             {
                 DoneLesson clickedLesson = (DoneLesson) lesson;
                 ((StudentMainActivity)requireActivity()).replaceFragment(
-                        LessonDetailsFragment.newInstance(clickedLesson, true),
+                        DoneLessonDetailsFragment.newInstance(clickedLesson, true),
                         true,
                         "LessonDetailsFragment");
             }

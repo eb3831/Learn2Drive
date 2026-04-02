@@ -31,7 +31,7 @@ import java.util.Locale;
  * Fragment responsible for displaying the details of a completed driving lesson.
  * Receives a DoneLesson object and adapts the UI based on whether the user is a student or a teacher.
  */
-public class LessonDetailsFragment extends Fragment
+public class DoneLessonDetailsFragment extends Fragment
 {
 
     private static final String ARG_LESSON = "arg_lesson";
@@ -50,7 +50,7 @@ public class LessonDetailsFragment extends Fragment
     private LinearLayout btnWatchTrack;
     private LinearLayout btnWatchSummary;
 
-    public LessonDetailsFragment()
+    public DoneLessonDetailsFragment()
     {
         // Required empty public constructor
     }
@@ -62,9 +62,9 @@ public class LessonDetailsFragment extends Fragment
      * @param isStudent Boolean indicating if the current logged-in user is a student.
      * @return A new instance of fragment LessonDetailsFragment.
      */
-    public static LessonDetailsFragment newInstance(DoneLesson lesson, boolean isStudent)
+    public static DoneLessonDetailsFragment newInstance(DoneLesson lesson, boolean isStudent)
     {
-        LessonDetailsFragment fragment = new LessonDetailsFragment();
+        DoneLessonDetailsFragment fragment = new DoneLessonDetailsFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_LESSON, lesson);
         args.putBoolean(ARG_IS_STUDENT, isStudent);
@@ -87,7 +87,7 @@ public class LessonDetailsFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        return inflater.inflate(R.layout.fragment_lesson_details, container, false);
+        return inflater.inflate(R.layout.fragment_done_lesson_details, container, false);
     }
 
     @Override
