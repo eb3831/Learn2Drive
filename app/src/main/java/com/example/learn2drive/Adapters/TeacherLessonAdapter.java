@@ -42,6 +42,17 @@ public class TeacherLessonAdapter extends RecyclerView.Adapter<TeacherLessonAdap
         this.listener = listener;
     }
 
+    /**
+     * Updates the current list of lessons and notifies the adapter of the data changes.
+     *
+     * @param newList The new filtered list of scheduled or completed lessons to display.
+     */
+    public void updateList(ArrayList<ScheduledLesson> newList)
+    {
+        this.lessonList = newList;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public LessonViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
