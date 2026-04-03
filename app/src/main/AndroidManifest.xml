@@ -19,6 +19,9 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
     <queries>
         <intent>
@@ -35,6 +38,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Learn2Drive">
+
+        <service
+            android:name=".Services.ActiveLessonService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location|microphone" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
