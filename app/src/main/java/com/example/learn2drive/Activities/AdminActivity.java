@@ -24,6 +24,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+/**
+ * Activity for administrators to manage teacher registrations.
+ * Handles viewing pending teacher requests, approving/rejecting them,
+ * and viewing the list of currently active teachers.
+ */
 public class AdminActivity extends AppCompatActivity
 {
     private AppCompatButton btnNewRequests, btnActiveTeachers;
@@ -31,12 +36,19 @@ public class AdminActivity extends AppCompatActivity
     private ListView lvAdminTeachers;
     private boolean showingRequests = true;
 
-    // Lists for logic and display
     private ArrayList<Teacher> pendingTeachersList;
     private ArrayList<Teacher> activeTeachersList;
     private ArrayList<String> displayNamesList;
     private ArrayAdapter<String> adapter;
 
+    /**
+     * Initializes the activity, sets up the user interface, configures the lists,
+     * and fetches the initial data from Firebase.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     * previously being shut down then this Bundle contains the data it most
+     * recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -49,6 +61,10 @@ public class AdminActivity extends AppCompatActivity
         updateUI();
     }
 
+    /**
+     * Initializes the UI components by finding their views and instantiates
+     * the ArrayLists required for managing teacher data.
+     */
     private void initViews()
     {
         btnNewRequests = findViewById(R.id.btnNewRequests);
@@ -61,6 +77,10 @@ public class AdminActivity extends AppCompatActivity
         displayNamesList = new ArrayList<>();
     }
 
+    /**
+     * Sets up the ListView with its adapter and defines the item click listener
+     * to handle interactions with specific teachers in the list.
+     */
     private void setupListView()
     {
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayNamesList);
@@ -86,6 +106,10 @@ public class AdminActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * Attaches a ValueEventListener to the Firebase Realtime Database to fetch
+     * all teachers and categorizes them into active and pending lists.
+     */
     private void fetchTeachersData()
     {
         FBRef.refTeachers.addValueEventListener(new ValueEventListener()
@@ -122,6 +146,12 @@ public class AdminActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * Click handler for the "New Requests" button.
+     * Switches the current view to display pending teacher approvals.
+     *
+     * @param v The view that was clicked.
+     */
     public void onNewRequestsClicked(View v)
     {
         if (!showingRequests)
@@ -132,6 +162,12 @@ public class AdminActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Click handler for the "Active Teachers" button.
+     * Switches the current view to display registered and active teachers.
+     *
+     * @param v The view that was clicked.
+     */
     public void onActiveTeachersClicked(View v)
     {
         if (showingRequests)
@@ -143,6 +179,10 @@ public class AdminActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Updates the visual styles of the toggle buttons and the title
+     * based on the currently selected state (showing requests or active teachers).
+     */
     private void updateUI()
     {
         if (showingRequests)
@@ -167,6 +207,10 @@ public class AdminActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Refreshes the displayed list view data by populating the display list
+     * from either the pending or active teachers list and notifying the adapter.
+     */
     private void refreshDisplayList()
     {
         displayNamesList.clear();
@@ -181,6 +225,12 @@ public class AdminActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Displays a dialog prompting the admin to either approve or reject
+     * a pending teacher's registration request. Updates Firebase accordingly.
+     *
+     * @param teacher The Teacher object representing the pending user.
+     */
     private void showApprovalDialog(Teacher teacher)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

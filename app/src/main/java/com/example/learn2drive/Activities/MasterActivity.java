@@ -15,11 +15,23 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.learn2drive.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+/**
+ * Base activity class that provides utility methods for fragment management
+ * and controlling the visibility of the bottom navigation view.
+ * Other activities in the application should extend this class to inherit these behaviors.
+ */
 public class MasterActivity extends AppCompatActivity
 {
     private FragmentManager fragmentManager;
     protected BottomNavigationView bottomNavigationView;
 
+    /**
+     * Initializes the activity when it is starting.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     * previously being shut down then this Bundle contains the data it most
+     * recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -28,6 +40,10 @@ public class MasterActivity extends AppCompatActivity
         initViews();
     }
 
+    /**
+     * Initializes the necessary components for the activity, specifically
+     * the FragmentManager used for handling fragment transactions.
+     */
     private void initViews()
     {
         fragmentManager = getSupportFragmentManager();
@@ -45,7 +61,6 @@ public class MasterActivity extends AppCompatActivity
     {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        // Fix: Use the dynamic containerId instead of the hardcoded one
         transaction.replace(containerId, fragment, tag);
 
         if (addToBackStack)
@@ -57,6 +72,10 @@ public class MasterActivity extends AppCompatActivity
         invalidateOptionsMenu();
     }
 
+    /**
+     * Clears all fragments currently in the back stack.
+     * This is useful for resetting the navigation state to the root fragment.
+     */
     public void clearStack()
     {
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);

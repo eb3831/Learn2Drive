@@ -34,9 +34,11 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.learn2drive.Helpers.FBRef;
+import com.example.learn2drive.Activities.LoginActivity;
 import com.example.learn2drive.Objects.Student;
 import com.example.learn2drive.Objects.Teacher;
 import com.example.learn2drive.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -45,6 +47,10 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * ProfileFragment displays the user's personal information.
+ * It supports both Student and Teacher types and handles profile picture updates and logout.
+ */
 public class ProfileFragment extends Fragment
 {
     private static final int REQUEST_CAMERA_PERMISSION = 101;
@@ -58,15 +64,24 @@ public class ProfileFragment extends Fragment
     // View declarations
     private TextView tvProfileSubtitle, tvProfileName, tvProfileId, tvProfileBirthDate, tvProfileTeacher;
     private ImageView ivProfilePicture, ivEditProfilePic;
-    private LinearLayout teacherContainer;
+    private LinearLayout teacherContainer, btnLogout;
     private FrameLayout loadingOverlay;
     private ProgressBar pbProfilePicLoading;
 
+    /**
+     * Required empty public constructor.
+     */
     public ProfileFragment()
     {
         // Required empty public constructor
     }
 
+    /**
+     * Factory method to create a new instance of this fragment.
+     *
+     * @param isStudent Boolean flag indicating if the current user is a student.
+     * @return A new instance of fragment ProfileFragment.
+     */
     public static ProfileFragment newInstance(boolean isStudent)
     {
         ProfileFragment fragment = new ProfileFragment();
@@ -76,6 +91,9 @@ public class ProfileFragment extends Fragment
         return fragment;
     }
 
+    /**
+     * Called to do initial creation of the fragment.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -87,6 +105,9 @@ public class ProfileFragment extends Fragment
         }
     }
 
+    /**
+     * Inflates the layout for this fragment.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -95,6 +116,10 @@ public class ProfileFragment extends Fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView has returned.
+     * Initializes views and starts loading data.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -105,8 +130,14 @@ public class ProfileFragment extends Fragment
         loadProfileData();
         loadProfilePicture();
         ivEditProfilePic.setOnClickListener(v -> checkCameraPermission());
+        btnLogout.setOnClickListener(v -> logoutUser());
     }
 
+    /**
+     * Binds XML layout elements to their respective Java view variables.
+     *
+     * @param view The parent view containing the elements.
+     */
     private void initViews(View view)
     {
         tvProfileSubtitle = view.findViewById(R.id.tvProfileSubtitle);
@@ -119,8 +150,12 @@ public class ProfileFragment extends Fragment
         ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
         ivEditProfilePic = view.findViewById(R.id.ivEditProfilePic);
         pbProfilePicLoading = view.findViewById(R.id.pbProfilePicLoading);
+        btnLogout = view.findViewById(R.id.btnLogout);
     }
 
+    /**
+     * Configures the user interface based on whether the user is a student or a teacher.
+     */
     private void setupUI() {
         if (isStudent)
         {
@@ -135,6 +170,24 @@ public class ProfileFragment extends Fragment
         }
     }
 
+    /**
+     * Signs out the user from Firebase and redirects to the Login screen.
+     */
+    private void logoutUser()
+    {
+        FirebaseAuth.getInstance().signOut();
+        FBRef.uid = null;
+
+        // Intent flags clear the activity back stack to prevent user from returning
+        Intent intent = new Intent(requireActivity(), LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        requireActivity().finish();
+    }
+
+    /**
+     * Fetches user profile data from Firebase Realtime Database.
+     */
     private void loadProfileData()
     {
         if (FBRef.uid == null || FBRef.uid.isEmpty())
@@ -192,6 +245,9 @@ public class ProfileFragment extends Fragment
         }
     }
 
+    /**
+     * Downloads the user's profile picture from Firebase Storage and displays it using Glide.
+     */
     private void loadProfilePicture()
     {
         if (FBRef.uid == null || FBRef.uid.isEmpty()) return;
@@ -242,6 +298,9 @@ public class ProfileFragment extends Fragment
         });
     }
 
+    /**
+     * Verifies camera permissions and requests them if they have not been granted yet.
+     */
     private void checkCameraPermission()
     {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
@@ -256,6 +315,9 @@ public class ProfileFragment extends Fragment
         }
     }
 
+    /**
+     * Prepares a temporary file and launches the device camera application to take a picture.
+     */
     private void launchCamera()
     {
         String filename = "tempfile_profile";
@@ -285,6 +347,9 @@ public class ProfileFragment extends Fragment
         }
     }
 
+    /**
+     * Handles the result of the permission request.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults)
@@ -307,6 +372,9 @@ public class ProfileFragment extends Fragment
         }
     }
 
+    /**
+     * Handles the result returned from the camera application.
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
@@ -318,6 +386,9 @@ public class ProfileFragment extends Fragment
         }
     }
 
+    /**
+     * Uploads the captured image to Firebase Storage and updates the ImageView.
+     */
     private void uploadProfilePicture()
     {
         if (imageUri == null || FBRef.uid == null || FBRef.uid.isEmpty()) return;
