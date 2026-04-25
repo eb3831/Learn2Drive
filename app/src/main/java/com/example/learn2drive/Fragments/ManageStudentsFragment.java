@@ -303,13 +303,5 @@ public class ManageStudentsFragment extends Fragment
         {
             studentsRef.removeEventListener(studentsListener);
         }
-        ((MasterActivity) getActivity()).showBottomNav();
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        ((MasterActivity) getActivity()).hideBottomNav();
     }
 }
