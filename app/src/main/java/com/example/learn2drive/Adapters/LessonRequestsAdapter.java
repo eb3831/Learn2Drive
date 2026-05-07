@@ -31,8 +31,18 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
      */
     public interface OnRequestClickListener
     {
+        /**
+         * Called when the accept button is clicked for a specific lesson request.
+         *
+         * @param request The lesson request that was accepted.
+         */
         void onAcceptClick(LessonRequestModel request);
 
+        /**
+         * Called when the decline button is clicked for a specific lesson request.
+         *
+         * @param request The lesson request that was declined.
+         */
         void onDeclineClick(LessonRequestModel request);
     }
 
@@ -54,6 +64,13 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
         this.listener = listener;
     }
 
+    /**
+     * Called when RecyclerView needs a new {@link RequestViewHolder} of the given type to represent an item.
+     *
+     * @param parent   The ViewGroup into which the new View will be added after it is bound to an adapter position.
+     * @param viewType The view type of the new View.
+     * @return A new RequestViewHolder that holds a View of the given view type.
+     */
     @NonNull
     @Override
     public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
@@ -62,6 +79,13 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
         return new RequestViewHolder(view);
     }
 
+    /**
+     * Called by RecyclerView to display the data at the specified position.
+     * This method updates the contents of the {@link RequestViewHolder} to reflect the lesson request at the given position.
+     *
+     * @param holder   The ViewHolder which should be updated to represent the contents of the item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull RequestViewHolder holder, int position)
     {
@@ -119,6 +143,11 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
         });
     }
 
+    /**
+     * Returns the total number of lesson requests in the data set held by the adapter.
+     *
+     * @return The total number of items in this adapter.
+     */
     @Override
     public int getItemCount()
     {
@@ -134,6 +163,12 @@ public class LessonRequestsAdapter extends RecyclerView.Adapter<LessonRequestsAd
         ImageView ivStudentProfile;
         AppCompatButton btnAccept, btnDecline;
 
+        /**
+         * Constructor for the RequestViewHolder.
+         * Initializes the UI components by finding them within the provided item view.
+         *
+         * @param itemView The view containing the layout for a single lesson request item.
+         */
         public RequestViewHolder(@NonNull View itemView)
         {
             super(itemView);

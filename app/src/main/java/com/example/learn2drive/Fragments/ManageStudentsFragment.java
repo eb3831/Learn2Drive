@@ -49,10 +49,18 @@ public class ManageStudentsFragment extends Fragment
     private DatabaseReference studentsRef;
     private ValueEventListener studentsListener;
 
+    /**
+     * Required empty public constructor for fragment initialization.
+     */
     public ManageStudentsFragment()
     {
     }
 
+    /**
+     * Factory method to create a new instance of this fragment.
+     *
+     * @return A new instance of ManageStudentsFragment.
+     */
     public static ManageStudentsFragment newInstance()
     {
         ManageStudentsFragment fragment = new ManageStudentsFragment();
@@ -61,6 +69,14 @@ public class ManageStudentsFragment extends Fragment
         return fragment;
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -68,6 +84,12 @@ public class ManageStudentsFragment extends Fragment
         return inflater.inflate(R.layout.fragment_manage_students, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     *
+     * @param view               The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -294,6 +316,10 @@ public class ManageStudentsFragment extends Fragment
         }
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Removes the active Firebase listener to prevent memory leaks.
+     */
     @Override
     public void onStop()
     {

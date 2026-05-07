@@ -29,7 +29,8 @@ import java.util.Comparator;
 import java.util.Locale;
 
 /**
- * Fragment displaying the teacher's scheduled lessons on their home screen.
+ * Fragment responsible for displaying the teacher's scheduled lessons on their home screen.
+ * It provides a quick overview of upcoming lessons and navigation buttons to other main features.
  */
 public class TeacherHomeFragment extends Fragment
 {
@@ -44,6 +45,9 @@ public class TeacherHomeFragment extends Fragment
 
     private ValueEventListener lessonsListener;
 
+    /**
+     * Required empty public constructor.
+     */
     public TeacherHomeFragment()
     {
         // Required empty public constructor
@@ -64,6 +68,15 @@ public class TeacherHomeFragment extends Fragment
         return fragment;
     }
 
+    /**
+     * Initializes the fragment's user interface, sets up UI components,
+     * configures the date formatter, and triggers the data fetching process from Firebase.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -80,6 +93,7 @@ public class TeacherHomeFragment extends Fragment
 
     /**
      * Links the UI components and sets up the RecyclerView with its adapter and click listeners.
+     * Also sets up navigation listeners for the action buttons.
      *
      * @param view The root view of the fragment.
      */
@@ -122,7 +136,8 @@ public class TeacherHomeFragment extends Fragment
     }
 
     /**
-     * Fetches lessons from Firebase Realtime DB and attaches a listener.
+     * Fetches scheduled lessons from Firebase Realtime Database for the current teacher
+     * and attaches a ValueEventListener to keep the list updated in real-time.
      */
     private void loadScheduledLessons()
     {
@@ -169,7 +184,8 @@ public class TeacherHomeFragment extends Fragment
     }
 
     /**
-     * Toggles visibility between the list, the loading spinner, and the empty state.
+     * Toggles visibility between the RecyclerView list, the loading spinner, and the empty state layout
+     * based on whether there are scheduled lessons to display.
      */
     private void updateUIState()
     {
@@ -190,6 +206,7 @@ public class TeacherHomeFragment extends Fragment
 
     /**
      * Sorts the lessonList based on date and time.
+     * The nearest upcoming lessons will appear at the top of the list.
      */
     private void sortLessonsByDate()
     {
@@ -212,7 +229,8 @@ public class TeacherHomeFragment extends Fragment
     }
 
     /**
-     * Removes the Firebase listener when the fragment is stopped to prevent memory leaks.
+     * Called when the fragment is no longer visible to the user.
+     * Removes the Firebase ValueEventListener to prevent memory leaks and unnecessary network calls.
      */
     @Override
     public void onStop()

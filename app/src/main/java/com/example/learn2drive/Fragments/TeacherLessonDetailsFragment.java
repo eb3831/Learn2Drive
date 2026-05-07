@@ -73,6 +73,12 @@ public class TeacherLessonDetailsFragment extends Fragment
         return fragment;
     }
 
+    /**
+     * Called to do initial creation of a fragment.
+     * Retrieves the ScheduledLesson object from the fragment's arguments and extracts the date and time.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -97,6 +103,15 @@ public class TeacherLessonDetailsFragment extends Fragment
         }
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * Inflates the layout for this fragment and initializes the UI views.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -105,6 +120,13 @@ public class TeacherLessonDetailsFragment extends Fragment
         return view;
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     * Populates the UI fields with the lesson data and sets up the click listeners.
+     *
+     * @param view The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -303,6 +325,10 @@ public class TeacherLessonDetailsFragment extends Fragment
                 });
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * Hides the bottom navigation bar of the parent activity to provide a clean, full-screen view.
+     */
     @Override
     public void onResume()
     {
@@ -310,6 +336,10 @@ public class TeacherLessonDetailsFragment extends Fragment
         ((MasterActivity) getActivity()).hideBottomNav();
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Restores the visibility of the bottom navigation bar in the parent activity.
+     */
     @Override
     public void onStop()
     {

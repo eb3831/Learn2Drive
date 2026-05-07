@@ -59,6 +59,9 @@ public class StudentHistoryFragment extends Fragment
 
     private String teacherUID = "TEACHER_UID_PLACEHOLDER";
 
+    /**
+     * Required empty public constructor for fragment initialization.
+     */
     public StudentHistoryFragment()
     {
         // Required empty public constructor
@@ -79,6 +82,14 @@ public class StudentHistoryFragment extends Fragment
         return fragment;
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -283,6 +294,10 @@ public class StudentHistoryFragment extends Fragment
         }
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Removes the active Firebase listener to prevent memory leaks and restores the bottom navigation bar.
+     */
     @Override
     public void onStop()
     {
@@ -294,6 +309,10 @@ public class StudentHistoryFragment extends Fragment
         ((MasterActivity) getActivity()).showBottomNav();
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * Hides the bottom navigation bar to maximize screen space for the history list.
+     */
     @Override
     public void onResume()
     {

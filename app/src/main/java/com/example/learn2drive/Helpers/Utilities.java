@@ -5,76 +5,80 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Utility class providing helper methods for data validation and date calculations.
+ * Contains logic for email verification, password strength, and age requirements.
+ */
 public class Utilities
 {
     /**
-     * פעולה המקבלת מחרוזת ומחזירה אמת אם היא מייצגת כתובת אימייל תקינה
-     *
-     * @param email המחרוזת לבדיקה
-     * @return true אם תקין, false אחרת
+     * Validates if a given string follows a standard email format.
+     * Checks for the presence of '@' and '.', correct positioning, and absence of spaces.
+     * @param email The email string to be validated.
+     * @return true if the email format is valid, false otherwise.
      */
     public static boolean isValidEmail(String email)
     {
 
-        // בדיקה שהמחרוזת לא ריקה או null
         if (email == null || email.length() == 0)
         {
             return false;
         }
 
-        // בדיקה שאין רווחים בכתובת
         if (email.indexOf(' ') != -1)
         {
             return false;
         }
 
-        // בדיקת קיום התו '@' ומיקומו
         int atIndex = email.indexOf('@');
         int lastAtIndex = email.lastIndexOf('@');
 
-        // אם אין @ בכלל, או שיש יותר מ-@ אחד (המיקום הראשון שונה מהאחרון)
         if (atIndex == -1 || atIndex != lastAtIndex)
         {
             return false;
         }
 
-        // בדיקה שה-@ לא נמצא בהתחלה
         if (atIndex == 0)
         {
             return false;
         }
 
-        // בדיקת קיום נקודה ומיקומה ביחס ל-@
-        // אנו מחפשים את הנקודה האחרונה במחרוזת
         int dotIndex = email.lastIndexOf('.');
 
-        // אם אין נקודה, או שהנקודה מופיעה לפני ה-@
         if (dotIndex == -1 || dotIndex < atIndex)
         {
             return false;
         }
 
-        // בדיקה שהנקודה לא נמצאת מיד אחרי ה-@ (למשל name@.com)
         if (dotIndex == atIndex + 1)
         {
             return false;
         }
 
-        // בדיקה שהנקודה אינה התו האחרון במחרוזת
         if (dotIndex == email.length() - 1)
         {
             return false;
         }
 
-        // אם עברנו את כל הבדיקות - הכתובת נחשבת תקינה
         return true;
     }
 
+    /**
+     * Validates if the provided password meets the minimum length requirement.
+     * @param password The password string to be checked.
+     * @return true if the password is at least 6 characters long, false otherwise.
+     */
     public static boolean isValidPassword(String password)
     {
         return password.length() >= 6;
     }
 
+    /**
+     * Checks if a user is old enough to start driving lessons (at least 16.5 years old).
+     * Parses the date of birth string and compares it with the current date.
+     * @param dateString The birth date in "dd.MM.yyyy" format.
+     * @return true if the user's age is 16 years and 6 months or older, false otherwise.
+     */
     public static boolean isUserOldEnough(String dateString)
     {
         String dateFormat = "dd.MM.yyyy";

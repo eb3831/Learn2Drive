@@ -14,9 +14,20 @@ import com.example.learn2drive.Fragments.StudentHomeFragment;
 import com.example.learn2drive.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+/**
+ * Main activity for the student user role.
+ * Handles the bottom navigation and fragment transactions for the student's main interface.
+ */
 public class StudentMainActivity extends MasterActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener
 {
+    /**
+     * Called when the activity is starting.
+     * Sets the content view and calls the initialization method for the UI components.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down
+     * then this Bundle contains the data it most recently supplied.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -26,6 +37,11 @@ public class StudentMainActivity extends MasterActivity implements
         initViews();
     }
 
+    /**
+     * Initializes the UI components of the activity.
+     * Sets up the BottomNavigationView, attaches the selection listener,
+     * and sets the default selected item to the student home screen.
+     */
     private void initViews()
     {
         bottomNavigationView = findViewById(R.id.studentBottomNav);
@@ -33,6 +49,14 @@ public class StudentMainActivity extends MasterActivity implements
         bottomNavigationView.setSelectedItemId(R.id.menu_student_home);
     }
 
+    /**
+     * Called when an item in the bottom navigation menu is selected.
+     * Determines which fragment to instantiate based on the selected menu item ID
+     * and triggers the fragment replacement.
+     *
+     * @param item The selected menu item.
+     * @return true to display the item as the selected item.
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
@@ -66,6 +90,14 @@ public class StudentMainActivity extends MasterActivity implements
         return true;
     }
 
+    /**
+     * Replaces the current fragment within the student fragment container.
+     * Overrides the method to explicitly target the specific container used in this activity.
+     *
+     * @param fragment       The new fragment to display.
+     * @param addToBackStack True if the transaction should be added to the back stack, false otherwise.
+     * @param tag            An optional tag name for the fragment.
+     */
     public void replaceFragment(Fragment fragment, boolean addToBackStack, String tag)
     {
         super.replaceFragment(fragment, addToBackStack, tag, R.id.studentFragmentContainer);

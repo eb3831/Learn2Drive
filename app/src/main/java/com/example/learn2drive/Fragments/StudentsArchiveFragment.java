@@ -28,6 +28,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment responsible for displaying a list of archived students for a specific teacher.
+ * Allows the teacher to view archived students and restore them to an active status.
+ */
 public class StudentsArchiveFragment extends Fragment
 {
     private RecyclerView rvArchivedStudents;
@@ -38,10 +42,22 @@ public class StudentsArchiveFragment extends Fragment
     private StudentAdapter studentAdapter;
     private List<Student> archivedStudentList;
 
+    /**
+     * Required empty public constructor.
+     */
     public StudentsArchiveFragment()
     {
     }
 
+    /**
+     * Initializes the fragment's user interface, sets up UI components, listeners,
+     * and triggers the data fetching process for archived students.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -64,6 +80,12 @@ public class StudentsArchiveFragment extends Fragment
         return view;
     }
 
+    /**
+     * Initializes the UI components, sets up the RecyclerView with its adapter,
+     * and handles item click events for restoring a student.
+     *
+     * @param view The root view of the fragment.
+     */
     private void initViews(View view)
     {
         rvArchivedStudents = view.findViewById(R.id.rvArchivedStudents);
@@ -119,6 +141,11 @@ public class StudentsArchiveFragment extends Fragment
                 });
     }
 
+    /**
+     * Fetches the list of archived students for the current teacher from Firebase.
+     * First checks the classes node for students with 'ARCHIVED' status,
+     * then retrieves their full details from the students node to populate the RecyclerView.
+     */
     private void loadArchivedStudents()
     {
         if (FBRef.uid == null) return;
@@ -197,6 +224,10 @@ public class StudentsArchiveFragment extends Fragment
                 });
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * Hides the bottom navigation bar of the parent activity to provide a full-screen experience.
+     */
     @Override
     public void onResume()
     {
@@ -204,6 +235,10 @@ public class StudentsArchiveFragment extends Fragment
         ((MasterActivity) getActivity()).hideBottomNav();
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Restores the visibility of the bottom navigation bar in the parent activity.
+     */
     @Override
     public void onStop()
     {

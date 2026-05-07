@@ -90,6 +90,10 @@ public class ActiveLessonService extends Service implements LocationTrackingHelp
         }
     }
 
+    /**
+     * Called when the service is first created.
+     * Initializes the locations list and creates the notification channel.
+     */
     @Override
     public void onCreate()
     {
@@ -98,6 +102,15 @@ public class ActiveLessonService extends Service implements LocationTrackingHelp
         createNotificationChannel();
     }
 
+    /**
+     * Called by the system every time a client starts the service using startService().
+     * Handles intent data and starts the service in the foreground.
+     *
+     * @param intent  The Intent supplied to startService.
+     * @param flags   Additional data about the start request.
+     * @param startId A unique integer representing this specific request to start.
+     * @return The return value indicates how the system should continue the service if it is killed.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
@@ -118,6 +131,12 @@ public class ActiveLessonService extends Service implements LocationTrackingHelp
         return START_NOT_STICKY;
     }
 
+    /**
+     * Return the communication channel to the service.
+     *
+     * @param intent The Intent that was used to bind to this service.
+     * @return An IBinder through which clients can call on to the service.
+     */
     @Nullable
     @Override
     public IBinder onBind(Intent intent)
@@ -145,6 +164,12 @@ public class ActiveLessonService extends Service implements LocationTrackingHelp
         }
     }
 
+    /**
+     * Builds the foreground notification with appropriate pending intent to return to the activity.
+     *
+     * @param contentText The message to display in the notification body.
+     * @return The constructed Notification object.
+     */
     private Notification createNotification(String contentText)
     {
         Intent notificationIntent = new Intent(this, com.example.learn2drive.Activities.TeacherMainActivity.class);
@@ -173,6 +198,14 @@ public class ActiveLessonService extends Service implements LocationTrackingHelp
                 .build();
     }
 
+    /**
+     * Initializes lesson capabilities based on user preferences and lesson details.
+     *
+     * @param audioEnabled    Whether audio recording should be active.
+     * @param locationEnabled Whether GPS tracking should be active.
+     * @param filePath        The target file path for the audio recording.
+     * @param lesson          The current ScheduledLesson object.
+     */
     public void initializeLessonCapabilities(boolean audioEnabled, boolean locationEnabled, String filePath, com.example.learn2drive.Objects.ScheduledLesson lesson)
     {
         this.isAudioEnabled = audioEnabled;
@@ -264,7 +297,7 @@ public class ActiveLessonService extends Service implements LocationTrackingHelp
     }
 
     /**
-     * Initializes and starts the internal timer.
+     * Initializes and starts the internal timer using a Handler and Runnable.
      */
     private void startTimer()
     {
@@ -293,6 +326,9 @@ public class ActiveLessonService extends Service implements LocationTrackingHelp
         timerHandler.post(timerRunnable);
     }
 
+    /**
+     * Suspends the timer and calculates the elapsed time until the pause.
+     */
     private void pauseTimer()
     {
         if (isTimerRunning)
@@ -303,6 +339,9 @@ public class ActiveLessonService extends Service implements LocationTrackingHelp
         }
     }
 
+    /**
+     * Resumes the timer from where it was paused.
+     */
     private void resumeTimer()
     {
         if (!isTimerRunning)
@@ -313,6 +352,11 @@ public class ActiveLessonService extends Service implements LocationTrackingHelp
         }
     }
 
+    /**
+     * Handles location updates received from the LocationTrackingHelper.
+     *
+     * @param location The new location update.
+     */
     @Override
     public void onLocationUpdated(Location location)
     {
@@ -327,6 +371,10 @@ public class ActiveLessonService extends Service implements LocationTrackingHelp
         }
     }
 
+    /**
+     * Called when the service is no longer used and is being removed.
+     * Cleans up resources, stops the lesson, and removes timer callbacks.
+     */
     @Override
     public void onDestroy()
     {
@@ -365,23 +413,41 @@ public class ActiveLessonService extends Service implements LocationTrackingHelp
         return String.format(java.util.Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
     }
 
-    // --- Getters for the Fragment to use later ---
-
+    /**
+     * Returns the list of locations recorded during the lesson.
+     *
+     * @return ArrayList of Location objects.
+     */
     public ArrayList<Location> getRecordedLocations()
     {
         return recordedLocations;
     }
 
+    /**
+     * Returns the audio file being recorded.
+     *
+     * @return The File object representing the audio recording.
+     */
     public File getAudioFile()
     {
         return audioFile;
     }
 
+    /**
+     * Returns the total elapsed time in milliseconds.
+     *
+     * @return Elapsed time in milliseconds.
+     */
     public long getCurrentElapsedMillis()
     {
         return currentElapsedMillis;
     }
 
+    /**
+     * Checks if the lesson timer is currently active.
+     *
+     * @return True if running, false otherwise.
+     */
     public boolean isLessonTimerRunning()
     {
         return isTimerRunning;

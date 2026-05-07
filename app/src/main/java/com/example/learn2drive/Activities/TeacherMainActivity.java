@@ -25,6 +25,14 @@ public class TeacherMainActivity extends MasterActivity implements
         NavigationBarView.OnItemSelectedListener
 {
 
+    /**
+     * Called when the activity is starting.
+     * Initializes the activity layout and handles any incoming intent data,
+     * specifically checking if it needs to resume an active lesson.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down
+     * then this Bundle contains the data it most recently supplied.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -48,12 +56,23 @@ public class TeacherMainActivity extends MasterActivity implements
         }
     }
 
+    /**
+     * Initializes the UI components of the activity.
+     * Specifically sets up the bottom navigation view and attaches its item selection listener.
+     */
     private void initViews()
     {
         bottomNavigationView = findViewById(R.id.teacherBottomNav);
         bottomNavigationView.setOnItemSelectedListener(this);
     }
 
+    /**
+     * Called when an item in the bottom navigation menu is selected.
+     * Determines which fragment to display based on the selected menu item ID.
+     *
+     * @param item The selected menu item.
+     * @return true to display the item as the selected item.
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
@@ -92,6 +111,7 @@ public class TeacherMainActivity extends MasterActivity implements
 
     /**
      * Replaces the current fragment in the main container.
+     * Overrides the method from MasterActivity to target the teacher-specific fragment container.
      *
      * @param fragment       The new fragment to display.
      * @param addToBackStack Whether the transaction should be added to the back stack.
@@ -102,6 +122,12 @@ public class TeacherMainActivity extends MasterActivity implements
         super.replaceFragment(fragment, addToBackStack, tag, R.id.teacherFragmentContainer);
     }
 
+    /**
+     * Called when the activity receives a new intent while it is already running at the top of the history stack.
+     * Updates the intent and checks if navigation to the active lesson is required.
+     *
+     * @param intent The new intent that was started for the activity.
+     */
     @Override
     protected void onNewIntent(Intent intent)
     {
@@ -112,7 +138,8 @@ public class TeacherMainActivity extends MasterActivity implements
 
     /**
      * Checks if the intent contains a flag to return to the active lesson.
-     * Parses the lesson data and navigates to the ActiveLessonFragment safely.
+     * Parses the lesson data and navigates to the ActiveLessonFragment safely,
+     * ensuring backward compatibility for different Android API levels.
      *
      * @param intent The intent containing potential lesson data.
      */

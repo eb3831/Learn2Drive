@@ -63,6 +63,9 @@ public class ScheduleLessonFragment extends Fragment implements TimeSlotAdapter.
     private DatabaseReference timetableRef;
     private ValueEventListener timetableListener;
 
+    /**
+     * Required empty public constructor for fragment initialization.
+     */
     public ScheduleLessonFragment()
     {
         // Required empty public constructor
@@ -83,6 +86,12 @@ public class ScheduleLessonFragment extends Fragment implements TimeSlotAdapter.
         return fragment;
     }
 
+    /**
+     * Called to do initial creation of a fragment.
+     * Retrieves the teacher UID from the fragment arguments.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -93,6 +102,14 @@ public class ScheduleLessonFragment extends Fragment implements TimeSlotAdapter.
         }
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -100,6 +117,12 @@ public class ScheduleLessonFragment extends Fragment implements TimeSlotAdapter.
         return inflater.inflate(R.layout.fragment_schedule_lesson, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     *
+     * @param view               The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -248,6 +271,14 @@ public class ScheduleLessonFragment extends Fragment implements TimeSlotAdapter.
         timetableRef.addValueEventListener(timetableListener);
     }
 
+    /**
+     * Triggered when a time slot's status is changed.
+     * Not utilized in the student's scheduling flow.
+     *
+     * @param timeSlot  The time slot that was changed.
+     * @param newStatus The new status of the time slot.
+     * @param position  The position of the item in the adapter.
+     */
     @Override
     public void onStatusChanged(TimeSlot timeSlot, String newStatus, int position)
     {
@@ -306,6 +337,10 @@ public class ScheduleLessonFragment extends Fragment implements TimeSlotAdapter.
         });
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Removes the active Firebase listener to prevent memory leaks and restores the bottom navigation bar.
+     */
     @Override
     public void onStop()
     {
@@ -318,6 +353,10 @@ public class ScheduleLessonFragment extends Fragment implements TimeSlotAdapter.
         ((MasterActivity) getActivity()).showBottomNav();
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * Hides the bottom navigation bar to maximize screen space.
+     */
     @Override
     public void onResume()
     {

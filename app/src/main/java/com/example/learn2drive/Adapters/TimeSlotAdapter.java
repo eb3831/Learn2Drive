@@ -19,6 +19,11 @@ import com.example.learn2drive.R;
 
 import java.util.List;
 
+/**
+ * Adapter class for displaying and managing time slots in a RecyclerView.
+ * This adapter adapts its UI and interaction logic based on whether it is being viewed
+ * by a student (can select slots) or a teacher (can manage availability).
+ */
 public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSlotViewHolder>
 {
     private List<TimeSlot> timeSlotList;
@@ -31,10 +36,31 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
      */
     public interface OnTimeSlotStatusChangeListener
     {
+        /**
+         * Called when a teacher changes the availability status of a time slot.
+         *
+         * @param timeSlot  The time slot that was updated.
+         * @param newStatus The new status of the time slot (e.g., AVAILABLE, UNAVAILABLE).
+         * @param position  The position of the updated item in the adapter's data set.
+         */
         void onStatusChanged(TimeSlot timeSlot, String newStatus, int position);
+
+        /**
+         * Called when a student clicks on a time slot to request a lesson.
+         *
+         * @param timeSlot The time slot selected by the student.
+         */
         void onStudentTimeSlotClicked(TimeSlot timeSlot);
     }
 
+    /**
+     * Constructor for the TimeSlotAdapter.
+     *
+     * @param context       The context of the calling fragment/activity.
+     * @param timeSlotList  The list of time slots to display.
+     * @param isStudentView A boolean flag indicating if the current user is a student (true) or teacher (false).
+     * @param listener      The callback interface for handling clicks and status changes.
+     */
     public TimeSlotAdapter(Context context, List<TimeSlot> timeSlotList, boolean isStudentView, OnTimeSlotStatusChangeListener listener)
     {
         this.context = context;
@@ -43,6 +69,13 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
         this.listener = listener;
     }
 
+    /**
+     * Called when RecyclerView needs a new {@link TimeSlotViewHolder} of the given type to represent an item.
+     *
+     * @param parent   The ViewGroup into which the new View will be added after it is bound to an adapter position.
+     * @param viewType The view type of the new View.
+     * @return A new TimeSlotViewHolder that holds a View of the given view type.
+     */
     @NonNull
     @Override
     public TimeSlotViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
@@ -51,6 +84,13 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
         return new TimeSlotViewHolder(view);
     }
 
+    /**
+     * Called by RecyclerView to display the data at the specified position.
+     * Customizes the UI elements based on the slot's status and whether the user is a student or teacher.
+     *
+     * @param holder   The ViewHolder which should be updated to represent the contents of the item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull TimeSlotViewHolder holder, int position)
     {
@@ -149,6 +189,11 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
         }
     }
 
+    /**
+     * Returns the total number of time slots in the data set held by the adapter.
+     *
+     * @return The total number of items in this adapter.
+     */
     @Override
     public int getItemCount()
     {
@@ -157,6 +202,9 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
 
     /**
      * Helper method to style the row as active/available.
+     * Clears any strike-through text flags and restores full opacity to the icon.
+     *
+     * @param holder The ViewHolder containing the UI elements to style.
      */
     private void setNormalStyle(TimeSlotViewHolder holder)
     {
@@ -167,6 +215,9 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
 
     /**
      * Helper method to style the row as inactive/canceled.
+     * Applies a strike-through text flag and reduces the opacity of the icon.
+     *
+     * @param holder The ViewHolder containing the UI elements to style.
      */
     private void setDisabledStyle(TimeSlotViewHolder holder)
     {
@@ -185,6 +236,12 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
         ImageView ivClockIcon;
         SwitchCompat switchAvailability;
 
+        /**
+         * Constructor for the TimeSlotViewHolder.
+         * Initializes the UI components by finding them within the provided item view.
+         *
+         * @param itemView The view containing the layout for a single time slot item.
+         */
         public TimeSlotViewHolder(@NonNull View itemView)
         {
             super(itemView);
@@ -194,4 +251,4 @@ public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.TimeSl
             switchAvailability = itemView.findViewById(R.id.switchAvailability);
         }
     }
-}  
+}

@@ -61,6 +61,15 @@ public class StudentHomeFragment extends Fragment
     {
     }
 
+    /**
+     * Initializes the fragment's user interface, sets up UI components, listeners,
+     * checks permissions, and triggers the data fetching process from Firebase.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -140,6 +149,14 @@ public class StudentHomeFragment extends Fragment
         }
     }
 
+    /**
+     * Handles the result of the requested permissions.
+     * Specifically checks if the notification permission was granted or denied and informs the user.
+     *
+     * @param requestCode The request code passed in requestPermissions().
+     * @param permissions The requested permissions.
+     * @param grantResults The grant results for the corresponding permissions.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
@@ -284,6 +301,10 @@ public class StudentHomeFragment extends Fragment
         });
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Cleans up the Firebase ValueEventListener to prevent memory leaks.
+     */
     @Override
     public void onStop()
     {

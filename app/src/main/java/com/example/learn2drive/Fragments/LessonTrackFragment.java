@@ -51,6 +51,9 @@ public class LessonTrackFragment extends Fragment implements OnMapReadyCallback
     private GoogleMap mMap;
     private DoneLesson currentLesson;
 
+    /**
+     * Required empty public constructor for fragment initialization.
+     */
     public LessonTrackFragment()
     {
         // Required empty public constructor
@@ -71,6 +74,14 @@ public class LessonTrackFragment extends Fragment implements OnMapReadyCallback
         return fragment;
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -78,6 +89,12 @@ public class LessonTrackFragment extends Fragment implements OnMapReadyCallback
         return inflater.inflate(R.layout.fragment_lesson_track, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     *
+     * @param view               The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -149,6 +166,12 @@ public class LessonTrackFragment extends Fragment implements OnMapReadyCallback
         });
     }
 
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     *
+     * @param googleMap A non-null instance of a GoogleMap associated with the fragment or map view.
+     */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap)
     {
@@ -267,6 +290,10 @@ public class LessonTrackFragment extends Fragment implements OnMapReadyCallback
         showLoading(false);
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Restores the visibility of the bottom navigation bar.
+     */
     @Override
     public void onStop()
     {
@@ -274,6 +301,10 @@ public class LessonTrackFragment extends Fragment implements OnMapReadyCallback
         ((MasterActivity) getActivity()).showBottomNav();
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * Hides the bottom navigation bar to maximize screen space for the map view.
+     */
     @Override
     public void onResume()
     {

@@ -18,6 +18,11 @@ public class TimeSlot
     private String startTime;
     private String endTime;
 
+    /**
+     * Default constructor for TimeSlot.
+     * Initializes the slot as available and clears all other fields.
+     * Required for Firebase Realtime Database.
+     */
     public TimeSlot()
     {
         this.duration = 0;

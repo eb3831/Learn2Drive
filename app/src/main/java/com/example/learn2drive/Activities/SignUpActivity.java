@@ -45,22 +45,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+/**
+ * Activity class responsible for the first step of the user registration process.
+ * It handles input validation, checks for existing users in Firebase, and utilizes
+ * the Gemini API to scan and extract data from an ID card image.
+ */
 public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
 {
     Intent gi;
 
-    // Inputs
     EditText etSignUpEmail, etSignUpPassword, etBirthDate, etIDNumber, etFullName, etPhone;
 
-    // Containers
     LinearLayout containerFullName, containerEmail, containerPhone,
             containerPassword, containerBirthDate, containerIdNumber;
 
-    // Error TextViews
     TextView tvFullNameError, tvEmailError, tvPhoneError,
             tvPasswordError, tvBirthDateError, tvIdError;
 
-    // Variables
     String signUpEmail, signUpPassword, id, dob, fullName, phone;
 
     private static final String TAG = "SignUpActivity";
@@ -74,6 +75,13 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
 
     private ArrayList<String> existingIds;
 
+    /**
+     * Called when the activity is starting.
+     * Initializes the activity, sets the layout, and calls the method to initialize views.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down
+     * then this Bundle contains the data it most recently supplied.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -83,9 +91,12 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         initViews();
     }
 
+    /**
+     * Initializes all UI components, variables, and managers used in the activity.
+     * Also triggers the retrieval of existing users from the database.
+     */
     public void initViews()
     {
-        // Edit Texts
         etSignUpEmail = findViewById(R.id.etSignUpEmail);
         etSignUpPassword = findViewById(R.id.etSignUpPassword);
         etBirthDate = findViewById(R.id.etBirthDate);
@@ -93,7 +104,6 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         etFullName = findViewById(R.id.etSignUpFullName);
         etPhone = findViewById(R.id.etSignUpPhone);
 
-        // Containers
         containerFullName = findViewById(R.id.containerFullName);
         containerEmail = findViewById(R.id.containerEmail);
         containerPhone = findViewById(R.id.containerPhone);
@@ -101,7 +111,6 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         containerBirthDate = findViewById(R.id.containerBirthDate);
         containerIdNumber = findViewById(R.id.containerIdNumber);
 
-        // Error Views
         tvEmailError = findViewById(R.id.tvEmailError);
         tvPasswordError = findViewById(R.id.tvPasswordError);
         tvBirthDateError = findViewById(R.id.tvBirthDateError);
@@ -116,6 +125,10 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         readExistingUsers();
     }
 
+    /**
+     * Reads all existing users from the Firebase Realtime Database and stores their ID numbers
+     * in an ArrayList to prevent duplicate registrations.
+     */
     private void readExistingUsers()
     {
         existingIds.clear();
@@ -140,6 +153,13 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         });
     }
 
+    /**
+     * Validates all user inputs. If all fields are valid, it proceeds to the second step
+     * of the sign-up process (SignUpActivity2) by passing the collected data via Intent.
+     * Displays appropriate error messages if validation fails.
+     *
+     * @param view The view that was clicked to trigger this method.
+     */
     public void moveToSignUp2(View view)
     {
         fullName = etFullName.getText().toString().trim();
@@ -227,6 +247,10 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
 
     // --- Error Handling Methods --- c
 
+    /**
+     * Resets all input container backgrounds to their default state and hides any
+     * visible error text views.
+     */
     private void resetErrors()
     {
         // Reset backgrounds
@@ -248,6 +272,12 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
 
     // --- Existing Functionality ---
 
+    /**
+     * Opens a DatePickerDialog allowing the user to select their date of birth.
+     * The maximum selectable date is constrained to the current system date.
+     *
+     * @param view The view that was clicked to trigger this method.
+     */
     public void openDatePicker(View view)
     {
         final Calendar c = Calendar.getInstance();
@@ -268,6 +298,11 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         datePickerDialog.show();
     }
 
+    /**
+     * Navigates the user back to the LoginActivity and finishes the current activity.
+     *
+     * @param view The view that was clicked to trigger this method.
+     */
     public void moveToLogin(View view)
     {
         gi = new Intent(this, LoginActivity.class);
@@ -275,6 +310,12 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         finish();
     }
 
+    /**
+     * Initiates the ID card scanning process. Requests camera permission if not already granted,
+     * otherwise launches the camera directly.
+     *
+     * @param view The view that was clicked to trigger this method.
+     */
     public void scanID(View view)
     {
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
@@ -288,6 +329,10 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         }
     }
 
+    /**
+     * Prepares a temporary file to store the captured image and launches the
+     * default camera application to take a full-resolution picture.
+     */
     private void launchCamera()
     {
         String filename = "tempfile_id_card";
@@ -317,6 +362,14 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         }
     }
 
+    /**
+     * Callback for the result from requesting permissions.
+     * If the camera permission is granted, it proceeds to launch the camera.
+     *
+     * @param requestCode  The request code passed in requestPermissions().
+     * @param permissions  The requested permissions.
+     * @param grantResults The grant results for the corresponding permissions.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
@@ -335,6 +388,14 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         }
     }
 
+    /**
+     * Callback for the result from the camera intent.
+     * Decodes the captured image and sends it to the Gemini API for processing.
+     *
+     * @param requestCode The integer request code originally supplied to startActivityForResult().
+     * @param resultCode  The integer result code returned by the child activity through its setResult().
+     * @param data_back   An Intent, which can return result data to the caller.
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data_back)
     {
@@ -353,6 +414,12 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         }
     }
 
+    /**
+     * Callback triggered when the Gemini API successfully returns a response.
+     * Parses the JSON result and populates the ID number and Date of Birth fields in the UI.
+     *
+     * @param result The generated text response from the Gemini model.
+     */
     @Override
     public void onSuccess(String result)
     {
@@ -385,6 +452,12 @@ public class SignUpActivity extends AppCompatActivity implements GeminiCallBack
         }
     }
 
+    /**
+     * Callback triggered when the Gemini API request fails.
+     * Dismisses the progress dialog and displays an error message to the user.
+     *
+     * @param error The Throwable object containing error details.
+     */
     @Override
     public void onFailure(Throwable error)
     {

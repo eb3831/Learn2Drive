@@ -7,6 +7,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+/**
+ * Helper class that manages all Firebase references for the application.
+ * Centralizes access to Authentication, Realtime Database, and Cloud Storage.
+ */
 public class FBRef
 {
     public static FirebaseAuth refAuth = FirebaseAuth.getInstance();
@@ -26,7 +30,7 @@ public class FBRef
     public static DatabaseReference refTeachersTimeTable = FB_DB.getReference("Teachers Timetable");
 
 
-    // --- Firebase Storage ---
+    // Firebase Storage
     public static FirebaseStorage FB_STORAGE = FirebaseStorage.getInstance();
     public static StorageReference refProfilePics = FB_STORAGE.getReference("Profile Pictures");
     public static StorageReference refLessonsDetails = FB_STORAGE.getReference("Lessons Details");

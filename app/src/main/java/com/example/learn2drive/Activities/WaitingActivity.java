@@ -22,7 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 /**
  * WaitingActivity handles the intermediate state where a user (Student or Teacher)
  * is waiting for admin or teacher approval.
- * * It listens to real-time updates from Firebase and redirects the user
+ * It listens to real-time updates from Firebase and redirects the user
  * to the main screen once the approval flag is updated.
  */
 public class WaitingActivity extends AppCompatActivity
@@ -31,6 +31,13 @@ public class WaitingActivity extends AppCompatActivity
     Intent gi;
     SharedPreferences sp;
 
+    /**
+     * Called when the activity is starting.
+     * Sets the content view, retrieves the intent data, and initializes the UI and listeners.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down
+     * then this Bundle contains the data it most recently supplied.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -67,7 +74,7 @@ public class WaitingActivity extends AppCompatActivity
 
     /**
      * Updates the local SharedPreferences to indicate that the user has been approved.
-     * This makes sure the user is not shown the waiting screen again.
+     * This makes sure the user is not shown the waiting screen again on future logins.
      */
     private void updateSharedPrefs()
     {
@@ -76,6 +83,13 @@ public class WaitingActivity extends AppCompatActivity
         editor.apply();
     }
 
+    /**
+     * Attaches a ValueEventListener to the appropriate Firebase database branch (Students or Teachers).
+     * Listens for real-time changes to the user's "status" property and automatically navigates
+     * to the appropriate main activity once the status is updated to ACTIVE.
+     *
+     * @param isStudent A boolean flag indicating whether the current user is a student (true) or a teacher (false).
+     */
     private void addListenerToFBBranch(boolean isStudent)
     {
         DatabaseReference ref = isStudent ? refStudents : refTeachers;

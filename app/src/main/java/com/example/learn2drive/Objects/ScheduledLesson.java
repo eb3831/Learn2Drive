@@ -2,6 +2,11 @@ package com.example.learn2drive.Objects;
 
 import java.io.Serializable;
 
+/**
+ * Represents a driving lesson that has been scheduled in the system.
+ * This class holds information about the lesson's participants, timing, and sequence.
+ * Implements Serializable to allow lesson data to be passed between Fragments and Activities.
+ */
 public class ScheduledLesson implements Serializable
 {
     private int lessonNumber;
@@ -12,6 +17,10 @@ public class ScheduledLesson implements Serializable
     private int duration;
     private String studentName;
 
+    /**
+     * Default constructor initializing all fields to default values.
+     * Required by Firebase Realtime Database for deserialization.
+     */
     public ScheduledLesson()
     {
         this.lessonNumber = 0;
@@ -23,7 +32,16 @@ public class ScheduledLesson implements Serializable
         this.studentName = "";
     }
 
-
+    /**
+     * Parameterized constructor to create a new scheduled lesson with full details.
+     * @param lessonNumber The ordinal number of the lesson for the specific student.
+     * @param teacherUID The unique Firebase ID of the instructor.
+     * @param studentUID The unique Firebase ID of the student.
+     * @param studentID The Israeli ID card number of the student.
+     * @param dateAndTime The scheduled timestamp for the lesson.
+     * @param duration The length of the lesson in minutes.
+     * @param studentName The full name of the student.
+     */
     public ScheduledLesson(int lessonNumber, String teacherUID, String studentUID, String studentID,
                            String dateAndTime, int duration, String studentName)
     {

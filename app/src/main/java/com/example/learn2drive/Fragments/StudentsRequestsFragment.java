@@ -47,6 +47,14 @@ public class StudentsRequestsFragment extends Fragment
     private ValueEventListener requestsListener;
     private DatabaseReference requestsRef;
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -55,6 +63,13 @@ public class StudentsRequestsFragment extends Fragment
         return inflater.inflate(R.layout.fragment_students_requests, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     * Initializes views, sets up the RecyclerView, handles click listeners, and triggers data loading.
+     *
+     * @param view The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -337,6 +352,10 @@ public class StudentsRequestsFragment extends Fragment
         }
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * Hides the bottom navigation bar of the parent activity to provide a clean view for requests.
+     */
     @Override
     public void onResume()
     {
@@ -344,6 +363,10 @@ public class StudentsRequestsFragment extends Fragment
         ((MasterActivity) getActivity()).hideBottomNav();
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Removes the Firebase database listener to prevent memory leaks and restores the bottom navigation bar.
+     */
     @Override
     public void onStop()
     {

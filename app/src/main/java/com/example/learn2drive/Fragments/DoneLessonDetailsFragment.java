@@ -51,6 +51,9 @@ public class DoneLessonDetailsFragment extends Fragment
     private LinearLayout btnWatchTrack;
     private LinearLayout btnWatchSummary;
 
+    /**
+     * Required empty public constructor for fragment initialization.
+     */
     public DoneLessonDetailsFragment()
     {
         // Required empty public constructor
@@ -61,7 +64,7 @@ public class DoneLessonDetailsFragment extends Fragment
      *
      * @param lesson    The completed lesson object containing all details.
      * @param isStudent Boolean indicating if the current logged-in user is a student.
-     * @return A new instance of fragment LessonDetailsFragment.
+     * @return A new instance of fragment DoneLessonDetailsFragment.
      */
     public static DoneLessonDetailsFragment newInstance(DoneLesson lesson, boolean isStudent)
     {
@@ -73,6 +76,12 @@ public class DoneLessonDetailsFragment extends Fragment
         return fragment;
     }
 
+    /**
+     * Called to do initial creation of a fragment.
+     * Retrieves the lesson data and user type from the fragment arguments.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -84,6 +93,14 @@ public class DoneLessonDetailsFragment extends Fragment
         }
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -91,6 +108,12 @@ public class DoneLessonDetailsFragment extends Fragment
         return inflater.inflate(R.layout.fragment_done_lesson_details, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     *
+     * @param view               The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -275,7 +298,7 @@ public class DoneLessonDetailsFragment extends Fragment
     }
 
     /**
-     * Replaces the current fragment with the map tracking fragment.
+     * Replaces the current fragment with the map tracking fragment based on the user type.
      */
     private void navigateToTrackMap()
     {
@@ -294,6 +317,10 @@ public class DoneLessonDetailsFragment extends Fragment
         }
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Restores the visibility of the bottom navigation bar.
+     */
     @Override
     public void onStop()
     {
@@ -301,6 +328,10 @@ public class DoneLessonDetailsFragment extends Fragment
         ((MasterActivity) getActivity()).showBottomNav();
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * Hides the bottom navigation bar to maximize screen real estate.
+     */
     @Override
     public void onResume()
     {

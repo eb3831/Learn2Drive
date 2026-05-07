@@ -1,5 +1,10 @@
 package com.example.learn2drive.Objects;
 
+/**
+ * Base class representing a generic user in the system.
+ * This class serves as a parent for Student, Teacher, and Admin classes,
+ * centralizing common identity and contact information.
+ */
 public class User
 {
     public static final int STUDENT = 0;
@@ -19,6 +24,11 @@ public class User
     protected String phoneNumber;
     protected String status;
 
+    /**
+     * Default constructor for User.
+     * Initializes a student role with empty strings for all identity fields.
+     * Required for Firebase Realtime Database operations.
+     */
     public User()
     {
         this.role = 0;
@@ -30,6 +40,16 @@ public class User
         this.status = "";
     }
 
+    /**
+     * Parameterized constructor to create a complete User profile.
+     * @param uid The unique Firebase Authentication UID.
+     * @param idNumber The user's Israeli ID number.
+     * @param fullName The user's full name.
+     * @param birthDate The user's date of birth in dd.MM.yyyy format.
+     * @param phoneNumber The user's contact phone number.
+     * @param status The current status of the account (e.g., ACTIVE).
+     * @param role The numeric role identifier (0, 1, or 2).
+     */
     public User(String uid, String idNumber, String fullName, String birthDate, String phoneNumber,
                 String status, int role)
     {

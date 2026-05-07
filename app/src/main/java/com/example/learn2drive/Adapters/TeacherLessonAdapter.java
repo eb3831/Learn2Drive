@@ -27,6 +27,11 @@ public class TeacherLessonAdapter extends RecyclerView.Adapter<TeacherLessonAdap
      */
     public interface OnLessonClickListener
     {
+        /**
+         * Called when a scheduled lesson item is clicked.
+         *
+         * @param lesson The scheduled lesson object that was clicked.
+         */
         void onLessonClicked(ScheduledLesson lesson);
     }
 
@@ -53,6 +58,13 @@ public class TeacherLessonAdapter extends RecyclerView.Adapter<TeacherLessonAdap
         notifyDataSetChanged();
     }
 
+    /**
+     * Called when RecyclerView needs a new {@link LessonViewHolder} of the given type to represent an item.
+     *
+     * @param parent   The ViewGroup into which the new View will be added after it is bound to an adapter position.
+     * @param viewType The view type of the new View.
+     * @return A new LessonViewHolder that holds a View of the given view type.
+     */
     @NonNull
     @Override
     public LessonViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
@@ -61,6 +73,14 @@ public class TeacherLessonAdapter extends RecyclerView.Adapter<TeacherLessonAdap
         return new LessonViewHolder(view);
     }
 
+    /**
+     * Called by RecyclerView to display the data at the specified position.
+     * This method updates the contents of the {@link LessonViewHolder} to reflect the lesson at the given position.
+     * It handles the splitting of the combined date and time string for proper display in separate text views.
+     *
+     * @param holder   The ViewHolder which should be updated to represent the contents of the item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull LessonViewHolder holder, int position)
     {
@@ -93,6 +113,12 @@ public class TeacherLessonAdapter extends RecyclerView.Adapter<TeacherLessonAdap
         });
     }
 
+    /**
+     * Returns the total number of lessons in the data set held by the adapter.
+     * Handles null-safety by returning 0 if the list is null.
+     *
+     * @return The total number of items in this adapter, or 0 if the list is null.
+     */
     @Override
     public int getItemCount()
     {
@@ -106,6 +132,12 @@ public class TeacherLessonAdapter extends RecyclerView.Adapter<TeacherLessonAdap
     {
         TextView tvDate, tvTime, tvStudentName, tvIDNumber, tvDurationDetails, tvDurationBadge;
 
+        /**
+         * Constructor for the LessonViewHolder.
+         * Initializes the UI components by finding them within the provided item view.
+         *
+         * @param itemView The view containing the layout for a single lesson item.
+         */
         public LessonViewHolder(@NonNull View itemView)
         {
             super(itemView);

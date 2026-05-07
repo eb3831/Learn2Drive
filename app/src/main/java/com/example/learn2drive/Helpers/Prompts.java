@@ -1,5 +1,9 @@
 package com.example.learn2drive.Helpers;
 
+/**
+ * Helper class that stores the prompts and JSON schemas used for AI interactions.
+ * This class centralizes the instructions sent to the Gemini API for consistent data extraction.
+ */
 public class Prompts
 {
     public static final String PHOTO_PROMPT = "Analyze the provided image of an Israeli Identity Card (Teudat Zehut)./n" +

@@ -64,17 +64,34 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
     private DatabaseReference currentDayRef;
     private ValueEventListener timeSlotsListener;
 
+    /**
+     * Required empty public constructor for fragment initialization.
+     */
     public HoursManagerFragment()
     {
         // Required empty public constructor
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         return inflater.inflate(R.layout.fragment_hours_manager, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     *
+     * @param view               The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -85,6 +102,11 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
         setupClickListeners();
     }
 
+    /**
+     * Creates a new instance of HoursManagerFragment.
+     *
+     * @return A new instance of HoursManagerFragment.
+     */
     public static HoursManagerFragment newInstance()
     {
         return new HoursManagerFragment();
@@ -408,6 +430,14 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
         currentDayRef.addValueEventListener(timeSlotsListener);
     }
 
+    /**
+     * Interface callback invoked when a time slot's status is changed (e.g., active/inactive).
+     * Updates the status directly in the Firebase database.
+     *
+     * @param timeSlot The TimeSlot object that was changed.
+     * @param newStatus The new status string to be saved.
+     * @param position The position of the item in the adapter.
+     */
     @Override
     public void onStatusChanged(TimeSlot timeSlot, String newStatus, int position)
     {
@@ -422,12 +452,22 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
         slotStatusRef.setValue(newStatus);
     }
 
+    /**
+     * Interface callback invoked when a student clicks on a time slot.
+     * Intentionally left blank for this fragment as this is the teacher's management view.
+     *
+     * @param timeSlot The TimeSlot object that was clicked.
+     */
     @Override
     public void onStudentTimeSlotClicked(TimeSlot timeSlot)
     {
         // Intentionally left blank for this fragment
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Removes the active Firebase listener and shows the bottom navigation bar.
+     */
     @Override
     public void onStop()
     {
@@ -440,6 +480,10 @@ public class HoursManagerFragment extends Fragment implements TimeSlotAdapter.On
         ((MasterActivity) getActivity()).showBottomNav();
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * Hides the bottom navigation bar to maximize screen space.
+     */
     @Override
     public void onResume()
     {

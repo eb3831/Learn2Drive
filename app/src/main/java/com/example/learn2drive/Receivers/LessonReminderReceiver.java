@@ -14,6 +14,13 @@ public class LessonReminderReceiver extends BroadcastReceiver
 {
     private static final String TAG = "LessonReminderReceiver";
 
+    /**
+     * Called when the BroadcastReceiver is receiving an Intent broadcast.
+     * Extracts lesson details from the intent and triggers a notification via NotificationHelper.
+     *
+     * @param context The Context in which the receiver is running.
+     * @param intent  The Intent being received, containing lesson time, notification ID, and reminder type.
+     */
     @Override
     public void onReceive(Context context, Intent intent)
     {

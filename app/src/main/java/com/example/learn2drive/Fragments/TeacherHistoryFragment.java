@@ -63,6 +63,15 @@ public class TeacherHistoryFragment extends Fragment
 
     private String selectedDateFilter = "";
 
+    /**
+     * Initializes the fragment's user interface, sets up UI components,
+     * configures the RecyclerView, and initializes listeners.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)

@@ -47,11 +47,22 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
 
     private ValueEventListener timetableListener;
 
+    /**
+     * Required empty public constructor for fragment initialization.
+     */
     public LessonRequestsFragment()
     {
         // Required empty public constructor
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -245,6 +256,12 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
         tvPendingCount.setText(count + " pending requests");
     }
 
+    /**
+     * Interface callback invoked when the teacher accepts a lesson request.
+     * Updates the time slot status to booked and creates a new scheduled lesson in the database.
+     *
+     * @param request The lesson request model containing the slot and student details.
+     */
     @Override
     public void onAcceptClick(LessonRequestModel request)
     {
@@ -300,6 +317,12 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
                 .show();
     }
 
+    /**
+     * Interface callback invoked when the teacher declines a lesson request.
+     * Resets the time slot status back to available and removes the student from it.
+     *
+     * @param request The lesson request model containing the slot details.
+     */
     @Override
     public void onDeclineClick(LessonRequestModel request)
     {
@@ -323,6 +346,10 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
                 .show();
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Removes the timetable listener to prevent memory leaks and shows the bottom navigation bar.
+     */
     @Override
     public void onStop()
     {
@@ -335,6 +362,10 @@ public class LessonRequestsFragment extends Fragment implements LessonRequestsAd
         ((MasterActivity) getActivity()).showBottomNav();
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * Hides the bottom navigation bar to maximize screen space for the requests list.
+     */
     @Override
     public void onResume()
     {

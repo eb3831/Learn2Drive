@@ -127,6 +127,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     };
 
+    /**
+     * Initializes the service logic by setting lesson capabilities and starting the lesson tracking.
+     */
     private void startServiceLogic()
     {
         if (activeLessonService != null && !activeLessonService.isLessonTimerRunning())
@@ -144,11 +147,20 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Required empty public constructor for fragment initialization.
+     */
     public ActiveLessonFragment()
     {
         // Required empty public constructor
     }
 
+    /**
+     * Creates a new instance of ActiveLessonFragment with the provided lesson data.
+     *
+     * @param lesson The ScheduledLesson object containing lesson details.
+     * @return A new instance of ActiveLessonFragment.
+     */
     public static ActiveLessonFragment newInstance(ScheduledLesson lesson)
     {
         ActiveLessonFragment fragment = new ActiveLessonFragment();
@@ -158,6 +170,14 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         return fragment;
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -168,6 +188,12 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         return view;
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     *
+     * @param view               The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -175,6 +201,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         checkPermissionsAndStart();
     }
 
+    /**
+     * Initial creation of the fragment.
+     *
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -182,6 +213,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
     }
 
+    /**
+     * Binds the fragment to the ActiveLessonService when it becomes visible.
+     */
     @Override
     public void onStart()
     {
@@ -191,6 +225,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         requireActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
+    /**
+     * Unbinds from the service and restores UI elements when the fragment is no longer visible.
+     */
     @Override
     public void onStop()
     {
@@ -205,6 +242,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         ((MasterActivity) getActivity()).showBottomNav();
     }
 
+    /**
+     * Hides the bottom navigation view when the fragment resumes.
+     */
     @Override
     public void onResume()
     {
@@ -212,6 +252,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         ((MasterActivity) getActivity()).hideBottomNav();
     }
 
+    /**
+     * Initializes the UI components from the layout XML.
+     *
+     * @param view The root view of the fragment.
+     */
     private void initializeViews(View view)
     {
         btnBack = view.findViewById(R.id.btnBack);
@@ -226,6 +271,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         llLocationBadge = view.findViewById(R.id.llLocationBadge);
     }
 
+    /**
+     * Extracts lesson data passed through the arguments bundle.
+     */
     private void extractArguments()
     {
         if (getArguments() != null)
@@ -238,6 +286,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Configures click listeners for interactive UI elements.
+     */
     private void setupClickListeners()
     {
         btnBack.setOnClickListener(v -> Toast.makeText(requireContext(),
@@ -248,7 +299,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         btnEndLesson.setOnClickListener(v -> showEndLessonDialog());
     }
 
-    // --- Permissions Logic remains largely the same ---
+    /**
+     * Checks for necessary permissions (Audio and Location) before starting the lesson logic.
+     */
     private void checkPermissionsAndStart()
     {
         boolean hasAudioPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
@@ -272,6 +325,13 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Callback for the result from requesting permissions.
+     *
+     * @param requestCode  The request code passed in requestPermissions.
+     * @param permissions  The requested permissions.
+     * @param grantResults The grant results for the corresponding permissions.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
@@ -284,6 +344,12 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Evaluates permission results and hardware status (GPS) to determine lesson capabilities.
+     *
+     * @param hasAudio    True if audio recording permission is granted.
+     * @param hasLocation True if location permission is granted.
+     */
     private void evaluatePermissionsAndStart(boolean hasAudio, boolean hasLocation)
     {
         if (hasLocation)
@@ -298,6 +364,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         startLessonWithCapabilities(hasAudio, hasLocation);
     }
 
+    /**
+     * Checks if location services (GPS or Network) are enabled on the device.
+     *
+     * @return True if location services are enabled.
+     */
     private boolean isLocationEnabled()
     {
         LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
@@ -309,6 +380,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         return false;
     }
 
+    /**
+     * Displays a dialog prompting the user to enable GPS settings.
+     *
+     * @param hasAudio Indicates if audio was previously enabled.
+     */
     private void promptEnableLocation(boolean hasAudio)
     {
         new AlertDialog.Builder(requireContext())
@@ -329,6 +405,13 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
                 .show();
     }
 
+    /**
+     * Handles the result from returning from system settings.
+     *
+     * @param requestCode The request code.
+     * @param resultCode  The result code.
+     * @param data        The intent data.
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
@@ -349,7 +432,10 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
     }
 
     /**
-     * Configures the UI and tells the Service to begin the lesson.
+     * Configures the UI and tells the Service to begin the lesson based on available capabilities.
+     *
+     * @param audioEnabled    Whether audio recording is possible.
+     * @param locationEnabled Whether location tracking is possible.
      */
     private void startLessonWithCapabilities(boolean audioEnabled, boolean locationEnabled)
     {
@@ -388,6 +474,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Initializes the Google Maps fragment.
+     */
     private void setupMap()
     {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFragment);
@@ -397,6 +486,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Called when the map is ready to be used.
+     *
+     * @param googleMap The GoogleMap object.
+     */
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap)
@@ -452,6 +546,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Toggles between pause and resume states for the active lesson recording.
+     */
     private void handlePauseResumeClick()
     {
         if (isBound && activeLessonService != null)
@@ -471,6 +568,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Updates the UI visual indicators for the recording status.
+     *
+     * @param isRecording True if the lesson is currently being recorded.
+     */
     private void updateRecordingUI(boolean isRecording)
     {
         if (isRecording)
@@ -487,6 +589,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Displays a confirmation dialog before ending the lesson.
+     */
     private void showEndLessonDialog()
     {
         new AlertDialog.Builder(requireContext())
@@ -497,6 +602,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
                 .show();
     }
 
+    /**
+     * Stops the lesson service, processes recorded data, and sends audio to Gemini for summary.
+     */
     private void processLessonEnd()
     {
         if (!isBound || activeLessonService == null) return;
@@ -551,6 +659,12 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Generates a GPX file from coordinates and initiates the database save process.
+     *
+     * @param geminiSummary  The JSON summary string from Gemini.
+     * @param finalLocations The list of recorded GPS locations.
+     */
     private void uploadGpxAndSaveLesson(String geminiSummary, ArrayList<Location> finalLocations)
     {
         LessonSummary tempSummary;
@@ -617,6 +731,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
                 });
     }
 
+    /**
+     * Saves the final lesson data object to the Firebase Realtime Database.
+     *
+     * @param parsedSummary The summary object containing lesson analysis.
+     */
     private void saveLessonDataToDatabase(LessonSummary parsedSummary)
     {
         String teacherUid = currentLesson.getTeacherUID();
@@ -647,6 +766,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
                 });
     }
 
+    /**
+     * Increments the lesson counter for the specific student in the database.
+     *
+     * @param studentUid The unique ID of the student.
+     */
     private void incrementStudentLessonCount(String studentUid)
     {
         FBRef.refStudents.child(studentUid).child("lessonsCompleted")
@@ -665,6 +789,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
                 });
     }
 
+    /**
+     * Navigates the user back to the Teacher Home screen after lesson completion.
+     */
     private void returnToHome()
     {
         TeacherMainActivity activity = (TeacherMainActivity) requireActivity();
@@ -672,8 +799,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         activity.replaceFragment(com.example.learn2drive.Fragments.TeacherHomeFragment.newInstance(), false, "TeacherHomeFragment");
     }
 
-    // --- ActiveLessonService.LessonServiceListener Implementation ---
-
+    /**
+     * Interface implementation for ActiveLessonService to update the timer UI.
+     *
+     * @param formattedTime The current elapsed time as a formatted string.
+     */
     @Override
     public void onTimerTick(String formattedTime)
     {
@@ -681,6 +811,11 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         requireActivity().runOnUiThread(() -> tvTimer.setText(formattedTime));
     }
 
+    /**
+     * Interface implementation for ActiveLessonService to update the map with new locations.
+     *
+     * @param location The latest recorded Location object.
+     */
     @Override
     public void onLocationUpdate(Location location)
     {
@@ -697,6 +832,9 @@ public class ActiveLessonFragment extends Fragment implements OnMapReadyCallback
         });
     }
 
+    /**
+     * Cleans up UI flags when the fragment view is destroyed.
+     */
     @Override
     public void onDestroyView()
     {
